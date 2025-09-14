@@ -25,9 +25,11 @@ type UpdateConsentStatusRequest struct {
 }
 
 type ConsentResponse struct {
-	ConsentID string `json:"consent_id"`
-	JWT       string `json:"jwt"`
-	Status    string `json:"status"`
+	ConsentID string    `json:"consent_id"`
+	JWT       string    `json:"jwt"`
+	Status    string    `json:"status"`
+	CreatedAt time.Time `json:"created_at"`
+	ExpiresAt time.Time `json:"expires_at"`
 }
 
 type CreateConsentRequest struct {
@@ -77,6 +79,8 @@ func (c *ConsentController) UpdateConsentStatus(ctx *gin.Context) {
 		ConsentID: consentId,
 		JWT:       "eyJhbGciOiJIUzI1NiJ9...",
 		Status:    req.Status,
+		CreatedAt: time.Now().Add(-24 * time.Hour),
+		ExpiresAt: time.Now().Add(24 * time.Hour),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
@@ -123,6 +127,8 @@ func (c *ConsentController) GetConsentByConsentId(ctx *gin.Context) {
 		ConsentID: consentId,
 		JWT:       "eyJhbGciOiJIUzI1NiJ9...",
 		Status:    "AUTHORISED",
+		CreatedAt: time.Now().Add(-24 * time.Hour),
+		ExpiresAt: time.Now().Add(24 * time.Hour),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
@@ -135,6 +141,8 @@ func (c *ConsentController) GetConsentByConsentIdViaConsumer(ctx *gin.Context) {
 		ConsentID: consentId,
 		JWT:       "eyJhbGciOiJIUzI1NiJ9...",
 		Status:    "AUTHORISED",
+		CreatedAt: time.Now().Add(-24 * time.Hour),
+		ExpiresAt: time.Now().Add(24 * time.Hour),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
@@ -147,6 +155,31 @@ func (c *ConsentController) RevokeConsentAtBank(ctx *gin.Context) {
 
 func (c *ConsentController) SelfRevokeConsent(ctx *gin.Context) {
 	utils.SendJSONResponse(ctx, http.StatusNoContent, nil)
+}
+
+func (c *ConsentController) CreateConsentImplicit(ctx *gin.Context) {
+	_ = ctx.Param("scaMethod") // SCA method for consent creation
+
+	var req CreateConsentRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	ttl := 3600 // default time to live
+	if req.TimeToLive != nil {
+		ttl = *req.TimeToLive
+	}
+
+	response := ConsentResponse{
+		ConsentID: "consent_" + strconv.FormatInt(time.Now().Unix(), 10),
+		Status:    "INITIATED",
+		JWT:       "eyJhbGciOiJIUzI1NiJ9...",
+		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(time.Duration(ttl) * time.Second),
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusCreated, response)
 }
 
 func (c *ConsentController) RevokeMyConsent(ctx *gin.Context) {
@@ -180,6 +213,8 @@ func (c *ConsentController) CreateConsent(ctx *gin.Context) {
 		ConsentID: "consent_" + strconv.FormatInt(time.Now().Unix(), 10),
 		JWT:       "eyJhbGciOiJIUzI1NiJ9...",
 		Status:    "INITIATED",
+		CreatedAt: time.Now(),
+		ExpiresAt: time.Now().Add(24 * time.Hour),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)
@@ -193,6 +228,60 @@ func (c *ConsentController) GetMtlsClientCertificateInfo(ctx *gin.Context) {
 			"valid_from": "2023-01-01T00:00:00Z",
 			"valid_to":   "2024-01-01T00:00:00Z",
 		},
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *ConsentController) UpdateConsentStatusByConsent(ctx *gin.Context) {
+	consentId := ctx.Param("consentId")
+	
+	var req gin.H
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	response := gin.H{
+		"consent_id": consentId,
+		"status":     req["status"],
+		"updated_at": "2024-01-01T00:00:00Z",
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *ConsentController) UpdateConsentAccountAccessByConsentId(ctx *gin.Context) {
+	consentId := ctx.Param("consentId")
+	
+	var req gin.H
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	response := gin.H{
+		"consent_id":      consentId,
+		"account_access":  req["account_access"],
+		"updated_at":      "2024-01-01T00:00:00Z",
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *ConsentController) UpdateConsentUserIdByConsentId(ctx *gin.Context) {
+	consentId := ctx.Param("consentId")
+	
+	var req gin.H
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	response := gin.H{
+		"consent_id": consentId,
+		"user_id":    req["user_id"],
+		"updated_at": "2024-01-01T00:00:00Z",
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)

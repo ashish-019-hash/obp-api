@@ -27,13 +27,6 @@ type UserAttributeRequest struct {
 	IsActive bool   `json:"is_active"`
 }
 
-type UserAttributeResponse struct {
-	UserAttributeID string `json:"user_attribute_id"`
-	Name            string `json:"name"`
-	Type            string `json:"type"`
-	Value           string `json:"value"`
-	IsActive        bool   `json:"is_active"`
-}
 
 type RegulatedEntityRequest struct {
 	Name        string `json:"name" binding:"required"`
@@ -167,12 +160,12 @@ func (c *V510Controller) CreateNonPersonalUserAttribute(ctx *gin.Context) {
 		return
 	}
 
-	response := UserAttributeResponse{
-		UserAttributeID: "attr_" + strconv.FormatInt(time.Now().Unix(), 10),
-		Name:            req.Name,
-		Type:            req.Type,
-		Value:           req.Value,
-		IsActive:        req.IsActive,
+	response := gin.H{
+		"user_attribute_id": "attr_" + strconv.FormatInt(time.Now().Unix(), 10),
+		"name":              req.Name,
+		"type":              req.Type,
+		"value":             req.Value,
+		"is_active":         req.IsActive,
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)
@@ -267,5 +260,116 @@ func (c *V510Controller) GetAllApiCollections(ctx *gin.Context) {
 	response := gin.H{
 		"api_collections": []gin.H{},
 	}
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *V510Controller) GetApiTags(ctx *gin.Context) {
+	response := gin.H{
+		"tags": []string{
+			"Account",
+			"Transaction",
+			"Customer",
+			"Bank",
+			"ATM",
+			"Branch",
+			"Card",
+			"Consent",
+			"Consumer",
+			"Counterparty",
+			"Entitlement",
+			"Metric",
+			"Product",
+			"Role",
+			"User",
+			"View",
+			"Webhook",
+		},
+	}
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *V510Controller) GetCoreAccountByIdThroughView(ctx *gin.Context) {
+	bankId := ctx.Param("bankId")
+	accountId := ctx.Param("accountId")
+	viewId := ctx.Param("viewId")
+
+	response := gin.H{
+		"id":       accountId,
+		"bank_id":  bankId,
+		"label":    "Main Account",
+		"number":   "123456789",
+		"owners": []gin.H{
+			{
+				"id":           "user_001",
+				"provider":     "http://127.0.0.1:8080",
+				"display_name": "John Doe",
+			},
+		},
+		"type":     "CURRENT",
+		"balance": gin.H{
+			"currency": "EUR",
+			"amount":   "1000.00",
+		},
+		"account_routings": []gin.H{
+			{
+				"scheme":  "AccountNumber",
+				"address": "123456789",
+			},
+		},
+		"account_rules": []gin.H{},
+		"tags":          []gin.H{},
+		"views_available": []gin.H{
+			{
+				"id":          viewId,
+				"short_name":  "Owner",
+				"description": "Owner view of account",
+				"is_public":   false,
+			},
+		},
+	}
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *V510Controller) UpdateMyApiCollection(ctx *gin.Context) {
+	apiCollectionId := ctx.Param("apiCollectionId")
+
+	var req gin.H
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	response := gin.H{
+		"api_collection_id":   apiCollectionId,
+		"api_collection_name": req["api_collection_name"],
+		"is_sharable":         req["is_sharable"],
+		"description":         req["description"],
+		"api_collection_endpoints": []gin.H{},
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *V510Controller) GetMtlsClientCertificateInfo(ctx *gin.Context) {
+	response := gin.H{
+		"certificate_info": gin.H{
+			"subject": gin.H{
+				"common_name":    "example.com",
+				"organization":   "Example Corp",
+				"country":        "US",
+				"email_address":  "admin@example.com",
+			},
+			"issuer": gin.H{
+				"common_name":  "Example CA",
+				"organization": "Example Certificate Authority",
+				"country":      "US",
+			},
+			"serial_number": "123456789",
+			"not_before":    time.Now().Add(-365 * 24 * time.Hour).Format(time.RFC3339),
+			"not_after":     time.Now().Add(365 * 24 * time.Hour).Format(time.RFC3339),
+			"fingerprint":   "AA:BB:CC:DD:EE:FF:00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD",
+		},
+	}
+
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
 }

@@ -198,3 +198,60 @@ func (c *CounterpartyController) GetCounterpartyLimitStatus(ctx *gin.Context) {
 func (c *CounterpartyController) DeleteCounterpartyLimit(ctx *gin.Context) {
 	utils.SendJSONResponse(ctx, http.StatusNoContent, nil)
 }
+
+func (c *CounterpartyController) GetCounterparties(ctx *gin.Context) {
+	response := gin.H{
+		"counterparties": []gin.H{},
+	}
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *CounterpartyController) CreateCounterparty(ctx *gin.Context) {
+	var req gin.H
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	response := gin.H{
+		"counterparty_id": "counterparty_" + strconv.FormatInt(time.Now().Unix(), 10),
+		"name":            req["name"],
+		"created_at":      time.Now(),
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusCreated, response)
+}
+
+func (c *CounterpartyController) GetCounterpartyById(ctx *gin.Context) {
+	counterpartyId := ctx.Param("counterpartyId")
+
+	response := gin.H{
+		"counterparty_id": counterpartyId,
+		"name":            "Example Counterparty",
+		"created_at":      time.Now().Add(-24 * time.Hour),
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *CounterpartyController) UpdateCounterparty(ctx *gin.Context) {
+	counterpartyId := ctx.Param("counterpartyId")
+	
+	var req gin.H
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	response := gin.H{
+		"counterparty_id": counterpartyId,
+		"name":            req["name"],
+		"updated_at":      time.Now(),
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
+func (c *CounterpartyController) DeleteCounterparty(ctx *gin.Context) {
+	utils.SendJSONResponse(ctx, http.StatusNoContent, nil)
+}
