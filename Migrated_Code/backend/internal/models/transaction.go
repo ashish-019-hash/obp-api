@@ -8,7 +8,7 @@ type Transaction struct {
 	ID              int64     `json:"id" gorm:"primaryKey;autoIncrement"`
 	TransactionID   string    `json:"transaction_id" gorm:"uniqueIndex;size:255;not null"`
 	AccountID       string    `json:"account_id" gorm:"index;size:255;not null"`
-	CounterpartyID  string    `json:"counterparty_id" gorm:"size:255"`
+	CounterpartyID  *string   `json:"counterparty_id,omitempty" gorm:"size:255"`
 	TransactionType string    `json:"transaction_type" gorm:"size:100;not null"`
 	Amount          int64     `json:"amount" gorm:"not null"` // Amount in smallest currency unit
 	Currency        string    `json:"currency" gorm:"size:10;not null"`

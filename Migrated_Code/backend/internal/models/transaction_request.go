@@ -25,6 +25,8 @@ type TransactionRequest struct {
 	BodyValueCurrency               string     `json:"body_value_currency" gorm:"size:3"`
 	BodyValueAmount                 string     `json:"body_value_amount" gorm:"size:32"`
 	BodyDescription                 string     `json:"body_description" gorm:"size:2000"`
+	BodyFromAccountID               string     `json:"body_from_account_id" gorm:"size:255"`
+	BodyToCounterpartyID            *string    `json:"body_to_counterparty_id,omitempty" gorm:"size:255"`
 	Details                         string     `json:"details" gorm:"type:text"`
 	
 	FromBankID                      string     `json:"from_bank_id" gorm:"size:255"`

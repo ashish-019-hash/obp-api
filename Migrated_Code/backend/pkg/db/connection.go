@@ -1,30 +1,61 @@
 package db
 
 import (
-	"fmt"
 	"log"
+
+	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+	
+	"github.com/ashish-019-hash/obp-api-backend/internal/models"
 )
 
-type Connection struct {
-}
+var DB *gorm.DB
 
-func NewConnection(host, port, user, password, dbname string) (*Connection, error) {
-	log.Printf("Database connection placeholder - Host: %s, Port: %s, DB: %s", host, port, dbname)
+func InitDB() error {
+	var err error
 	
-	return &Connection{}, nil
-}
+	DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Info),
+	})
+	if err != nil {
+		return err
+	}
 
-func (c *Connection) Close() error {
-	log.Println("Database connection closed")
+	err = DB.AutoMigrate(
+		&models.Bank{},
+		&models.BankAccount{},
+		&models.Product{},
+		&models.Customer{},
+		&models.User{},
+		&models.Transaction{},
+		&models.TransactionRequest{},
+		&models.Counterparty{},
+		&models.Consent{},
+		&models.UserCustomerLink{},
+		&models.CustomerAccountLink{},
+		&models.AccountRouting{},
+	)
+	if err != nil {
+		return err
+	}
+
+	log.Println("SQLite in-memory database initialized with GORM")
+	log.Println("All models auto-migrated successfully")
 	return nil
 }
 
-func (c *Connection) Ping() error {
-	log.Println("Database ping successful")
-	return nil
+func GetDB() *gorm.DB {
+	return DB
 }
 
-func (c *Connection) Migrate() error {
-	log.Println("Database migration placeholder")
+func CloseDB() error {
+	if DB != nil {
+		sqlDB, err := DB.DB()
+		if err != nil {
+			return err
+		}
+		return sqlDB.Close()
+	}
 	return nil
 }
