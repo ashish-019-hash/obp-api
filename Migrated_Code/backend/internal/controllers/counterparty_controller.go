@@ -199,24 +199,55 @@ func (c *CounterpartyController) DeleteCounterpartyLimit(ctx *gin.Context) {
 	utils.SendJSONResponse(ctx, http.StatusNoContent, nil)
 }
 
+type CounterpartyResponse struct {
+	CounterpartyID string    `json:"counterparty_id"`
+	Name           string    `json:"name"`
+	BankID         string    `json:"bank_id"`
+	AccountID      string    `json:"account_id"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+type CreateCounterpartyRequest struct {
+	Name      string `json:"name" binding:"required"`
+	BankID    string `json:"bank_id" binding:"required"`
+	AccountID string `json:"account_id" binding:"required"`
+}
+
+type UpdateCounterpartyRequest struct {
+	Name string `json:"name" binding:"required"`
+}
+
 func (c *CounterpartyController) GetCounterparties(ctx *gin.Context) {
 	response := gin.H{
-		"counterparties": []gin.H{},
+		"counterparties": []CounterpartyResponse{
+			{
+				CounterpartyID: "counterparty_001",
+				Name:           "Counterparty One",
+				BankID:         "bank_001",
+				AccountID:      "account_001",
+				CreatedAt:      time.Now().Add(-48 * time.Hour),
+				UpdatedAt:      time.Now().Add(-24 * time.Hour),
+			},
+		},
 	}
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
 }
 
 func (c *CounterpartyController) CreateCounterparty(ctx *gin.Context) {
-	var req gin.H
+	var req CreateCounterpartyRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
 		return
 	}
 
-	response := gin.H{
-		"counterparty_id": "counterparty_" + strconv.FormatInt(time.Now().Unix(), 10),
-		"name":            req["name"],
-		"created_at":      time.Now(),
+	response := CounterpartyResponse{
+		CounterpartyID: "counterparty_" + strconv.FormatInt(time.Now().Unix(), 10),
+		Name:           req.Name,
+		BankID:         req.BankID,
+		AccountID:      req.AccountID,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)
@@ -225,10 +256,13 @@ func (c *CounterpartyController) CreateCounterparty(ctx *gin.Context) {
 func (c *CounterpartyController) GetCounterpartyById(ctx *gin.Context) {
 	counterpartyId := ctx.Param("counterpartyId")
 
-	response := gin.H{
-		"counterparty_id": counterpartyId,
-		"name":            "Example Counterparty",
-		"created_at":      time.Now().Add(-24 * time.Hour),
+	response := CounterpartyResponse{
+		CounterpartyID: counterpartyId,
+		Name:           "Example Counterparty",
+		BankID:         "bank_001",
+		AccountID:      "account_001",
+		CreatedAt:      time.Now().Add(-24 * time.Hour),
+		UpdatedAt:      time.Now(),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
@@ -237,16 +271,19 @@ func (c *CounterpartyController) GetCounterpartyById(ctx *gin.Context) {
 func (c *CounterpartyController) UpdateCounterparty(ctx *gin.Context) {
 	counterpartyId := ctx.Param("counterpartyId")
 	
-	var req gin.H
+	var req UpdateCounterpartyRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
 		return
 	}
 
-	response := gin.H{
-		"counterparty_id": counterpartyId,
-		"name":            req["name"],
-		"updated_at":      time.Now(),
+	response := CounterpartyResponse{
+		CounterpartyID: counterpartyId,
+		Name:           req.Name,
+		BankID:         "bank_001",
+		AccountID:      "account_001",
+		CreatedAt:      time.Now().Add(-24 * time.Hour),
+		UpdatedAt:      time.Now(),
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
