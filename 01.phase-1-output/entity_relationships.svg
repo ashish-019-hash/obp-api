@@ -1,0 +1,265 @@
+<svg width="1400" height="1000" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="700" y="30" text-anchor="middle" font-size="24" font-weight="bold" fill="#333">
+    OBP-API Entity Relationship Diagram
+  </text>
+  
+  <!-- Legend -->
+  <g id="legend" transform="translate(50, 50)">
+    <rect x="0" y="0" width="300" height="140" fill="none" stroke="#ccc" stroke-width="1"/>
+    <text x="10" y="20" font-size="16" font-weight="bold" fill="#333">Legend</text>
+    
+    <rect x="10" y="30" width="20" height="15" fill="#4A90E2"/>
+    <text x="35" y="42" font-size="12" fill="#333">Banking Core</text>
+    
+    <rect x="10" y="50" width="20" height="15" fill="#F5A623"/>
+    <text x="35" y="62" font-size="12" fill="#333">Customer Management</text>
+    
+    <rect x="10" y="70" width="20" height="15" fill="#7ED321"/>
+    <text x="35" y="82" font-size="12" fill="#333">Transaction Processing</text>
+    
+    <rect x="10" y="90" width="20" height="15" fill="#D0021B"/>
+    <text x="35" y="102" font-size="12" fill="#333">Security & Authorization</text>
+    
+    <rect x="10" y="110" width="20" height="15" fill="#9013FE"/>
+    <text x="35" y="122" font-size="12" fill="#333">Supporting Entities</text>
+    
+    <text x="150" y="42" font-size="12" fill="#333">→ 1:many</text>
+    <text x="150" y="62" font-size="12" fill="#333">↔ many:many</text>
+    <text x="150" y="82" font-size="12" fill="#333">PK Primary Key</text>
+    <text x="150" y="102" font-size="12" fill="#333">FK Foreign Key</text>
+  </g>
+  
+  <!-- Banking Core Domain -->
+  <g id="banking-core">
+    <!-- Bank Entity -->
+    <rect x="100" y="220" width="180" height="120" fill="#4A90E2" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="190" y="240" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Bank</text>
+    <text x="110" y="260" font-size="11" fill="white">PK: id</text>
+    <text x="110" y="275" font-size="11" fill="white">bankId: String</text>
+    <text x="110" y="290" font-size="11" fill="white">shortName: String</text>
+    <text x="110" y="305" font-size="11" fill="white">fullName: String</text>
+    <text x="110" y="320" font-size="11" fill="white">routingScheme: String</text>
+    
+    <!-- BankAccount Entity -->
+    <rect x="400" y="200" width="200" height="160" fill="#4A90E2" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="500" y="220" text-anchor="middle" font-size="14" font-weight="bold" fill="white">BankAccount</text>
+    <text x="410" y="240" font-size="11" fill="white">PK: id</text>
+    <text x="410" y="255" font-size="11" fill="white">accountId: String</text>
+    <text x="410" y="270" font-size="11" fill="white">FK: bankId → Bank</text>
+    <text x="410" y="285" font-size="11" fill="white">accountType: String</text>
+    <text x="410" y="300" font-size="11" fill="white">balance: BigDecimal</text>
+    <text x="410" y="315" font-size="11" fill="white">currency: String</text>
+    <text x="410" y="330" font-size="11" fill="white">number: String</text>
+    <text x="410" y="345" font-size="11" fill="white">lastUpdate: Date</text>
+    
+    <!-- Product Entity -->
+    <rect x="100" y="380" width="180" height="140" fill="#4A90E2" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="190" y="400" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Product</text>
+    <text x="110" y="420" font-size="11" fill="white">PK: id</text>
+    <text x="110" y="435" font-size="11" fill="white">FK: bankId → Bank</text>
+    <text x="110" y="450" font-size="11" fill="white">productCode: String</text>
+    <text x="110" y="465" font-size="11" fill="white">name: String</text>
+    <text x="110" y="480" font-size="11" fill="white">category: String</text>
+    <text x="110" y="495" font-size="11" fill="white">family: String</text>
+    <text x="110" y="510" font-size="11" fill="white">description: String</text>
+  </g>
+  
+  <!-- Customer Management Domain -->
+  <g id="customer-management">
+    <!-- Customer Entity -->
+    <rect x="700" y="200" width="200" height="160" fill="#F5A623" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="800" y="220" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Customer</text>
+    <text x="710" y="240" font-size="11" fill="white">PK: id</text>
+    <text x="710" y="255" font-size="11" fill="white">customerId: String</text>
+    <text x="710" y="270" font-size="11" fill="white">FK: bankId → Bank</text>
+    <text x="710" y="285" font-size="11" fill="white">number: String</text>
+    <text x="710" y="300" font-size="11" fill="white">legalName: String</text>
+    <text x="710" y="315" font-size="11" fill="white">email: String</text>
+    <text x="710" y="330" font-size="11" fill="white">mobileNumber: String</text>
+    <text x="710" y="345" font-size="11" fill="white">kycStatus: Boolean</text>
+    
+    <!-- User Entity -->
+    <rect x="700" y="400" width="200" height="120" fill="#F5A623" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="800" y="420" text-anchor="middle" font-size="14" font-weight="bold" fill="white">User</text>
+    <text x="710" y="440" font-size="11" fill="white">PK: userPrimaryKey</text>
+    <text x="710" y="455" font-size="11" fill="white">userId: String</text>
+    <text x="710" y="470" font-size="11" fill="white">provider: String</text>
+    <text x="710" y="485" font-size="11" fill="white">emailAddress: String</text>
+    <text x="710" y="500" font-size="11" fill="white">name: String</text>
+  </g>
+  
+  <!-- Transaction Processing Domain -->
+  <g id="transaction-processing">
+    <!-- TransactionRequest Entity -->
+    <rect x="400" y="400" width="220" height="180" fill="#7ED321" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="510" y="420" text-anchor="middle" font-size="14" font-weight="bold" fill="white">TransactionRequest</text>
+    <text x="410" y="440" font-size="11" fill="white">PK: id</text>
+    <text x="410" y="455" font-size="11" fill="white">transactionRequestId: String</text>
+    <text x="410" y="470" font-size="11" fill="white">FK: from_account_id → BankAccount</text>
+    <text x="410" y="485" font-size="11" fill="white">FK: to_account_id → BankAccount</text>
+    <text x="410" y="500" font-size="11" fill="white">FK: counterparty_id → Counterparty</text>
+    <text x="410" y="515" font-size="11" fill="white">type: String</text>
+    <text x="410" y="530" font-size="11" fill="white">status: String</text>
+    <text x="410" y="545" font-size="11" fill="white">amount: String</text>
+    <text x="410" y="560" font-size="11" fill="white">currency: String</text>
+    <text x="410" y="575" font-size="11" fill="white">description: String</text>
+    
+    <!-- Transaction Entity -->
+    <rect x="100" y="600" width="180" height="120" fill="#7ED321" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="190" y="620" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Transaction</text>
+    <text x="110" y="640" font-size="11" fill="white">PK: transactionId</text>
+    <text x="110" y="655" font-size="11" fill="white">FK: thisAccount → BankAccount</text>
+    <text x="110" y="670" font-size="11" fill="white">FK: otherAccount → Counterparty</text>
+    <text x="110" y="685" font-size="11" fill="white">amount: BigDecimal</text>
+    <text x="110" y="700" font-size="11" fill="white">transactionType: String</text>
+    
+    <!-- Counterparty Entity -->
+    <rect x="400" y="620" width="200" height="140" fill="#7ED321" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="500" y="640" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Counterparty</text>
+    <text x="410" y="660" font-size="11" fill="white">PK: id</text>
+    <text x="410" y="675" font-size="11" fill="white">counterpartyId: String</text>
+    <text x="410" y="690" font-size="11" fill="white">FK: thisAccountId → BankAccount</text>
+    <text x="410" y="705" font-size="11" fill="white">name: String</text>
+    <text x="410" y="720" font-size="11" fill="white">otherBankRoutingAddress: String</text>
+    <text x="410" y="735" font-size="11" fill="white">isBeneficiary: Boolean</text>
+  </g>
+  
+  <!-- Security & Authorization Domain -->
+  <g id="security-authorization">
+    <!-- Consent Entity -->
+    <rect x="950" y="200" width="180" height="120" fill="#D0021B" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="1040" y="220" text-anchor="middle" font-size="14" font-weight="bold" fill="white">Consent</text>
+    <text x="960" y="240" font-size="11" fill="white">PK: id</text>
+    <text x="960" y="255" font-size="11" fill="white">consentId: String</text>
+    <text x="960" y="270" font-size="11" fill="white">FK: userId → User</text>
+    <text x="960" y="285" font-size="11" fill="white">FK: bankId → Bank</text>
+    <text x="960" y="300" font-size="11" fill="white">status: String</text>
+    
+    <!-- OAuth Entity -->
+    <rect x="950" y="350" width="180" height="100" fill="#D0021B" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="1040" y="370" text-anchor="middle" font-size="14" font-weight="bold" fill="white">OAuth</text>
+    <text x="960" y="390" font-size="11" fill="white">PK: id</text>
+    <text x="960" y="405" font-size="11" fill="white">FK: userId → User</text>
+    <text x="960" y="420" font-size="11" fill="white">consumerKey: String</text>
+    <text x="960" y="435" font-size="11" fill="white">token: String</text>
+  </g>
+  
+  <!-- Supporting Entities -->
+  <g id="supporting-entities">
+    <!-- UserCustomerLink Entity -->
+    <rect x="950" y="480" width="200" height="100" fill="#9013FE" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="1050" y="500" text-anchor="middle" font-size="14" font-weight="bold" fill="white">UserCustomerLink</text>
+    <text x="960" y="520" font-size="11" fill="white">PK: id</text>
+    <text x="960" y="535" font-size="11" fill="white">FK: userId → User</text>
+    <text x="960" y="550" font-size="11" fill="white">FK: customerId → Customer</text>
+    <text x="960" y="565" font-size="11" fill="white">isActive: Boolean</text>
+    
+    <!-- CustomerAccountLink Entity -->
+    <rect x="700" y="600" width="200" height="100" fill="#9013FE" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="800" y="620" text-anchor="middle" font-size="14" font-weight="bold" fill="white">CustomerAccountLink</text>
+    <text x="710" y="640" font-size="11" fill="white">PK: id</text>
+    <text x="710" y="655" font-size="11" fill="white">FK: customerId → Customer</text>
+    <text x="710" y="670" font-size="11" fill="white">FK: accountId → BankAccount</text>
+    <text x="710" y="685" font-size="11" fill="white">isActive: Boolean</text>
+    
+    <!-- AccountRouting Entity -->
+    <rect x="950" y="620" width="180" height="80" fill="#9013FE" stroke="#333" stroke-width="2" rx="5"/>
+    <text x="1040" y="640" text-anchor="middle" font-size="14" font-weight="bold" fill="white">AccountRouting</text>
+    <text x="960" y="660" font-size="11" fill="white">FK: accountId → BankAccount</text>
+    <text x="960" y="675" font-size="11" fill="white">scheme: String</text>
+    <text x="960" y="690" font-size="11" fill="white">address: String</text>
+  </g>
+  
+  <!-- Relationships -->
+  <g id="relationships">
+    <!-- Bank → BankAccount (1:many) -->
+    <line x1="280" y1="280" x2="400" y2="280" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="340" y="275" text-anchor="middle" font-size="10" fill="#333">1:many</text>
+    
+    <!-- Bank → Product (1:many) -->
+    <line x1="190" y1="340" x2="190" y2="380" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="210" y="365" font-size="10" fill="#333">1:many</text>
+    
+    <!-- Bank → Customer (1:many) -->
+    <line x1="280" y1="260" x2="700" y2="260" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="490" y="255" text-anchor="middle" font-size="10" fill="#333">1:many</text>
+    
+    <!-- BankAccount → TransactionRequest (1:many) -->
+    <line x1="500" y1="360" x2="500" y2="400" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="520" y="385" font-size="10" fill="#333">1:many</text>
+    
+    <!-- TransactionRequest → Transaction (1:many) -->
+    <line x1="400" y1="580" x2="280" y2="640" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="340" y="605" text-anchor="middle" font-size="10" fill="#333">1:many</text>
+    
+    <!-- TransactionRequest → Counterparty (many:1) -->
+    <line x1="510" y1="580" x2="510" y2="620" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="530" y="605" font-size="10" fill="#333">many:1</text>
+    
+    <!-- User ↔ Customer (many:many via UserCustomerLink) -->
+    <line x1="800" y1="400" x2="800" y2="360" stroke="#333" stroke-width="2"/>
+    <line x1="800" y1="360" x2="950" y2="360" stroke="#333" stroke-width="2"/>
+    <line x1="950" y1="360" x2="950" y2="480" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="875" y="355" text-anchor="middle" font-size="10" fill="#333">many:many</text>
+    
+    <!-- Customer ↔ BankAccount (many:many via CustomerAccountLink) -->
+    <line x1="700" y1="350" x2="650" y2="350" stroke="#333" stroke-width="2"/>
+    <line x1="650" y1="350" x2="650" y2="650" stroke="#333" stroke-width="2"/>
+    <line x1="650" y1="650" x2="700" y2="650" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="625" y="500" text-anchor="middle" font-size="10" fill="#333" transform="rotate(-90, 625, 500)">many:many</text>
+    
+    <!-- User → Consent (1:many) -->
+    <line x1="900" y1="460" x2="950" y2="260" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="925" y="355" text-anchor="middle" font-size="10" fill="#333">1:many</text>
+    
+    <!-- User → OAuth (1:many) -->
+    <line x1="900" y1="460" x2="950" y2="400" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="925" y="425" text-anchor="middle" font-size="10" fill="#333">1:many</text>
+    
+    <!-- BankAccount → AccountRouting (1:many) -->
+    <line x1="600" y1="300" x2="950" y2="660" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <text x="775" y="475" text-anchor="middle" font-size="10" fill="#333">1:many</text>
+  </g>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+  
+  <!-- Domain Labels -->
+  <text x="190" y="210" text-anchor="middle" font-size="12" font-weight="bold" fill="#4A90E2">Banking Core</text>
+  <text x="800" y="190" text-anchor="middle" font-size="12" font-weight="bold" fill="#F5A623">Customer Management</text>
+  <text x="510" y="390" text-anchor="middle" font-size="12" font-weight="bold" fill="#7ED321">Transaction Processing</text>
+  <text x="1040" y="190" text-anchor="middle" font-size="12" font-weight="bold" fill="#D0021B">Security &amp; Authorization</text>
+  <text x="1050" y="470" text-anchor="middle" font-size="12" font-weight="bold" fill="#9013FE">Supporting Entities</text>
+  
+  <!-- Authentication Guards Note -->
+  <g id="auth-guards" transform="translate(50, 750)">
+    <rect x="0" y="0" width="500" height="120" fill="none" stroke="#ccc" stroke-width="1"/>
+    <text x="10" y="20" font-size="14" font-weight="bold" fill="#333">Authentication Guards &amp; Conditions</text>
+    <text x="10" y="40" font-size="12" fill="#333">• User authentication required for account access</text>
+    <text x="10" y="55" font-size="12" fill="#333">• Customer-account linking controls account visibility</text>
+    <text x="10" y="70" font-size="12" fill="#333">• Consent required for PSD2 transaction requests</text>
+    <text x="10" y="85" font-size="12" fill="#333">• OAuth tokens control API access permissions</text>
+    <text x="10" y="100" font-size="12" fill="#333">• View-based permissions filter account data</text>
+  </g>
+  
+  <!-- Framework Notes -->
+  <g id="framework-notes" transform="translate(600, 750)">
+    <rect x="0" y="0" width="500" height="120" fill="none" stroke="#ccc" stroke-width="1"/>
+    <text x="10" y="20" font-size="14" font-weight="bold" fill="#333">Lift Framework Patterns</text>
+    <text x="10" y="40" font-size="12" fill="#333">• UUIDString fields for foreign key relationships</text>
+    <text x="10" y="55" font-size="12" fill="#333">• MappedString(length) for text fields with constraints</text>
+    <text x="10" y="70" font-size="12" fill="#333">• LongKeyedMapper base class for all entities</text>
+    <text x="10" y="85" font-size="12" fill="#333">• Unique indexes on business identifiers</text>
+    <text x="10" y="100" font-size="12" fill="#333">• Trait → Case Class → Mapped Class hierarchy</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="700" y="950" text-anchor="middle" font-size="12" fill="#666">
+    Generated from OBP-API Scala codebase - Lift Web Framework - September 14, 2025
+  </text>
+</svg>
