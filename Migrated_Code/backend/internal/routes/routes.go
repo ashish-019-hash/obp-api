@@ -3,10 +3,11 @@ package routes
 import (
 	"github.com/ashish-019-hash/obp-api-backend/internal/controllers"
 	"github.com/ashish-019-hash/obp-api-backend/internal/middleware"
+	"github.com/ashish-019-hash/obp-api-backend/internal/services"
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes() *gin.Engine {
+func SetupRoutes(orchestrationService *services.OrchestrationService) *gin.Engine {
 	r := gin.New()
 
 	r.Use(middleware.Logger())
@@ -27,6 +28,8 @@ func SetupRoutes() *gin.Engine {
 		v1.GET("/health", healthController.HealthCheck)
 		
 	}
+
+	SetupV510Routes(r, orchestrationService)
 
 	return r
 }

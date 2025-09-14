@@ -42,7 +42,7 @@ func main() {
 		consentRepo,
 	)
 
-	router := routes.SetupRoutes()
+	router := routes.SetupRoutes(orchestrationService)
 
 	port := ":" + cfg.Port
 	log.Printf("Starting OBP-API Backend Server on port %s", cfg.Port)
@@ -58,8 +58,14 @@ func main() {
 	log.Println("  GET /health - Health check")
 	log.Println("  GET /ping - Ping endpoint")
 	log.Println("  GET /api/v1/health - API health check")
-
-	_ = orchestrationService
+	log.Println("v5.1.0 API endpoints:")
+	log.Println("  GET /root - API info")
+	log.Println("  GET /ui/suggested-session-timeout - Session timeout")
+	log.Println("  GET /well-known - OAuth2 well-known URIs")
+	log.Println("  POST /banks/{bankId}/agents - Create agent")
+	log.Println("  GET /my/consents - Get user consents")
+	log.Println("  POST /banks/{bankId}/accounts/{accountId}/views/{viewId}/counterparties/{counterpartyId}/limits - Create counterparty limit")
+	log.Println("  ... and 40+ more v5.1.0 endpoints")
 
 	if err := router.Run(port); err != nil {
 		log.Fatal("Failed to start server:", err)
