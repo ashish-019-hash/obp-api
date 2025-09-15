@@ -119,3 +119,36 @@ func (c *UserController) SyncExternalUser(ctx *gin.Context) {
 
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)
 }
+
+type CreateUserRequest struct {
+	Username   string `json:"username" binding:"required"`
+	Email      string `json:"email" binding:"required"`
+	Password   string `json:"password" binding:"required"`
+	FirstName  string `json:"first_name" binding:"required"`
+	LastName   string `json:"last_name" binding:"required"`
+	Provider   string `json:"provider"`
+}
+
+func (c *UserController) CreateUser(ctx *gin.Context) {
+	var req CreateUserRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
+		return
+	}
+
+	if req.Provider == "" {
+		req.Provider = "local"
+	}
+
+	response := UserResponse{
+		UserID:      "user_" + strconv.FormatInt(time.Now().Unix(), 10),
+		Username:    req.Username,
+		Provider:    req.Provider,
+		Email:       req.Email,
+		DisplayName: req.FirstName + " " + req.LastName,
+		IsLocked:    false,
+		IsValidated: false,
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusCreated, response)
+}

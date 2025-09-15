@@ -32,7 +32,7 @@ go run cmd/main.go
 ```
 
 ### Base URL
-All endpoints use the base URL pattern: `http://[server-host]:8080`
+All endpoints use the base URL pattern: `http://[server-host]:8080/obp/v5.1.0`
 
 ### Response Format
 All endpoints return JSON responses with consistent structure:
