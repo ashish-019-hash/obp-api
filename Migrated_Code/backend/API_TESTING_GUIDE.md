@@ -66,7 +66,7 @@ All endpoints return JSON responses with consistent structure:
 
 **Test Command**:
 ```bash
-curl -X GET [BASE_URL]/root
+curl -X GET http://localhost:8080/obp/v5.1.0/root
 ```
 
 #### GET /ui/suggested-session-timeout
@@ -81,7 +81,7 @@ curl -X GET [BASE_URL]/root
 
 **Test Command**:
 ```bash
-curl -X GET [BASE_URL]/ui/suggested-session-timeout
+curl -X GET http://localhost:8080/obp/v5.1.0/ui/suggested-session-timeout
 ```
 
 #### GET /well-known
@@ -132,7 +132,7 @@ curl -X GET [BASE_URL]/ui/suggested-session-timeout
 
 **Test Command**:
 ```bash
-curl -X GET [BASE_URL]/users/provider/github/username/john_doe
+curl -X GET http://localhost:8080/obp/v5.1.0/users/provider/github/username/john_doe
 ```
 
 #### GET /users/provider/{provider}/username/{username}/lock-status
@@ -368,7 +368,7 @@ curl -X GET [BASE_URL]/users/provider/github/username/john_doe
 
 **Test Command**:
 ```bash
-curl -X GET [BASE_URL]/banks/bank123/accounts/acc456/views/owner
+curl -X GET http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner
 ```
 
 ### Balance Management
@@ -1096,13 +1096,13 @@ curl -X GET [BASE_URL]/banks/bank123/accounts/acc456/views/owner
 #### 1. User Registration and Consent Flow
 ```bash
 # 1. Check API status
-curl -X GET [BASE_URL]/root
+curl -X GET http://localhost:8080/obp/v5.1.0/root
 
 # 2. Get user information
-curl -X GET [BASE_URL]/users/provider/github/username/testuser
+curl -X GET http://localhost:8080/obp/v5.1.0/users/provider/github/username/testuser
 
 # 3. Create consent
-curl -X POST [BASE_URL]/banks/bank123/consents \
+curl -X POST http://localhost:8080/obp/v5.1.0/banks/bank123/consents \
   -H "Content-Type: application/json" \
   -d '{
     "everything": false,
@@ -1114,19 +1114,19 @@ curl -X POST [BASE_URL]/banks/bank123/consents \
   }'
 
 # 4. Check consent status
-curl -X GET [BASE_URL]/my/consents
+curl -X GET http://localhost:8080/obp/v5.1.0/my/consents
 ```
 
 #### 2. Account and Balance Management
 ```bash
 # 1. Get account details
-curl -X GET [BASE_URL]/banks/bank123/accounts/acc456/views/owner
+curl -X GET http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner
 
 # 2. Check account balances
-curl -X GET [BASE_URL]/banks/bank123/accounts/acc456/views/owner/balances
+curl -X GET http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner/balances
 
 # 3. Create new balance entry
-curl -X POST [BASE_URL]/banks/bank123/accounts/acc456/balances \
+curl -X POST http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/balances \
   -H "Content-Type: application/json" \
   -d '{
     "balance_type": "CURRENT",
@@ -1134,7 +1134,7 @@ curl -X POST [BASE_URL]/banks/bank123/accounts/acc456/balances \
   }'
 
 # 4. Update balance
-curl -X PUT [BASE_URL]/banks/bank123/accounts/acc456/balances/balance_001 \
+curl -X PUT http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/balances/balance_001 \
   -H "Content-Type: application/json" \
   -d '{
     "balance_type": "CURRENT",
@@ -1145,10 +1145,10 @@ curl -X PUT [BASE_URL]/banks/bank123/accounts/acc456/balances/balance_001 \
 #### 3. Counterparty Management
 ```bash
 # 1. Get all counterparties
-curl -X GET [BASE_URL]/banks/bank123/accounts/acc456/views/owner/counterparties
+curl -X GET http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner/counterparties
 
 # 2. Create new counterparty
-curl -X POST [BASE_URL]/banks/bank123/accounts/acc456/views/owner/counterparties \
+curl -X POST http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner/counterparties \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Business Partner",
@@ -1160,7 +1160,7 @@ curl -X POST [BASE_URL]/banks/bank123/accounts/acc456/views/owner/counterparties
   }'
 
 # 3. Set counterparty limits
-curl -X POST [BASE_URL]/banks/bank123/accounts/acc456/views/owner/counterparties/cp_001/limits \
+curl -X POST http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner/counterparties/cp_001/limits \
   -H "Content-Type: application/json" \
   -d '{
     "currency": "EUR",
@@ -1173,16 +1173,16 @@ curl -X POST [BASE_URL]/banks/bank123/accounts/acc456/views/owner/counterparties
 #### 4. System Administration
 ```bash
 # 1. Check system integrity
-curl -X GET [BASE_URL]/management/system/integrity/custom-view-names-check
+curl -X GET http://localhost:8080/obp/v5.1.0/management/system/integrity/custom-view-names-check
 
 # 2. Get system metrics
-curl -X GET [BASE_URL]/management/aggregate-metrics
+curl -X GET http://localhost:8080/obp/v5.1.0/management/aggregate-metrics
 
 # 3. Get WebUI properties
-curl -X GET [BASE_URL]/webui-props
+curl -X GET http://localhost:8080/obp/v5.1.0/webui-props
 
 # 4. Check certificate info
-curl -X GET [BASE_URL]/mtls-client-certificate-info
+curl -X GET http://localhost:8080/obp/v5.1.0/mtls-client-certificate-info
 ```
 
 ### Error Handling Examples
@@ -1214,11 +1214,11 @@ curl -X GET [BASE_URL]/mtls-client-certificate-info
 #### Load Testing Example
 ```bash
 # Use Apache Bench for basic load testing
-ab -n 1000 -c 10 [BASE_URL]/root
+ab -n 1000 -c 10 http://localhost:8080/obp/v5.1.0/root
 
 # Use curl for concurrent requests
 for i in {1..100}; do
-  curl -X GET [BASE_URL]/banks/bank123/accounts/acc456/views/owner &
+  curl -X GET http://localhost:8080/obp/v5.1.0/banks/bank123/accounts/acc456/views/owner &
 done
 wait
 ```
