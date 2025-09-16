@@ -133,9 +133,6 @@ func SetupRoutes(
 		v5.GET("/management/system-integrity/account-access-unique-index-1-check", obpController.CheckAccountAccessUniqueIndex)
 		v5.GET("/management/system-integrity/account-currency-check", obpController.CheckAccountCurrency)
 		v5.GET("/management/system-integrity/orphaned-account-check", obpController.CheckOrphanedAccounts)
-		v5.GET("/management/system-integrity/account-access-unique-index-check", obpController.CheckAccountAccessUniqueIndex)
-		v5.GET("/management/system-integrity/account-currency-check", obpController.CheckAccountCurrency)
-		v5.GET("/management/system-integrity/orphaned-account-check", obpController.CheckOrphanedAccounts)
 
 		v5.POST("/banks/:bankId/atms/:atmId/attributes", obpController.CreateATMAttribute)
 		v5.GET("/banks/:bankId/atms/:atmId/attributes", obpController.GetATMAttributes)
@@ -334,12 +331,6 @@ func SetupRoutes(
 		v5.GET("/management/system/integrity/account-access-unique-index", obpController.CheckAccountAccessUniqueIndex)
 		v5.GET("/management/system/integrity/account-currency", obpController.CheckAccountCurrency)
 		v5.GET("/management/system/integrity/orphaned-accounts", obpController.CheckOrphanedAccounts)
-		
-		v5.GET("/management/system/integrity/custom-view-names-new", obpController.CheckCustomViewNamesNew)
-		v5.GET("/management/system/integrity/system-view-names-new", obpController.CheckSystemViewNamesNew)
-		v5.GET("/management/system/integrity/account-access-unique-index-new", obpController.CheckAccountAccessUniqueIndexNew)
-		v5.GET("/management/system/integrity/account-currency-new", obpController.CheckAccountCurrencyNew)
-		v5.GET("/management/system/integrity/orphaned-accounts-new", obpController.CheckOrphanedAccountsNew)
 
 		v5.POST("/banks/:bankId/atm-attribute-definitions", obpController.CreateATMAttributeDefinition)
 		v5.GET("/banks/:bankId/atm-attribute-definitions", obpController.GetATMAttributeDefinitions)
