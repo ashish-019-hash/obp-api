@@ -43,6 +43,251 @@ paths:
         '500':
           $ref: '#/components/responses/InternalServerError'
 
+  /obp/v5.1.0/regulated-entities/{regulatedEntityId}:
+    delete:
+      tags: [Regulated Entities]
+      summary: Delete Regulated Entity
+      description: Delete a regulated entity by ID
+      parameters:
+        - name: regulatedEntityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Regulated entity deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/waiting-for-godot:
+    get:
+      tags: [Testing]
+      summary: Waiting For Godot
+      description: Test endpoint for performance testing and load simulation
+      responses:
+        '200':
+          description: Test response
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/accounts/{accountId}:
+    get:
+      tags: [Bahrain OBF - Accounts]
+      summary: Get Account by AccountId
+      description: Get account details for Bahrain Open Banking Framework compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                  Links:
+                    type: object
+                  Data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/accounts:
+    get:
+      tags: [Bahrain OBF - Accounts]
+      summary: Get Accounts
+      description: Get all accounts for Bahrain Open Banking Framework compliance
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                  Links:
+                    type: object
+                  Data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/accounts/{accountId}/balances:
+    get:
+      tags: [Bahrain OBF - Balances]
+      summary: Get Account Balances
+      description: Get account balances for Bahrain Open Banking Framework compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/balances:
+    get:
+      tags: [Bahrain OBF - Balances]
+      summary: Get Balances
+      description: Get all balances for Bahrain Open Banking Framework compliance
+      responses:
+        '200':
+          description: Balances retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/domestic-payment-consents:
+    post:
+      tags: [Bahrain OBF - Payments]
+      summary: Create Domestic Payment Consent
+      description: Create domestic payment consent for Bahrain OBF compliance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Domestic payment consent created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/aisp/accounts:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Accounts
+      description: Get accounts for UK Open Banking compliance
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                  Links:
+                    type: object
+                  Data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/aisp/accounts/{accountId}:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Account
+      description: Get account details for UK Open Banking compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account details retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/aisp/accounts/{accountId}/balances:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Account Balances
+      description: Get account balances for UK Open Banking compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/pisp/domestic-payment-consents:
+    post:
+      tags: [UK Open Banking - Payments]
+      summary: Create Domestic Payment Consents
+      description: Create domestic payment consent for UK Open Banking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Domestic payment consent created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/pisp/domestic-payments:
+    post:
+      tags: [UK Open Banking - Payments]
+      summary: Create Domestic Payments
+      description: Create domestic payment for UK Open Banking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Domestic payment created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
   /obp/v5.1.0/ui/suggested-session-timeout:
     get:
       tags: [API Information]
@@ -1507,5 +1752,27 @@ tags:
     description: Berlin Group PSD2 Payment Initiation Services
   - name: UK Open Banking - Accounts
     description: UK Open Banking Account and Information Services
+  - name: UK Open Banking - Payments
+    description: UK Open Banking Payment Initiation Services
   - name: Australian CDR - Banking
     description: Australian Consumer Data Right Banking APIs
+  - name: Bahrain OBF - Accounts
+    description: Bahrain Open Banking Framework Account Services
+  - name: Bahrain OBF - Payments
+    description: Bahrain Open Banking Framework Payment Services
+  - name: Bahrain OBF - Balances
+    description: Bahrain Open Banking Framework Balance Services
+  - name: MxOF - ATMs
+    description: Mexican Open Finance ATM Services
+  - name: STET - Payments
+    description: STET Payment Initiation Services
+  - name: Polish - AIS
+    description: Polish Account Information Services
+  - name: System Management
+    description: System administration and management
+  - name: User Management
+    description: User account and authentication management
+  - name: Regulated Entities
+    description: Regulated entity management and compliance
+  - name: Testing
+    description: Testing and performance endpoints
