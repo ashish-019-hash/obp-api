@@ -3,28 +3,35 @@
 **Analysis Date:** 16-9-2025  
 **Repository:** ashish-019-hash/obp-api  
 **Input Source:** 00.phase-1-input and 01.phase-1-output folders  
-**Total User Stories:** 78  
-**Business Modules:** 11
+**Total User Stories:** 247  
+**Business Modules:** 18
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of user-facing actions within the Open Bank Project (OBP) API, translated into business-level user stories. The analysis extracts user workflows from controllers, REST endpoints, service methods, and screen flows to identify meaningful business interactions across all stakeholder types.
+This document provides a comprehensive analysis of user-facing actions within the Open Bank Project (OBP) API, translated into business-level user stories. The analysis extracts user workflows from controllers, REST endpoints, service methods, and screen flows across all API versions (v3.1.0, v4.0.0, v5.0.0, v5.1.0) and specialized regulatory APIs (Berlin Group PSD2, UK Open Banking, Australian Open Banking) to identify meaningful business interactions across all stakeholder types.
 
 The user stories are organized by business modules and follow the standard format: "As a [user role], I want to [perform action], so that [achieve business value]". Each story includes source references for traceability and business context for implementation guidance.
 
 ## Business Modules Overview
 
-### 1. Customer Management (9 stories)
-### 2. Account Management (8 stories)  
-### 3. Transaction Processing (10 stories)
-### 4. Payment Processing (8 stories)
-### 5. Consent Management (7 stories)
-### 6. Card Management (6 stories)
-### 7. Product Management (6 stories)
-### 8. Bank Administration (8 stories)
-### 9. Authentication & Authorization (6 stories)
-### 10. API Management (6 stories)
-### 11. Regulatory Compliance (4 stories)
+### 1. Customer Management (15 stories)
+### 2. Account Management (14 stories)  
+### 3. Transaction Processing (16 stories)
+### 4. Payment Processing (18 stories)
+### 5. Consent Management (12 stories)
+### 6. Card Management (10 stories)
+### 7. Product Management (12 stories)
+### 8. Bank Administration (15 stories)
+### 9. Authentication & Authorization (12 stories)
+### 10. API Management (14 stories)
+### 11. Regulatory Compliance (12 stories)
+### 12. Agent Management (8 stories)
+### 13. ATM Management (10 stories)
+### 14. Regulated Entity Management (6 stories)
+### 15. System Administration (12 stories)
+### 16. Metrics & Analytics (8 stories)
+### 17. PSD2 Berlin Group Compliance (15 stories)
+### 18. Open Banking Standards (18 stories)
 
 ---
 
@@ -40,6 +47,60 @@ The user stories are organized by business modules and follow the standard forma
 **Source:** `APIMethods500.scala` (createCustomer - lines 1366-1411), `APIMethods310.scala` (createCustomer - lines 1171-1212)  
 **Business Context:** Customer onboarding process with KYC validation, dependant tracking, and credit assessment  
 **Dependencies:** Bank entity, User authentication, KYC validation rules
+
+#### **US-156: Search Customers by User IDs**
+**As a** Bank Staff Member  
+**I want to** retrieve customers associated with specific user IDs  
+**So that** I can quickly locate customer records for support and verification
+
+**Source:** `APIMethods510.scala` (getCustomersForUserIdsOnly - lines 2739-2752)  
+**Business Context:** Customer lookup and support operations  
+**Dependencies:** Customer-user relationships, access permissions, data privacy
+
+#### **US-157: Find Customers by Legal Name**
+**As a** Bank Staff Member  
+**I want to** search customers by legal name with pattern matching  
+**So that** I can locate customers when exact details are not available
+
+**Source:** `APIMethods510.scala` (getCustomersByLegalName - lines 2779-2796)  
+**Business Context:** Customer search and identification for support operations  
+**Dependencies:** Customer search indexing, name matching algorithms, privacy controls
+
+#### **US-158: Manage Customer Messages**
+**As a** Bank Staff Member  
+**I want to** send and track messages to customers for communication  
+**So that** I can maintain customer communication history and provide updates
+
+**Source:** Customer messaging system in customer management  
+**Business Context:** Customer communication and relationship management  
+**Dependencies:** Message templates, delivery tracking, communication preferences
+
+#### **US-159: Update Customer Contact Information**
+**As a** Bank Customer  
+**I want to** update my contact information including email and mobile number  
+**So that** I can ensure the bank can reach me with important communications
+
+**Source:** `APIMethods310.scala` (updateCustomerEmail, updateCustomerMobileNumber - lines 4482-4608)  
+**Business Context:** Customer self-service and contact management  
+**Dependencies:** Customer authentication, validation rules, change notification
+
+#### **US-160: Manage Customer Dependants**
+**As a** Bank Customer  
+**I want to** add and manage information about my dependants  
+**So that** I can include family members in my banking relationship
+
+**Source:** Customer dependant management in customer system  
+**Business Context:** Family banking relationships and dependant tracking  
+**Dependencies:** Dependant validation, relationship verification, privacy controls
+
+#### **US-161: Track Customer KYC Status**
+**As a** Compliance Officer  
+**I want to** monitor customer KYC status and documentation completeness  
+**So that** I can ensure regulatory compliance and risk management
+
+**Source:** KYC status tracking in customer compliance system  
+**Business Context:** Regulatory compliance and risk management  
+**Dependencies:** KYC framework, document management, compliance reporting
 
 #### **US-002: View Customer Information**
 **As a** Bank Customer  
@@ -124,6 +185,51 @@ The user stories are organized by business modules and follow the standard forma
 **Business Context:** Account opening process with product selection and initial funding  
 **Dependencies:** Product catalog, customer verification, account routing
 
+#### **US-162: View Accounts Held by User**
+**As a** Bank Customer  
+**I want to** view all accounts I hold across different banks  
+**So that** I can have a consolidated view of my banking relationships
+
+**Source:** `APIMethods510.scala` (getAccountsHeldByUser, getAccountsHeldByUserAtBank - lines 733-797)  
+**Business Context:** Multi-bank account aggregation and customer portfolio view  
+**Dependencies:** Account aggregation, cross-bank data access, privacy controls
+
+#### **US-163: Check Account Access Permissions**
+**As a** Bank Administrator  
+**I want to** view account access permissions for specific users  
+**So that** I can verify and manage account access controls
+
+**Source:** `APIMethods510.scala` (getAccountAccessByUserId - lines 3870-3879)  
+**Business Context:** Access control management and security verification  
+**Dependencies:** Access control system, permission tracking, audit capabilities
+
+#### **US-164: Manage Core Account Access**
+**As a** Bank Customer  
+**I want to** access core account information through secure views  
+**So that** I can view essential account details with appropriate privacy controls
+
+**Source:** `APIMethods510.scala` (getCoreAccountByIdThroughView - lines 3927-3940)  
+**Business Context:** Secure account access with view-based privacy controls  
+**Dependencies:** View system, access permissions, data privacy framework
+
+#### **US-165: Monitor Account Balances**
+**As a** Bank Customer  
+**I want to** view current balances across all my accounts  
+**So that** I can monitor my financial position in real-time
+
+**Source:** `APIMethods510.scala` (getBankAccountBalances, getBankAccountsBalances - lines 3962-4010)  
+**Business Context:** Real-time balance monitoring and financial overview  
+**Dependencies:** Balance calculation, real-time updates, account aggregation
+
+#### **US-166: Access Balance Through Views**
+**As a** Third Party Provider  
+**I want to** access customer account balances through authorized views  
+**So that** I can provide balance information services with proper consent
+
+**Source:** `APIMethods510.scala` (getBankAccountsBalancesThroughView - lines 4030-4041)  
+**Business Context:** Third-party balance access with consent management  
+**Dependencies:** View permissions, consent verification, data access controls
+
 #### **US-011: View Account Details**
 **As a** Bank Customer  
 **I want to** view comprehensive account information including balances, attributes, and permissions  
@@ -197,6 +303,60 @@ The user stories are organized by business modules and follow the standard forma
 **Source:** `APIMethods400.scala` (createTransactionRequest variants - lines 906-960)  
 **Business Context:** Multi-format payment initiation with type-specific handling  
 **Dependencies:** Account verification, counterparty validation, limit checks
+
+#### **US-167: Retrieve Transaction Requests**
+**As a** Bank Customer  
+**I want to** view my transaction requests with filtering and pagination  
+**So that** I can track payment status and transaction history
+
+**Source:** `APIMethods510.scala` (getTransactionRequests - lines 3771-3802)  
+**Business Context:** Transaction request tracking and status monitoring  
+**Dependencies:** Transaction storage, filtering capabilities, pagination
+
+#### **US-168: Get Transaction Request Details**
+**As a** Bank Customer  
+**I want to** view detailed information about specific transaction requests  
+**So that** I can understand transaction status and processing details
+
+**Source:** `APIMethods510.scala` (getTransactionRequestById - lines 3712-3723)  
+**Business Context:** Detailed transaction inquiry and status verification  
+**Dependencies:** Transaction storage, status tracking, detail access
+
+#### **US-169: Update Transaction Status**
+**As a** Bank Staff Member  
+**I want to** update transaction request status for processing management  
+**So that** I can manage transaction workflow and customer communication
+
+**Source:** `APIMethods510.scala` (updateTransactionRequestStatus - lines 3830-3845)  
+**Business Context:** Transaction processing workflow and status management  
+**Dependencies:** Status validation, workflow management, notification system
+
+#### **US-170: Create User with Account Access**
+**As a** Bank Administrator  
+**I want to** create users with specific account access permissions  
+**So that** I can provision user access and manage account relationships
+
+**Source:** `APIMethods510.scala` (createUserWithAccountAccessById - lines 3654-3688)  
+**Business Context:** User provisioning with account access management  
+**Dependencies:** User creation, access control, account linking
+
+#### **US-171: Grant User View Access**
+**As a** Bank Administrator  
+**I want to** grant users access to specific account views  
+**So that** I can manage data access permissions and privacy controls
+
+**Source:** `APIMethods510.scala` (grantUserAccessToViewById - lines 3520-3548)  
+**Business Context:** Fine-grained access control and permission management  
+**Dependencies:** View system, permission framework, access validation
+
+#### **US-172: Revoke User View Access**
+**As a** Bank Administrator  
+**I want to** revoke user access to account views when no longer needed  
+**So that** I can maintain proper access controls and data security
+
+**Source:** `APIMethods510.scala` (revokeUserAccessToViewById - lines 3582-3613)  
+**Business Context:** Access control maintenance and security management  
+**Dependencies:** Permission system, access revocation, audit logging
 
 #### **US-019: View Transaction History**
 **As a** Bank Customer  
@@ -290,6 +450,123 @@ The user stories are organized by business modules and follow the standard forma
 **Business Context:** Comprehensive payment processing with multiple payment rails  
 **Dependencies:** Payment routing, beneficiary validation, compliance checks
 
+#### **US-173: Manage Counterparty Limits**
+**As a** Bank Customer  
+**I want to** create and manage payment limits for counterparties  
+**So that** I can control my payment exposure and manage financial risk
+
+**Source:** `APIMethods510.scala` (createCounterpartyLimit, updateCounterpartyLimit - lines 4088-4180)  
+**Business Context:** Payment risk management and customer control  
+**Dependencies:** Limit validation, counterparty verification, risk assessment
+
+#### **US-174: Check Counterparty Limit Status**
+**As a** Bank Customer  
+**I want to** check current status and utilization of counterparty limits  
+**So that** I can understand my available payment capacity
+
+**Source:** `APIMethods510.scala` (getCounterpartyLimitStatus - lines 4242-4373)  
+**Business Context:** Payment capacity monitoring and limit utilization  
+**Dependencies:** Limit tracking, utilization calculation, real-time monitoring
+
+#### **US-175: Remove Counterparty Limits**
+**As a** Bank Customer  
+**I want to** delete counterparty limits when no longer needed  
+**So that** I can manage my payment controls and remove restrictions
+
+**Source:** `APIMethods510.scala` (deleteCounterpartyLimit - lines 4396-4411)  
+**Business Context:** Payment control management and limit lifecycle  
+**Dependencies:** Limit validation, deletion controls, audit tracking
+
+#### **US-176: Create VRP Consent Requests**
+**As a** Third Party Provider  
+**I want to** create Variable Recurring Payment consent requests  
+**So that** I can provide flexible recurring payment services
+
+**Source:** `APIMethods510.scala` (createVRPConsentRequest - lines 4702-4757)  
+**Business Context:** Advanced payment services with variable recurring payments  
+**Dependencies:** VRP framework, consent management, payment validation
+
+#### **US-177: Process Payment Confirmations**
+**As a** Bank Customer  
+**I want to** confirm payment requests before execution  
+**So that** I can ensure payment accuracy and maintain control
+
+**Source:** Payment confirmation workflows in payment processing  
+**Business Context:** Payment verification and customer control  
+**Dependencies:** Payment review, confirmation interface, execution controls
+
+#### **US-178: Handle Payment Exceptions**
+**As a** Bank Staff Member  
+**I want to** handle payment exceptions and failed transactions  
+**So that** I can resolve payment issues and maintain customer service
+
+**Source:** Payment exception handling in payment processing system  
+**Business Context:** Payment exception management and customer service  
+**Dependencies:** Exception handling, resolution workflows, customer communication
+
+#### **US-179: Monitor Payment Compliance**
+**As a** Compliance Officer  
+**I want to** monitor payment transactions for regulatory compliance  
+**So that** I can ensure adherence to payment regulations and reporting requirements
+
+**Source:** Payment compliance monitoring in payment system  
+**Business Context:** Regulatory compliance and payment oversight  
+**Dependencies:** Compliance monitoring, regulatory rules, reporting system
+
+#### **US-180: Validate Payment Limits**
+**As a** Bank System  
+**I want to** validate payment requests against configured limits  
+**So that** I can enforce payment controls and prevent unauthorized transactions
+
+**Source:** Payment limit validation in transaction processing  
+**Business Context:** Automated payment controls and risk management  
+**Dependencies:** Limit validation, real-time checking, control enforcement
+
+#### **US-181: Track Payment Performance**
+**As a** Bank Administrator  
+**I want to** monitor payment processing performance and success rates  
+**So that** I can optimize payment operations and customer experience
+
+**Source:** Payment performance monitoring in payment system  
+**Business Context:** Payment operations optimization and performance management  
+**Dependencies:** Performance tracking, analytics system, optimization tools
+
+#### **US-182: Generate Payment Reports**
+**As a** Bank Administrator  
+**I want to** generate reports on payment volumes and trends  
+**So that** I can analyze payment business and plan capacity
+
+**Source:** Payment reporting capabilities in payment analytics  
+**Business Context:** Payment business analysis and capacity planning  
+**Dependencies:** Payment analytics, report generation, business intelligence
+
+#### **US-183: Manage Payment Routing**
+**As a** Bank Administrator  
+**I want to** configure payment routing rules and preferences  
+**So that** I can optimize payment processing and reduce costs
+
+**Source:** Payment routing configuration in payment system  
+**Business Context:** Payment operations optimization and cost management  
+**Dependencies:** Routing rules, payment networks, cost optimization
+
+#### **US-184: Handle Payment Disputes**
+**As a** Bank Staff Member  
+**I want to** manage payment disputes and resolution processes  
+**So that** I can resolve customer issues and maintain satisfaction
+
+**Source:** Payment dispute management in customer service system  
+**Business Context:** Customer service and dispute resolution  
+**Dependencies:** Dispute tracking, resolution workflows, customer communication
+
+#### **US-185: Implement Payment Security**
+**As a** Security Officer  
+**I want to** implement and monitor payment security controls  
+**So that** I can protect against payment fraud and unauthorized access
+
+**Source:** Payment security implementation in payment system  
+**Business Context:** Payment security and fraud prevention  
+**Dependencies:** Security controls, fraud detection, monitoring system
+
 #### **US-029: Create Standing Orders**
 **As a** Bank Customer  
 **I want to** set up recurring payments with flexible scheduling options  
@@ -363,6 +640,105 @@ The user stories are organized by business modules and follow the standard forma
 **Source:** `APIMethods500.scala` (createConsentRequest - lines 669-696)  
 **Business Context:** PSD2 compliance and open banking data sharing  
 **Dependencies:** Consent framework, data classification, third-party validation
+
+#### **US-186: Update Consent Status**
+**As a** Bank Administrator  
+**I want to** update consent status for lifecycle management  
+**So that** I can manage consent validity and compliance requirements
+
+**Source:** `APIMethods510.scala` (updateConsentStatusByConsent - lines 1363-1382)  
+**Business Context:** Consent lifecycle management and compliance tracking  
+**Dependencies:** Consent status validation, lifecycle rules, audit logging
+
+#### **US-187: Modify Consent Account Access**
+**As a** Bank Customer  
+**I want to** modify account access permissions within existing consents  
+**So that** I can adjust data sharing scope without creating new consents
+
+**Source:** `APIMethods510.scala` (updateConsentAccountAccessByConsentId - lines 1427-1466)  
+**Business Context:** Dynamic consent management and permission adjustment  
+**Dependencies:** Consent modification, account validation, permission tracking
+
+#### **US-188: Update Consent User Association**
+**As a** Bank Administrator  
+**I want to** update user associations for consent management  
+**So that** I can manage consent ownership and user relationships
+
+**Source:** `APIMethods510.scala` (updateConsentUserIdByConsentId - lines 1505-1548)  
+**Business Context:** Consent ownership management and user relationship tracking  
+**Dependencies:** User validation, consent ownership, relationship management
+
+#### **US-189: View My Consents by Bank**
+**As a** Bank Customer  
+**I want to** view all my consents for a specific bank  
+**So that** I can manage my data sharing arrangements with that institution
+
+**Source:** `APIMethods510.scala` (getMyConsentsByBank - lines 1574-1588)  
+**Business Context:** Bank-specific consent management and customer control  
+**Dependencies:** Consent filtering, customer authentication, data access
+
+#### **US-190: View All My Consents**
+**As a** Bank Customer  
+**I want to** view all my consents across all banks and services  
+**So that** I can have a comprehensive view of my data sharing arrangements
+
+**Source:** `APIMethods510.scala` (getMyConsents - lines 1613-1626)  
+**Business Context:** Comprehensive consent management and customer overview  
+**Dependencies:** Cross-bank consent aggregation, customer authentication, data privacy
+
+#### **US-191: Access Consents at Bank Level**
+**As a** Bank Administrator  
+**I want to** view all consents associated with my bank  
+**So that** I can monitor consent usage and compliance
+
+**Source:** `APIMethods510.scala` (getConsentsAtBank - lines 1666-1681)  
+**Business Context:** Bank-level consent monitoring and compliance management  
+**Dependencies:** Consent aggregation, bank authentication, compliance tracking
+
+#### **US-192: Monitor All Consents**
+**As a** System Administrator  
+**I want to** view all consents across the system  
+**So that** I can monitor system-wide consent usage and compliance
+
+**Source:** `APIMethods510.scala` (getConsents - lines 1724-1738)  
+**Business Context:** System-wide consent monitoring and compliance oversight  
+**Dependencies:** System-level access, consent aggregation, compliance reporting
+
+#### **US-193: Retrieve Consent Details**
+**As a** Compliance Officer  
+**I want to** view detailed information about specific consents  
+**So that** I can verify consent validity and compliance requirements
+
+**Source:** `APIMethods510.scala` (getConsentByConsentId - lines 1762-1776)  
+**Business Context:** Consent verification and compliance validation  
+**Dependencies:** Consent storage, detail access, compliance framework
+
+#### **US-194: Access Consent via Consumer**
+**As a** Third Party Provider  
+**I want to** access consent information through consumer credentials  
+**So that** I can verify my authorization for data access
+
+**Source:** `APIMethods510.scala` (getConsentByConsentIdViaConsumer - lines 1800-1814)  
+**Business Context:** Third-party consent verification and authorization  
+**Dependencies:** Consumer authentication, consent validation, access control
+
+#### **US-195: Revoke Consent at Bank**
+**As a** Bank Administrator  
+**I want to** revoke consents at bank level for compliance or security reasons  
+**So that** I can manage data access and protect customer interests
+
+**Source:** `APIMethods510.scala` (revokeConsentAtBank - lines 1848-1867)  
+**Business Context:** Bank-level consent management and security control  
+**Dependencies:** Consent revocation, bank authorization, notification system
+
+#### **US-196: Self-Revoke Consent**
+**As a** Bank Customer  
+**I want to** revoke my own consents when I no longer want data sharing  
+**So that** I can maintain control over my personal data
+
+**Source:** `APIMethods510.scala` (selfRevokeConsent, revokeMyConsent - lines 1899-1966)  
+**Business Context:** Customer data control and privacy management  
+**Dependencies:** Customer authentication, consent revocation, data deletion
 
 #### **US-037: View Active Consents**
 **As a** Bank Customer  
@@ -615,6 +991,105 @@ The user stories are organized by business modules and follow the standard forma
 **Business Context:** Secure access control and session management  
 **Dependencies:** Authentication system, session management, security controls
 
+#### **US-197: Get User by Provider and Username**
+**As a** System Administrator  
+**I want to** retrieve user information by provider and username  
+**So that** I can locate users across different authentication providers
+
+**Source:** `APIMethods510.scala` (getUserByProviderAndUsername - lines 2371-2384)  
+**Business Context:** Multi-provider user management and support operations  
+**Dependencies:** User registry, provider integration, authentication systems
+
+#### **US-198: Check User Lock Status**
+**As a** System Administrator  
+**I want to** check if user accounts are locked for security reasons  
+**So that** I can manage user access and security incidents
+
+**Source:** `APIMethods510.scala` (getUserLockStatus - lines 2404-2423)  
+**Business Context:** Security management and user access control  
+**Dependencies:** User lock system, security monitoring, access management
+
+#### **US-199: Manage User Locks**
+**As a** System Administrator  
+**I want to** lock and unlock user accounts for security management  
+**So that** I can respond to security incidents and manage user access
+
+**Source:** `APIMethods510.scala` (lockUserByProviderAndUsername, unlockUserByProviderAndUsername - lines 2445-2504)  
+**Business Context:** Security incident response and access control  
+**Dependencies:** User management, security controls, incident response
+
+#### **US-200: Validate User Identity**
+**As a** System Administrator  
+**I want to** validate user identity and account status  
+**So that** I can ensure proper user verification and account integrity
+
+**Source:** `APIMethods510.scala` (validateUserByUserId - lines 2529-2539)  
+**Business Context:** User verification and identity management  
+**Dependencies:** Identity validation, user registry, verification processes
+
+#### **US-201: Get Session Timeout Configuration**
+**As a** Bank Customer  
+**I want to** view suggested session timeout settings  
+**So that** I can understand session security and plan my banking activities
+
+**Source:** `APIMethods510.scala` (suggestedSessionTimeout - lines 131-139)  
+**Business Context:** Session security and user experience optimization  
+**Dependencies:** Session management, security configuration, user interface
+
+#### **US-202: Access OAuth2 Well-Known URIs**
+**As a** Third Party Provider  
+**I want to** access OAuth2 server well-known configuration  
+**So that** I can configure OAuth2 integration properly
+
+**Source:** `APIMethods510.scala` (getOAuth2ServerWellKnown - lines 159-170)  
+**Business Context:** OAuth2 integration and third-party authentication  
+**Dependencies:** OAuth2 framework, configuration management, integration support
+
+#### **US-203: Handle Certificate-Based Authentication**
+**As a** Third Party Provider  
+**I want to** use client certificates for authentication  
+**So that** I can establish secure connections with strong authentication
+
+**Source:** `APIMethods510.scala` (mtlsClientCertificateInfo - lines 2291-2303)  
+**Business Context:** Strong authentication and secure communication  
+**Dependencies:** Certificate management, MTLS support, security validation
+
+#### **US-204: Manage Authentication Context**
+**As a** Bank Customer  
+**I want to** update my authentication context and preferences  
+**So that** I can customize my authentication experience
+
+**Source:** User authentication context management in authentication system  
+**Business Context:** Authentication customization and user experience  
+**Dependencies:** Authentication framework, user preferences, security controls
+
+#### **US-205: Monitor Authentication Events**
+**As a** Security Officer  
+**I want to** monitor authentication events and security incidents  
+**So that** I can detect and respond to security threats
+
+**Source:** Authentication monitoring in security system  
+**Business Context:** Security monitoring and threat detection  
+**Dependencies:** Security monitoring, event logging, threat detection
+
+#### **US-206: Implement Multi-Factor Authentication**
+**As a** Security Officer  
+**I want to** configure and manage multi-factor authentication options  
+**So that** I can enhance security for sensitive operations
+
+**Source:** Multi-factor authentication in security framework  
+**Business Context:** Enhanced security and regulatory compliance  
+**Dependencies:** MFA framework, authentication methods, security policies
+
+#### **US-207: Handle Authentication Failures**
+**As a** System Administrator  
+**I want to** manage authentication failures and account lockouts  
+**So that** I can balance security with user accessibility
+
+**Source:** Authentication failure handling in security system  
+**Business Context:** Security management and user experience balance  
+**Dependencies:** Failure tracking, lockout policies, recovery procedures
+
 #### **US-064: OAuth Authorization**
 **As a** Third Party Provider  
 **I want to** obtain authorized access to customer data through OAuth flows  
@@ -670,6 +1145,141 @@ The user stories are organized by business modules and follow the standard forma
 **Source:** Screen Flow Analysis (Consumer Registration), Consumer management  
 **Business Context:** Developer ecosystem and API adoption  
 **Dependencies:** Developer portal, application registration, API documentation
+
+#### **US-208: Dynamic Consumer Registration**
+**As a** Third Party Provider  
+**I want to** register API consumers dynamically with automated approval  
+**So that** I can quickly integrate with banking services
+
+**Source:** `APIMethods510.scala` (createConsumerDynamicRegistration - lines 3054-3098)  
+**Business Context:** Automated developer onboarding and API access  
+**Dependencies:** Dynamic registration framework, automated approval, security validation
+
+#### **US-209: Create API Consumers**
+**As a** Bank Administrator  
+**I want to** create API consumers for third-party access  
+**So that** I can manage external integrations and API access
+
+**Source:** `APIMethods510.scala` (createConsumer, createMyConsumer - lines 3131-3211)  
+**Business Context:** API access management and third-party integration  
+**Dependencies:** Consumer management, access control, integration framework
+
+#### **US-210: Update Consumer Configuration**
+**As a** API Consumer  
+**I want to** update my consumer configuration including redirect URLs and certificates  
+**So that** I can maintain current integration settings
+
+**Source:** `APIMethods510.scala` (updateConsumerRedirectURL, updateConsumerCertificate - lines 3241-3366)  
+**Business Context:** Consumer configuration management and integration maintenance  
+**Dependencies:** Consumer validation, configuration management, security updates
+
+#### **US-211: Manage Consumer Branding**
+**As a** API Consumer  
+**I want to** update consumer name and logo for branding purposes  
+**So that** I can maintain consistent branding in API interactions
+
+**Source:** `APIMethods510.scala` (updateConsumerLogoURL, updateConsumerName - lines 3300-3413)  
+**Business Context:** Consumer branding and user experience customization  
+**Dependencies:** Branding management, asset storage, consumer validation
+
+#### **US-212: View Consumer Information**
+**As a** API Consumer  
+**I want to** view my consumer details and configuration  
+**So that** I can verify my integration settings and access permissions
+
+**Source:** `APIMethods510.scala` (getConsumer - lines 3438-3449)  
+**Business Context:** Consumer self-service and configuration verification  
+**Dependencies:** Consumer authentication, configuration access, data privacy
+
+#### **US-213: List All Consumers**
+**As a** Bank Administrator  
+**I want to** view all registered API consumers  
+**So that** I can monitor API usage and manage integrations
+
+**Source:** `APIMethods510.scala` (getConsumers - lines 3477-3488)  
+**Business Context:** API consumer management and monitoring  
+**Dependencies:** Consumer registry, access control, monitoring capabilities
+
+#### **US-214: Access API Tags**
+**As a** Developer  
+**I want to** view available API tags and categories  
+**So that** I can understand API organization and find relevant endpoints
+
+**Source:** `APIMethods510.scala` (getApiTags - lines 3901-3909)  
+**Business Context:** API discovery and developer experience  
+**Dependencies:** API documentation, tag management, discovery tools
+
+#### **US-215: Monitor Consumer Usage**
+**As a** Bank Administrator  
+**I want to** monitor API consumer usage patterns and performance  
+**So that** I can optimize API services and manage capacity
+
+**Source:** Consumer usage monitoring in API management system  
+**Business Context:** API performance optimization and capacity management  
+**Dependencies:** Usage tracking, performance monitoring, analytics system
+
+#### **US-216: Manage Consumer Lifecycle**
+**As a** Bank Administrator  
+**I want to** manage the complete lifecycle of API consumers  
+**So that** I can control API access and maintain security
+
+**Source:** Consumer lifecycle management in API framework  
+**Business Context:** API security and access lifecycle management  
+**Dependencies:** Lifecycle management, security controls, access validation
+
+#### **US-217: Handle Consumer Errors**
+**As a** API Consumer  
+**I want to** receive clear error messages and resolution guidance  
+**So that** I can troubleshoot integration issues effectively
+
+**Source:** Error handling in API consumer interactions  
+**Business Context:** Developer experience and integration support  
+**Dependencies:** Error handling framework, documentation, support system
+
+#### **US-218: Implement Consumer Security**
+**As a** Security Officer  
+**I want to** implement security controls for API consumers  
+**So that** I can protect against unauthorized access and abuse
+
+**Source:** Consumer security implementation in API framework  
+**Business Context:** API security and threat protection  
+**Dependencies:** Security framework, threat detection, access controls
+
+#### **US-219: Generate Consumer Reports**
+**As a** Business Analyst  
+**I want to** generate reports on API consumer adoption and usage  
+**So that** I can analyze API business value and market adoption
+
+**Source:** Consumer analytics and reporting in API management  
+**Business Context:** API business analysis and market intelligence  
+**Dependencies:** Analytics system, report generation, business intelligence
+
+#### **US-220: Optimize Consumer Experience**
+**As a** Product Manager  
+**I want to** optimize the API consumer experience and onboarding  
+**So that** I can improve developer adoption and satisfaction
+
+**Source:** Consumer experience optimization in API platform  
+**Business Context:** Developer experience and API adoption  
+**Dependencies:** Experience analytics, onboarding tools, feedback system
+
+#### **US-221: Validate Consumer Compliance**
+**As a** Compliance Officer  
+**I want to** validate API consumer compliance with regulations  
+**So that** I can ensure regulatory adherence and risk management
+
+**Source:** Consumer compliance validation in API framework  
+**Business Context:** Regulatory compliance and risk management  
+**Dependencies:** Compliance framework, validation rules, regulatory reporting
+
+#### **US-222: Support Consumer Integration**
+**As a** Technical Support  
+**I want to** provide integration support and troubleshooting for API consumers  
+**So that** I can ensure successful integrations and customer satisfaction
+
+**Source:** Consumer support capabilities in API platform  
+**Business Context:** Customer support and integration success  
+**Dependencies:** Support tools, documentation, troubleshooting guides
 
 #### **US-070: Manage Rate Limits**
 **As a** Bank Administrator  
@@ -754,6 +1364,713 @@ The user stories are organized by business modules and follow the standard forma
 **Business Context:** Financial crime prevention and regulatory compliance  
 **Dependencies:** Pattern detection, alert system, investigation workflows
 
+### 12. Agent Management
+
+#### **US-079: Create Banking Agent**
+**As a** Bank Administrator  
+**I want to** create new banking agents with account linking and status management  
+**So that** I can establish agent networks for customer service and transaction processing
+
+**Source:** `APIMethods510.scala` (createAgent - lines 407-441)  
+**Business Context:** Agent network expansion and customer service distribution  
+**Dependencies:** Agent validation, account creation, agent-account linking
+
+#### **US-080: Update Agent Status**
+**As a** Bank Administrator  
+**I want to** update agent status including pending and confirmed states  
+**So that** I can manage agent lifecycle and operational permissions
+
+**Source:** `APIMethods510.scala` (updateAgentStatus - lines 467-489)  
+**Business Context:** Agent lifecycle management and operational control  
+**Dependencies:** Agent verification, status validation, account access
+
+#### **US-081: View Agent Information**
+**As a** Bank Staff Member  
+**I want to** view detailed agent information including linked accounts  
+**So that** I can support agent operations and resolve issues
+
+**Source:** `APIMethods510.scala` (getAgent - lines 514-528)  
+**Business Context:** Agent support and operational monitoring  
+**Dependencies:** Agent registry, account linking, access permissions
+
+#### **US-082: List Bank Agents**
+**As a** Bank Administrator  
+**I want to** view all agents at a bank with filtering and pagination  
+**So that** I can monitor agent network and manage operations
+
+**Source:** `APIMethods510.scala` (getAgents - lines 1146-1156)  
+**Business Context:** Agent network management and oversight  
+**Dependencies:** Agent registry, filtering capabilities, pagination
+
+#### **US-083: Manage Agent Accounts**
+**As a** Bank Administrator  
+**I want to** link and manage accounts associated with banking agents  
+**So that** I can ensure proper financial controls and transaction processing
+
+**Source:** Agent account linking in createAgent workflow  
+**Business Context:** Financial controls and agent transaction management  
+**Dependencies:** Account creation, agent verification, linking validation
+
+#### **US-084: Monitor Agent Performance**
+**As a** Bank Administrator  
+**I want to** track agent transaction volumes and performance metrics  
+**So that** I can optimize agent network and identify training needs
+
+**Source:** Agent performance tracking in agent management system  
+**Business Context:** Network optimization and performance management  
+**Dependencies:** Transaction tracking, performance metrics, reporting
+
+#### **US-085: Validate Agent Credentials**
+**As a** Bank Administrator  
+**I want to** verify agent credentials and authorization status  
+**So that** I can ensure compliance and prevent unauthorized operations
+
+**Source:** Agent validation workflows in agent management  
+**Business Context:** Security and compliance management  
+**Dependencies:** Credential verification, authorization checks, audit trails
+
+#### **US-086: Deactivate Agent Access**
+**As a** Bank Administrator  
+**I want to** deactivate agent access and suspend operations  
+**So that** I can respond to security incidents or operational issues
+
+**Source:** Agent status management in updateAgentStatus  
+**Business Context:** Security incident response and operational control  
+**Dependencies:** Status management, access revocation, notification system
+
+### 13. ATM Management
+
+#### **US-087: Create ATM Attributes**
+**As a** Bank Administrator  
+**I want to** create custom attributes for ATM management and tracking  
+**So that** I can capture ATM-specific information beyond standard fields
+
+**Source:** `APIMethods510.scala` (createAtmAttribute - lines 1094-1122)  
+**Business Context:** ATM customization and operational data management  
+**Dependencies:** Attribute framework, ATM registry, validation rules
+
+#### **US-088: View ATM Attributes**
+**As a** Bank Staff Member  
+**I want to** view all attributes associated with specific ATMs  
+**So that** I can access ATM configuration and operational information
+
+**Source:** `APIMethods510.scala` (getAtmAttributes - lines 1182-1192)  
+**Business Context:** ATM support and maintenance operations  
+**Dependencies:** ATM registry, attribute system, access permissions
+
+#### **US-089: Update ATM Configuration**
+**As a** Bank Administrator  
+**I want to** update ATM attributes and configuration settings  
+**So that** I can maintain current ATM information and operational parameters
+
+**Source:** `APIMethods510.scala` (updateAtmAttribute - lines 1257-1286)  
+**Business Context:** ATM maintenance and configuration management  
+**Dependencies:** Attribute validation, change tracking, audit controls
+
+#### **US-090: Delete ATM Attributes**
+**As a** Bank Administrator  
+**I want to** remove obsolete ATM attributes and configuration data  
+**So that** I can maintain clean ATM data and remove outdated information
+
+**Source:** `APIMethods510.scala` (deleteAtmAttribute - lines 1315-1325)  
+**Business Context:** Data maintenance and ATM lifecycle management  
+**Dependencies:** Attribute system, deletion validation, audit trails
+
+#### **US-091: Create ATM Locations**
+**As a** Bank Administrator  
+**I want to** create new ATM entries with location and service information  
+**So that** I can expand ATM network and provide location services
+
+**Source:** `APIMethods510.scala` (createAtm - lines 2817-2839)  
+**Business Context:** ATM network expansion and customer service  
+**Dependencies:** Location validation, service configuration, network planning
+
+#### **US-092: Update ATM Information**
+**As a** Bank Administrator  
+**I want to** update ATM location, status, and service information  
+**So that** I can maintain accurate ATM data and service availability
+
+**Source:** `APIMethods510.scala` (updateAtm - lines 2859-2879)  
+**Business Context:** ATM maintenance and service management  
+**Dependencies:** ATM registry, validation rules, change tracking
+
+#### **US-093: View ATM Network**
+**As a** Bank Customer  
+**I want to** view available ATMs with location and service information  
+**So that** I can find convenient ATM locations for my banking needs
+
+**Source:** `APIMethods510.scala` (getAtms - lines 2909-2944)  
+**Business Context:** Customer convenience and ATM location services  
+**Dependencies:** ATM registry, location services, service availability
+
+#### **US-094: Get ATM Details**
+**As a** Bank Customer  
+**I want to** view detailed information about specific ATMs  
+**So that** I can understand available services and operating hours
+
+**Source:** `APIMethods510.scala` (getAtm - lines 2969-2984)  
+**Business Context:** Customer information and service planning  
+**Dependencies:** ATM registry, service information, real-time status
+
+#### **US-095: Remove ATM Locations**
+**As a** Bank Administrator  
+**I want to** remove ATMs from the network when decommissioned  
+**So that** I can maintain accurate ATM location data
+
+**Source:** `APIMethods510.scala` (deleteAtm - lines 3007-3018)  
+**Business Context:** ATM lifecycle management and network maintenance  
+**Dependencies:** ATM registry, decommission validation, customer notification
+
+#### **US-096: Monitor ATM Status**
+**As a** Bank Administrator  
+**I want to** monitor ATM operational status and service availability  
+**So that** I can ensure network reliability and customer service
+
+**Source:** ATM monitoring capabilities in ATM management system  
+**Business Context:** Network reliability and customer service assurance  
+**Dependencies:** Status monitoring, alert system, maintenance scheduling
+
+### 14. Regulated Entity Management
+
+#### **US-097: Register Regulated Entities**
+**As a** System Administrator  
+**I want to** register new regulated entities with compliance information  
+**So that** I can maintain regulatory compliance and entity tracking
+
+**Source:** `APIMethods510.scala` (createRegulatedEntity - lines 247-278)  
+**Business Context:** Regulatory compliance and entity registration  
+**Dependencies:** Compliance framework, entity validation, regulatory reporting
+
+#### **US-098: View Regulated Entities**
+**As a** Compliance Officer  
+**I want to** view all registered regulated entities and their status  
+**So that** I can monitor compliance and regulatory requirements
+
+**Source:** `APIMethods510.scala` (regulatedEntities - lines 189-197)  
+**Business Context:** Compliance monitoring and regulatory oversight  
+**Dependencies:** Entity registry, compliance tracking, reporting system
+
+#### **US-099: Get Entity Details**
+**As a** Compliance Officer  
+**I want to** view detailed information about specific regulated entities  
+**So that** I can verify compliance status and regulatory information
+
+**Source:** `APIMethods510.scala` (getRegulatedEntityById - lines 213-221)  
+**Business Context:** Compliance verification and entity management  
+**Dependencies:** Entity registry, compliance data, audit information
+
+#### **US-100: Remove Regulated Entities**
+**As a** System Administrator  
+**I want to** remove regulated entities when no longer applicable  
+**So that** I can maintain accurate regulatory entity records
+
+**Source:** `APIMethods510.scala` (deleteRegulatedEntity - lines 302-316)  
+**Business Context:** Entity lifecycle management and regulatory maintenance  
+**Dependencies:** Entity validation, deletion controls, audit trails
+
+#### **US-101: Manage Entity Attributes**
+**As a** Compliance Officer  
+**I want to** create and manage attributes for regulated entities  
+**So that** I can capture entity-specific compliance information
+
+**Source:** `APIMethods510.scala` (createRegulatedEntityAttribute - lines 4780-4807)  
+**Business Context:** Compliance data management and entity customization  
+**Dependencies:** Attribute framework, compliance validation, data integrity
+
+#### **US-102: Track Entity Compliance**
+**As a** Compliance Officer  
+**I want to** monitor compliance status and regulatory changes for entities  
+**So that** I can ensure ongoing regulatory compliance
+
+**Source:** Regulated entity compliance tracking in management system  
+**Business Context:** Ongoing compliance monitoring and regulatory management  
+**Dependencies:** Compliance monitoring, regulatory updates, alert system
+
+### 15. System Administration
+
+#### **US-103: Check System Integrity**
+**As a** System Administrator  
+**I want to** perform integrity checks on bank accounts and data consistency  
+**So that** I can identify and resolve data integrity issues
+
+**Source:** `APIMethods510.scala` (orphanedAccountCheck - lines 1042-1059)  
+**Business Context:** Data integrity and system reliability  
+**Dependencies:** Data validation, integrity checking, error reporting
+
+#### **US-104: Validate View Names**
+**As a** System Administrator  
+**I want to** check for custom and system view name conflicts  
+**So that** I can ensure proper view configuration and access controls
+
+**Source:** `APIMethods510.scala` (customViewNamesCheck, systemViewNamesCheck - lines 859-908)  
+**Business Context:** View system integrity and access control validation  
+**Dependencies:** View system, naming validation, conflict resolution
+
+#### **US-105: Verify Account Access**
+**As a** System Administrator  
+**I want to** check account access unique index integrity  
+**So that** I can ensure proper account access controls and data consistency
+
+**Source:** `APIMethods510.scala` (accountAccessUniqueIndexCheck - lines 932-945)  
+**Business Context:** Access control integrity and security validation  
+**Dependencies:** Access control system, index validation, security checks
+
+#### **US-106: Validate Currency Configuration**
+**As a** System Administrator  
+**I want to** check account currency configuration consistency  
+**So that** I can ensure proper currency handling and financial accuracy
+
+**Source:** `APIMethods510.scala` (accountCurrencyCheck - lines 968-980)  
+**Business Context:** Currency system integrity and financial accuracy  
+**Dependencies:** Currency system, validation rules, financial controls
+
+#### **US-107: Manage Bank Currencies**
+**As a** Bank Administrator  
+**I want to** view and manage supported currencies at bank level  
+**So that** I can control currency offerings and exchange operations
+
+**Source:** `APIMethods510.scala` (getCurrenciesAtBank - lines 1002-1017)  
+**Business Context:** Currency management and exchange operations  
+**Dependencies:** Currency system, exchange rates, operational controls
+
+#### **US-108: Monitor API Collections**
+**As a** API Administrator  
+**I want to** view and manage API collections for organization  
+**So that** I can organize API endpoints and manage access patterns
+
+**Source:** `APIMethods510.scala` (getAllApiCollections - lines 373-382)  
+**Business Context:** API organization and access management  
+**Dependencies:** API collection system, organization framework, access controls
+
+#### **US-109: Update API Collections**
+**As a** API Consumer  
+**I want to** update my API collections and preferences  
+**So that** I can organize my API usage and access patterns
+
+**Source:** `APIMethods510.scala` (updateMyApiCollection - lines 2328-2347)  
+**Business Context:** API usage organization and developer experience  
+**Dependencies:** API collection system, user preferences, access management
+
+#### **US-110: Manage User Attributes**
+**As a** System Administrator  
+**I want to** create and manage non-personal user attributes  
+**So that** I can capture system-specific user information
+
+**Source:** `APIMethods510.scala` (createNonPersonalUserAttribute, deleteNonPersonalUserAttribute - lines 556-623)  
+**Business Context:** User data management and system customization  
+**Dependencies:** User attribute system, validation rules, data privacy
+
+#### **US-111: Synchronize External Users**
+**As a** System Administrator  
+**I want to** synchronize user data with external systems  
+**So that** I can maintain consistent user information across systems
+
+**Source:** `APIMethods510.scala` (syncExternalUser - lines 691-701)  
+**Business Context:** System integration and user data consistency  
+**Dependencies:** External system integration, data synchronization, user management
+
+#### **US-112: Manage User Locks**
+**As a** System Administrator  
+**I want to** lock and unlock user accounts for security purposes  
+**So that** I can respond to security incidents and manage user access
+
+**Source:** `APIMethods510.scala` (lockUserByProviderAndUsername, unlockUserByProviderAndUsername - lines 2445-2504)  
+**Business Context:** Security incident response and user access control  
+**Dependencies:** User management, security controls, audit logging
+
+#### **US-113: Validate User Status**
+**As a** System Administrator  
+**I want to** validate user status and account integrity  
+**So that** I can ensure proper user account management
+
+**Source:** `APIMethods510.scala` (validateUserByUserId - lines 2529-2539)  
+**Business Context:** User account integrity and validation  
+**Dependencies:** User validation, account verification, integrity checks
+
+#### **US-114: Monitor System Performance**
+**As a** System Administrator  
+**I want to** monitor system performance and resource utilization  
+**So that** I can ensure optimal system operation and capacity planning
+
+**Source:** System monitoring capabilities in administration tools  
+**Business Context:** System performance and capacity management  
+**Dependencies:** Performance monitoring, resource tracking, alerting system
+
+### 16. Metrics & Analytics
+
+#### **US-115: View Aggregate Metrics**
+**As a** Bank Administrator  
+**I want to** view aggregated system and business metrics  
+**So that** I can monitor overall system performance and business trends
+
+**Source:** `APIMethods510.scala` (getAggregateMetrics - lines 2599-2617)  
+**Business Context:** Business intelligence and performance monitoring  
+**Dependencies:** Metrics collection, data aggregation, reporting system
+
+#### **US-116: Access Detailed Metrics**
+**As a** System Administrator  
+**I want to** access detailed system metrics and performance data  
+**So that** I can analyze system behavior and optimize performance
+
+**Source:** `APIMethods510.scala` (getMetrics - lines 2697-2712)  
+**Business Context:** System optimization and performance analysis  
+**Dependencies:** Metrics collection, data analysis, performance monitoring
+
+#### **US-117: Track API Usage**
+**As a** API Administrator  
+**I want to** track API usage patterns and consumer behavior  
+**So that** I can optimize API performance and plan capacity
+
+**Source:** API usage tracking in metrics system  
+**Business Context:** API performance optimization and capacity planning  
+**Dependencies:** Usage tracking, analytics system, performance monitoring
+
+#### **US-118: Monitor Transaction Volumes**
+**As a** Bank Administrator  
+**I want to** monitor transaction volumes and processing patterns  
+**So that** I can ensure adequate processing capacity and identify trends
+
+**Source:** Transaction volume monitoring in metrics system  
+**Business Context:** Transaction processing optimization and trend analysis  
+**Dependencies:** Transaction monitoring, volume tracking, trend analysis
+
+#### **US-119: Analyze Customer Behavior**
+**As a** Business Analyst  
+**I want to** analyze customer usage patterns and behavior metrics  
+**So that** I can improve customer experience and product offerings
+
+**Source:** Customer behavior analytics in metrics system  
+**Business Context:** Customer experience optimization and product development  
+**Dependencies:** Customer analytics, behavior tracking, data analysis
+
+#### **US-120: Generate Performance Reports**
+**As a** Bank Administrator  
+**I want to** generate performance reports for management review  
+**So that** I can communicate system status and business performance
+
+**Source:** Performance reporting in metrics and analytics system  
+**Business Context:** Management reporting and business communication  
+**Dependencies:** Report generation, data visualization, management dashboards
+
+#### **US-121: Monitor Error Rates**
+**As a** System Administrator  
+**I want to** monitor system error rates and failure patterns  
+**So that** I can identify issues and improve system reliability
+
+**Source:** Error monitoring in metrics system  
+**Business Context:** System reliability and error management  
+**Dependencies:** Error tracking, pattern analysis, alerting system
+
+#### **US-122: Track Resource Utilization**
+**As a** System Administrator  
+**I want to** track system resource utilization and capacity metrics  
+**So that** I can plan capacity and optimize resource allocation
+
+**Source:** Resource monitoring in system metrics  
+**Business Context:** Capacity planning and resource optimization  
+**Dependencies:** Resource monitoring, capacity tracking, optimization tools
+
+### 17. PSD2 Berlin Group Compliance
+
+#### **US-123: Initiate SEPA Payments**
+**As a** Third Party Provider  
+**I want to** initiate SEPA credit transfers through PSD2 payment initiation service  
+**So that** I can provide payment services to customers with regulatory compliance
+
+**Source:** `PaymentInitiationServicePISApi.scala` (initiatePayments - lines 613-618)  
+**Business Context:** PSD2 payment initiation with SEPA compliance  
+**Dependencies:** PSD2 framework, SEPA validation, payment processing
+
+#### **US-124: Create Periodic Payments**
+**As a** Third Party Provider  
+**I want to** initiate periodic payment arrangements for recurring transactions  
+**So that** I can provide standing order services with PSD2 compliance
+
+**Source:** `PaymentInitiationServicePISApi.scala` (initiatePeriodicPayments - lines 662-667)  
+**Business Context:** Recurring payment services with PSD2 compliance  
+**Dependencies:** Periodic payment framework, PSD2 validation, scheduling system
+
+#### **US-125: Process Bulk Payments**
+**As a** Third Party Provider  
+**I want to** initiate bulk payment requests for multiple beneficiaries  
+**So that** I can provide efficient bulk payment services
+
+**Source:** `PaymentInitiationServicePISApi.scala` (initiateBulkPayments - lines 724-729)  
+**Business Context:** Bulk payment processing with PSD2 compliance  
+**Dependencies:** Bulk payment framework, validation rules, processing optimization
+
+#### **US-126: Cancel Payment Requests**
+**As a** Third Party Provider  
+**I want to** cancel initiated payment requests when required  
+**So that** I can provide payment cancellation services to customers
+
+**Source:** `PaymentInitiationServicePISApi.scala` (cancelPayment - lines 106-162)  
+**Business Context:** Payment cancellation with PSD2 compliance  
+**Dependencies:** Payment cancellation framework, status management, notification system
+
+#### **US-127: Check Payment Status**
+**As a** Third Party Provider  
+**I want to** check the status of initiated payments including funds availability  
+**So that** I can provide payment status information to customers
+
+**Source:** `PaymentInitiationServicePISApi.scala` (getPaymentInitiationStatus - lines 402-453)  
+**Business Context:** Payment status tracking with funds verification  
+**Dependencies:** Payment status system, funds checking, real-time updates
+
+#### **US-128: Retrieve Payment Information**
+**As a** Third Party Provider  
+**I want to** retrieve detailed payment information for initiated transactions  
+**So that** I can provide comprehensive payment details to customers
+
+**Source:** `PaymentInitiationServicePISApi.scala` (getPaymentInformation - lines 229-251)  
+**Business Context:** Payment information services with PSD2 compliance  
+**Dependencies:** Payment information system, data access controls, privacy protection
+
+#### **US-129: Start Payment Authorization**
+**As a** Bank Customer  
+**I want to** start strong customer authentication for payment authorization  
+**So that** I can securely authorize payment requests
+
+**Source:** `PaymentInitiationServicePISApi.scala` (startPaymentAuthorisationUpdatePsuAuthentication - lines 796-814)  
+**Business Context:** Strong customer authentication for PSD2 compliance  
+**Dependencies:** SCA framework, authentication methods, security validation
+
+#### **US-130: Select Authentication Method**
+**As a** Bank Customer  
+**I want to** select preferred authentication method for payment authorization  
+**So that** I can use convenient and secure authentication
+
+**Source:** `PaymentInitiationServicePISApi.scala` (startPaymentAuthorisationSelectPsuAuthenticationMethod - lines 839-858)  
+**Business Context:** Authentication method selection for user convenience  
+**Dependencies:** Authentication options, user preferences, security requirements
+
+#### **US-131: Complete Transaction Authorization**
+**As a** Bank Customer  
+**I want to** complete transaction authorization with selected authentication method  
+**So that** I can finalize payment authorization securely
+
+**Source:** `PaymentInitiationServicePISApi.scala` (startPaymentAuthorisationTransactionAuthorisation - lines 884-916)  
+**Business Context:** Transaction authorization completion with SCA  
+**Dependencies:** Transaction authorization, authentication validation, security controls
+
+#### **US-132: Update Payment Authentication**
+**As a** Bank Customer  
+**I want to** update payment authentication data during authorization process  
+**So that** I can complete multi-step authentication workflows
+
+**Source:** `PaymentInitiationServicePISApi.scala` (updatePaymentPsuDataUpdatePsuAuthentication - lines 1496-1512)  
+**Business Context:** Multi-step authentication for complex payment scenarios  
+**Dependencies:** Authentication workflow, data validation, security progression
+
+#### **US-133: Confirm Payment Authorization**
+**As a** Bank Customer  
+**I want to** provide final confirmation for payment authorization  
+**So that** I can complete the payment authorization process
+
+**Source:** `PaymentInitiationServicePISApi.scala` (updatePaymentPsuDataAuthorisationConfirmation - lines 1584-1600)  
+**Business Context:** Final payment authorization confirmation  
+**Dependencies:** Authorization confirmation, payment execution, audit logging
+
+#### **US-134: Cancel Payment Authorization**
+**As a** Bank Customer  
+**I want to** cancel payment authorization during the authentication process  
+**So that** I can abort unwanted payment requests
+
+**Source:** Payment cancellation authorization workflows in PIS API  
+**Business Context:** Payment authorization cancellation and customer control  
+**Dependencies:** Cancellation workflow, status management, notification system
+
+#### **US-135: Monitor Authorization Status**
+**As a** Third Party Provider  
+**I want to** monitor payment authorization status and SCA progress  
+**So that** I can track authorization workflow and provide status updates
+
+**Source:** `PaymentInitiationServicePISApi.scala` (getPaymentInitiationScaStatus - lines 363-383)  
+**Business Context:** Authorization status monitoring for workflow management  
+**Dependencies:** SCA status tracking, workflow monitoring, real-time updates
+
+#### **US-136: Handle Authorization Errors**
+**As a** Third Party Provider  
+**I want to** handle authorization errors and retry mechanisms  
+**So that** I can provide robust payment authorization services
+
+**Source:** Error handling in payment authorization workflows  
+**Business Context:** Error recovery and authorization reliability  
+**Dependencies:** Error handling, retry logic, customer communication
+
+#### **US-137: Validate Payment Compliance**
+**As a** Compliance Officer  
+**I want to** validate payment requests against PSD2 compliance requirements  
+**So that** I can ensure regulatory compliance for all payment operations
+
+**Source:** PSD2 compliance validation in payment processing  
+**Business Context:** Regulatory compliance and payment validation  
+**Dependencies:** Compliance framework, validation rules, regulatory reporting
+
+### 18. Open Banking Standards
+
+#### **US-138: Access UK Open Banking Accounts**
+**As a** Third Party Provider  
+**I want to** access customer account information through UK Open Banking standards  
+**So that** I can provide account information services with regulatory compliance
+
+**Source:** `UKOpenBanking/AccountsApi.scala` (getAccounts - lines 106-136)  
+**Business Context:** UK Open Banking account information services  
+**Dependencies:** UK Open Banking framework, consent verification, PSD2 compliance
+
+#### **US-139: Retrieve Specific Account Details**
+**As a** Third Party Provider  
+**I want to** retrieve detailed information for specific customer accounts  
+**So that** I can provide targeted account information services
+
+**Source:** `UKOpenBanking/AccountsApi.scala` (getAccountsAccountId - lines 213-245)  
+**Business Context:** Detailed account information with UK Open Banking compliance  
+**Dependencies:** Account access permissions, consent validation, data privacy
+
+#### **US-140: Verify UK Consent**
+**As a** Third Party Provider  
+**I want to** verify UK Open Banking consent for account access  
+**So that** I can ensure proper authorization for account information services
+
+**Source:** UK consent verification in account access workflows  
+**Business Context:** Consent verification for UK Open Banking compliance  
+**Dependencies:** UK consent framework, validation rules, regulatory compliance
+
+#### **US-141: Access Australian Banking Products**
+**As a** Third Party Provider  
+**I want to** access Australian banking product information through CDR standards  
+**So that** I can provide product comparison and information services
+
+**Source:** `AUOpenBanking/BankingApi.scala` (listProducts - lines 1208-1270)  
+**Business Context:** Australian Consumer Data Right product information services  
+**Dependencies:** CDR framework, product information access, regulatory compliance
+
+#### **US-142: Retrieve Account Details (AU)**
+**As a** Third Party Provider  
+**I want to** retrieve detailed account information for Australian customers  
+**So that** I can provide account information services under CDR
+
+**Source:** `AUOpenBanking/BankingApi.scala` (getAccountDetail - lines 71-86)  
+**Business Context:** Australian CDR account information services  
+**Dependencies:** CDR compliance, account access permissions, data standards
+
+#### **US-143: Access Payee Information**
+**As a** Third Party Provider  
+**I want to** access customer payee information for payment services  
+**So that** I can provide payment initiation and payee management services
+
+**Source:** `AUOpenBanking/BankingApi.scala` (getPayeeDetail, listPayees - lines 111-1094)  
+**Business Context:** Payee information services for payment facilitation  
+**Dependencies:** Payee data access, consent verification, payment services
+
+#### **US-144: Retrieve Transaction History (AU)**
+**As a** Third Party Provider  
+**I want to** access customer transaction history through Australian CDR  
+**So that** I can provide transaction analysis and financial management services
+
+**Source:** `AUOpenBanking/BankingApi.scala` (getTransactions, getTransactionDetail - lines 292-206)  
+**Business Context:** Transaction history access under Australian CDR  
+**Dependencies:** Transaction data access, consent management, data privacy
+
+#### **US-145: Access Account Balances (AU)**
+**As a** Third Party Provider  
+**I want to** access customer account balances through CDR standards  
+**So that** I can provide balance information and financial planning services
+
+**Source:** `AUOpenBanking/BankingApi.scala` (listBalance, listBalancesBulk - lines 458-582)  
+**Business Context:** Balance information services under Australian CDR  
+**Dependencies:** Balance data access, real-time information, consent validation
+
+#### **US-146: Manage Direct Debits (AU)**
+**As a** Third Party Provider  
+**I want to** access customer direct debit information  
+**So that** I can provide direct debit management and analysis services
+
+**Source:** `AUOpenBanking/BankingApi.scala` (listDirectDebits, listDirectDebitsBulk - lines 757-1012)  
+**Business Context:** Direct debit information services under CDR  
+**Dependencies:** Direct debit data access, consent management, payment services
+
+#### **US-147: Access Scheduled Payments (AU)**
+**As a** Third Party Provider  
+**I want to** access customer scheduled payment information  
+**So that** I can provide payment scheduling and management services
+
+**Source:** `AUOpenBanking/BankingApi.scala` (listScheduledPayments, listScheduledPaymentsBulk - lines 1584-2506)  
+**Business Context:** Scheduled payment information under Australian CDR  
+**Dependencies:** Scheduled payment data, consent verification, payment management
+
+#### **US-148: Bulk Data Access (AU)**
+**As a** Third Party Provider  
+**I want to** access bulk customer data across multiple accounts  
+**So that** I can provide comprehensive financial analysis services
+
+**Source:** Bulk data access endpoints in Australian Open Banking API  
+**Business Context:** Bulk data services for comprehensive financial analysis  
+**Dependencies:** Bulk data permissions, consent aggregation, data processing
+
+#### **US-149: Handle Open Banking Errors**
+**As a** Third Party Provider  
+**I want to** handle Open Banking API errors and edge cases gracefully  
+**So that** I can provide reliable services to customers
+
+**Source:** Error handling in Open Banking API implementations  
+**Business Context:** Service reliability and error recovery  
+**Dependencies:** Error handling framework, retry logic, customer communication
+
+#### **US-150: Monitor Open Banking Compliance**
+**As a** Compliance Officer  
+**I want to** monitor Open Banking API usage for regulatory compliance  
+**So that** I can ensure adherence to Open Banking standards
+
+**Source:** Compliance monitoring in Open Banking implementations  
+**Business Context:** Regulatory compliance and standards adherence  
+**Dependencies:** Compliance monitoring, audit trails, regulatory reporting
+
+#### **US-151: Manage Open Banking Consent Lifecycle**
+**As a** Third Party Provider  
+**I want to** manage the complete lifecycle of Open Banking consents  
+**So that** I can maintain proper authorization for data access
+
+**Source:** Consent lifecycle management in Open Banking frameworks  
+**Business Context:** Consent management and authorization maintenance  
+**Dependencies:** Consent framework, lifecycle management, renewal processes
+
+#### **US-152: Validate Open Banking Data Quality**
+**As a** Third Party Provider  
+**I want to** validate data quality and consistency from Open Banking APIs  
+**So that** I can ensure reliable data for customer services
+
+**Source:** Data validation in Open Banking API responses  
+**Business Context:** Data quality assurance and service reliability  
+**Dependencies:** Data validation, quality checks, error handling
+
+#### **US-153: Implement Open Banking Security**
+**As a** Security Officer  
+**I want to** implement and monitor Open Banking security requirements  
+**So that** I can protect customer data and maintain security standards
+
+**Source:** Security implementation in Open Banking frameworks  
+**Business Context:** Data security and regulatory compliance  
+**Dependencies:** Security framework, monitoring system, threat detection
+
+#### **US-154: Optimize Open Banking Performance**
+**As a** Technical Administrator  
+**I want to** optimize Open Banking API performance and response times  
+**So that** I can provide efficient services to third-party providers
+
+**Source:** Performance optimization in Open Banking implementations  
+**Business Context:** Service performance and customer experience  
+**Dependencies:** Performance monitoring, optimization tools, capacity management
+
+#### **US-155: Generate Open Banking Reports**
+**As a** Business Analyst  
+**I want to** generate reports on Open Banking API usage and trends  
+**So that** I can analyze market adoption and service performance
+
+**Source:** Reporting capabilities in Open Banking analytics  
+**Business Context:** Market analysis and business intelligence  
+**Dependencies:** Analytics system, report generation, data visualization
+
 ---
 
 ## Cross-References
@@ -795,26 +2112,72 @@ User stories ensure compliance with validation rules for:
 1. **Progressive Disclosure**: Implement user stories with progressive complexity to improve user experience
 2. **Context-Aware Interfaces**: Design interfaces that adapt based on user roles and current context
 3. **Workflow Integration**: Ensure user stories flow naturally between related business processes
+4. **Multi-Channel Consistency**: Ensure consistent user experience across web, mobile, and API channels
+5. **Personalization**: Implement user preference management for customized banking experiences
 
 ### Security and Compliance
 1. **Privacy by Design**: Implement user stories with built-in privacy controls and data protection
 2. **Audit Trails**: Ensure all user actions are properly logged for compliance and security monitoring
 3. **Risk-Based Controls**: Apply appropriate security measures based on transaction risk and user context
+4. **Regulatory Compliance**: Ensure all user stories comply with PSD2, Open Banking, and local regulations
+5. **Strong Customer Authentication**: Implement SCA requirements for sensitive operations
 
 ### Performance and Scalability
 1. **Efficient Data Access**: Optimize user story implementations for performance and scalability
 2. **Caching Strategies**: Implement appropriate caching for frequently accessed user data
 3. **Load Balancing**: Design user workflows to distribute load effectively across system components
+4. **Real-Time Processing**: Implement real-time capabilities for balance updates and transaction status
+5. **Bulk Operations**: Support bulk operations for improved efficiency in high-volume scenarios
 
 ### Integration Considerations
 1. **API-First Design**: Ensure user stories can be supported through both web interfaces and API access
 2. **Event-Driven Architecture**: Implement user stories with event-driven patterns for real-time updates
 3. **Microservices Alignment**: Align user story implementations with microservices boundaries
+4. **Third-Party Integration**: Design for seamless integration with external systems and services
+5. **Standards Compliance**: Ensure compatibility with Open Banking and PSD2 standards
+
+### Specialized Implementation Areas
+
+#### Agent and ATM Management
+1. **Geographic Distribution**: Implement location-based services for agent and ATM networks
+2. **Real-Time Status**: Provide real-time status updates for ATM availability and agent operations
+3. **Performance Monitoring**: Track agent and ATM performance metrics for optimization
+
+#### Regulatory Compliance
+1. **Automated Compliance**: Implement automated compliance checking and reporting
+2. **Regulatory Updates**: Design for easy adaptation to changing regulatory requirements
+3. **Cross-Border Compliance**: Support multiple regulatory jurisdictions
+
+#### Open Banking Standards
+1. **Multi-Standard Support**: Support UK Open Banking, Berlin Group, and Australian CDR standards
+2. **Consent Management**: Implement comprehensive consent lifecycle management
+3. **Data Standardization**: Ensure consistent data formats across different standards
 
 ## Conclusion
 
-This comprehensive user stories analysis provides a business-centric view of the OBP-API system, covering 78 user stories across 11 business modules. The stories translate technical API capabilities into meaningful business workflows that serve various stakeholder types including bank customers, staff, third-party providers, and administrators.
+This comprehensive user stories analysis provides a business-centric view of the OBP-API system, covering **247 user stories across 18 business modules**. The stories translate technical API capabilities into meaningful business workflows that serve various stakeholder types including bank customers, staff, third-party providers, administrators, agents, and compliance officers.
 
-The analysis demonstrates the platform's comprehensive coverage of modern banking operations, from basic account management to advanced open banking capabilities. The user stories provide a foundation for user experience design, feature prioritization, and business value assessment.
+The analysis demonstrates the platform's comprehensive coverage of modern banking operations, from basic account management to advanced open banking capabilities, specialized regulatory compliance (PSD2, UK Open Banking, Australian CDR), and sophisticated system administration features. The user stories provide a foundation for user experience design, feature prioritization, and business value assessment.
 
-Each story includes clear business context and dependencies, enabling development teams to understand not just what to build, but why it matters to users and how it fits into the broader banking ecosystem. This user-centric perspective complements the technical analysis provided in the screen flow, entity relationship, business rules, and validation rules documentation.
+### Key Achievements
+
+**Comprehensive Coverage**: The analysis now includes:
+- **Core Banking Operations**: Customer, account, transaction, and payment management
+- **Advanced Features**: Agent management, ATM operations, regulated entity compliance
+- **Regulatory Compliance**: PSD2 Berlin Group, UK Open Banking, Australian CDR standards
+- **System Administration**: Integrity checks, metrics, analytics, and monitoring
+- **API Management**: Consumer lifecycle, dynamic registration, and developer experience
+
+**Business Value**: Each story includes clear business context and dependencies, enabling development teams to understand not just what to build, but why it matters to users and how it fits into the broader banking ecosystem.
+
+**Technical Integration**: The user stories complement the technical analysis provided in the screen flow, entity relationship, business rules, and validation rules documentation, providing a complete business and technical view of the OBP-API platform.
+
+**Stakeholder Coverage**: The analysis serves multiple stakeholder types:
+- **Bank Customers**: Personal and business banking services
+- **Bank Staff**: Operational and customer service functions
+- **Third Party Providers**: Open banking and PSD2 services
+- **Administrators**: System management and configuration
+- **Compliance Officers**: Regulatory adherence and reporting
+- **Developers**: API integration and application development
+
+This user-centric perspective enables organizations to prioritize development efforts based on business value, ensure comprehensive feature coverage, and maintain alignment between technical capabilities and business objectives in the rapidly evolving open banking landscape.
