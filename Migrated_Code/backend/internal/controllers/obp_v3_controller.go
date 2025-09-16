@@ -997,6 +997,7 @@ func (c *OBPv3Controller) GetOtherAccountCorporateLocation(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	accountID := ctx.Param("accountId")
 	viewID := ctx.Param("viewId")
+
 	otherAccountID := ctx.Param("otherAccountId")
 	location := map[string]interface{}{
 		"bank_id": bankID,
@@ -1327,5 +1328,52 @@ func (c *OBPv3Controller) DeleteProductAttributeDefinition(ctx *gin.Context) {
 		"message": "Product attribute definition deleted",
 		"bank_id": bankID,
 		"attribute_definition_id": attrDefID,
+	})
+}
+
+func (c *OBPv3Controller) CreateProductAttributeV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	var attrData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrData["bank_id"] = bankID
+	attrData["product_code"] = productCode
+	ctx.JSON(http.StatusCreated, attrData)
+}
+
+func (c *OBPv3Controller) GetProductAttributesV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attributes := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"product_attributes": attributes, "bank_id": bankID, "product_code": productCode})
+}
+
+func (c *OBPv3Controller) UpdateProductAttributeV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attrID := ctx.Param("attributeId")
+	var attrData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrData["bank_id"] = bankID
+	attrData["product_code"] = productCode
+	attrData["attribute_id"] = attrID
+	ctx.JSON(http.StatusOK, attrData)
+}
+
+func (c *OBPv3Controller) DeleteProductAttributeV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attrID := ctx.Param("attributeId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product attribute deleted",
+		"bank_id": bankID,
+		"product_code": productCode,
+		"attribute_id": attrID,
 	})
 }

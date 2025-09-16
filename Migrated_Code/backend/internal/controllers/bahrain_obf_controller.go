@@ -1199,3 +1199,36 @@ func (c *BahrainOBFController) PatchDomesticFutureDatedPayment(ctx *gin.Context)
 	}
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (c *BahrainOBFController) GetAccountSupplementaryAccountInfoNew(ctx *gin.Context) {
+	accountID := ctx.Param("AccountId")
+	info := map[string]interface{}{
+		"Data": map[string]interface{}{
+			"Account": map[string]interface{}{
+				"AccountId": accountID,
+				"SupplementaryData": map[string]interface{}{
+					"AccountType": "Personal",
+					"AccountSubType": "CurrentAccount",
+				},
+			},
+		},
+		"Meta": map[string]interface{}{},
+		"Links": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, info)
+}
+
+func (c *BahrainOBFController) GetDomesticFutureDatedPaymentDetailsNew(ctx *gin.Context) {
+	paymentID := ctx.Param("DomesticFutureDatedPaymentId")
+	details := map[string]interface{}{
+		"Data": map[string]interface{}{
+			"DomesticFutureDatedPaymentId": paymentID,
+			"Status": "Pending",
+			"CreationDateTime": "2023-01-01T00:00:00Z",
+			"StatusUpdateDateTime": "2023-01-01T00:00:00Z",
+		},
+		"Meta": map[string]interface{}{},
+		"Links": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, details)
+}

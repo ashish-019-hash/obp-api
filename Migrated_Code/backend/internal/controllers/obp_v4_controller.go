@@ -1116,3 +1116,49 @@ func (c *OBPv4Controller) DeleteTransactionRequestType(ctx *gin.Context) {
 		"transaction_request_type": requestType,
 	})
 }
+
+func (c *OBPv4Controller) DeleteTransactionRequestAttributeDefinitionNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	attrDefID := ctx.Param("attributeDefinitionId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Transaction request attribute definition deleted",
+		"bank_id": bankID,
+		"attribute_definition_id": attrDefID,
+	})
+}
+
+func (c *OBPv4Controller) GetRefundTransactionRequestNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	transactionRequestID := ctx.Param("transactionRequestId")
+	
+	request := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"transaction_request_id": transactionRequestID,
+		"type": "REFUND",
+		"status": "COMPLETED",
+	}
+	ctx.JSON(http.StatusOK, request)
+}
+
+func (c *OBPv4Controller) AnswerRefundTransactionRequestChallengeNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	transactionRequestID := ctx.Param("transactionRequestId")
+	
+	var challengeData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&challengeData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	challengeData["bank_id"] = bankID
+	challengeData["account_id"] = accountID
+	challengeData["view_id"] = viewID
+	challengeData["transaction_request_id"] = transactionRequestID
+	ctx.JSON(http.StatusOK, challengeData)
+}
