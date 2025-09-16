@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1300" height="2700" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="650" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2c3e50">Business Rules Dependencies - OBP API</text>
+  <text x="650" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#34495e">35 Core Business Rules across 9 Categories</text>
+
+  <!-- Currency Exchange & Conversion Rules (BR-001 to BR-003) -->
+  <rect x="50" y="80" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="60" y="100" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-001: FX Rate Lookup</text>
+  <text x="60" y="115" font-family="Arial, sans-serif" font-size="10" fill="white">Fallback exchange rate lookup</text>
+  <text x="60" y="128" font-family="Arial, sans-serif" font-size="10" fill="white">with 14 supported currencies</text>
+  <text x="60" y="145" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">fx.scala:40-57</text>
+
+  <rect x="350" y="80" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="360" y="100" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-002: Currency Conversion</text>
+  <text x="360" y="115" font-family="Arial, sans-serif" font-size="10" fill="white">BigDecimal multiplication with</text>
+  <text x="360" y="128" font-family="Arial, sans-serif" font-size="10" fill="white">HALF_UP rounding</text>
+  <text x="360" y="145" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">fx.scala:127-130</text>
+
+  <rect x="650" y="80" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="660" y="100" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-003: Rate Resolution</text>
+  <text x="660" y="115" font-family="Arial, sans-serif" font-size="10" fill="white">Three-tier rate resolution:</text>
+  <text x="660" y="128" font-family="Arial, sans-serif" font-size="10" fill="white">bank → cached → hardcoded</text>
+  <text x="660" y="145" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">fx.scala:151-162</text>
+
+  <!-- Transaction Limits & Controls (BR-004 to BR-006) -->
+  <rect x="50" y="180" width="280" height="80" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="5"/>
+  <text x="60" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-004: Counterparty Limits</text>
+  <text x="60" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Six-dimensional limit enforcement</text>
+  <text x="60" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">with amounts and counts</text>
+  <text x="60" y="245" font-family="Arial, sans-serif" font-size="9" fill="#fdf2f2">MappedCounterpartyLimit.scala:54-75</text>
+
+  <!-- Fee Calculations (BR-005) -->
+  <rect x="350" y="180" width="280" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+  <text x="360" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-005: Product Fee Structure</text>
+  <text x="360" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Fee calculation with amount,</text>
+  <text x="360" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">currency, frequency</text>
+  <text x="360" y="245" font-family="Arial, sans-serif" font-size="9" fill="#fef9e7">MappedProductFeeProvider.scala:39-49</text>
+
+  <!-- Transaction Processing Logic (BR-006 to BR-008) -->
+  <rect x="650" y="180" width="280" height="80" fill="#27ae60" stroke="#229954" stroke-width="2" rx="5"/>
+  <text x="660" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-006: Transaction Classification</text>
+  <text x="660" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Credit/debit based on amount</text>
+  <text x="660" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">sign triggering balance events</text>
+  <text x="660" y="245" font-family="Arial, sans-serif" font-size="9" fill="#e8f5e8">MappedTransaction.scala:285-296</text>
+
+  <!-- Security & Access Control (BR-007 to BR-009) -->
+  <rect x="950" y="180" width="280" height="80" fill="#8e44ad" stroke="#7d3c98" stroke-width="2" rx="5"/>
+  <text x="960" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-007: Challenge Threshold</text>
+  <text x="960" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Calculation with FX conversion</text>
+  <text x="960" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">default: BigDecimal(1000)</text>
+  <text x="960" y="245" font-family="Arial, sans-serif" font-size="9" fill="#f4ecf7">LocalMappedConnector.scala:152-175</text>
+
+  <!-- New Business Rules BR-028 to BR-035 -->
+  
+  <!-- BR-028: VRP Multi-Dimensional Limit Validation -->
+  <rect x="50" y="2200" width="280" height="80" fill="#ff6b6b" stroke="#c0392b" stroke-width="2" rx="5"/>
+  <text x="60" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-028: VRP Multi-Dimensional Limits</text>
+  <text x="60" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">Complex VRP limit validation with</text>
+  <text x="60" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">multi-dimensional checking</text>
+  <text x="60" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#ffecec">VrpConsentCreation.scala:73-76</text>
+  
+  <!-- BR-029: Currency Decimal Place Calculations -->
+  <rect x="350" y="2200" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="360" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-029: Currency Decimal Places</text>
+  <text x="360" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">Currency-specific decimal place</text>
+  <text x="360" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">determination</text>
+  <text x="360" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">Helper.scala:140-150</text>
+  
+  <!-- BR-030: Smallest Currency Unit Conversions -->
+  <rect x="650" y="2200" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="660" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-030: Currency Unit Conversions</text>
+  <text x="660" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">BigDecimal conversions between</text>
+  <text x="660" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">currency units</text>
+  <text x="660" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">Helper.scala:157-161</text>
+  
+  <!-- BR-031: Funds Availability Verification -->
+  <rect x="950" y="2200" width="280" height="80" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="5"/>
+  <text x="960" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-031: Funds Availability</text>
+  <text x="960" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">PSD2-compliant funds verification</text>
+  <text x="960" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">with currency matching</text>
+  <text x="960" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#fdf2f2">APIMethods310.scala:674-679</text>
+  
+  <!-- BR-032: Berlin Group Currency Conversion -->
+  <rect x="50" y="2300" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="60" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-032: Berlin Group FX</text>
+  <text x="60" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">Cross-currency fund availability</text>
+  <text x="60" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">with FX conversion</text>
+  <text x="60" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">ConfirmationOfFundsServicePIISApi.scala:91-99</text>
+  
+  <!-- BR-033: ATM Minimum Withdrawal -->
+  <rect x="350" y="2300" width="280" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+  <text x="360" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-033: ATM Minimum Amount</text>
+  <text x="360" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">Minimum withdrawal amount</text>
+  <text x="360" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">validation for ATMs</text>
+  <text x="360" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#fef9e7">JSONFactory_MXOF_1_0_0.scala:125</text>
+  
+  <!-- BR-034: ATM 24-Hour Access -->
+  <rect x="650" y="2300" width="280" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+  <text x="660" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-034: ATM 24-Hour Access</text>
+  <text x="660" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">24-hour availability determination</text>
+  <text x="660" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">based on opening hours</text>
+  <text x="660" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#fef9e7">JSONFactory_MXOF_1_0_0.scala:101-109</text>
+  
+  <!-- BR-035: Pagination Parameter Validation -->
+  <rect x="950" y="2300" width="280" height="80" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="5"/>
+  <text x="960" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-035: Pagination Validation</text>
+  <text x="960" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">API pagination parameter</text>
+  <text x="960" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">validation with constraints</text>
+  <text x="960" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#f4ecf7">APIUtil.scala:1104-1127</text>
+  
+  <!-- Dependencies for new rules -->
+  
+  <!-- BR-029 → BR-030 -->
+  <path d="M 630 2240 L 650 2240" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- BR-001 → BR-032 -->
+  <path d="M 330 140 Q 400 1000 190 2300" stroke="#e74c3c" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+  
+  <!-- BR-031 → BR-032 -->
+  <path d="M 950 2240 Q 500 2250 330 2340" stroke="#e74c3c" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- BR-029 → BR-033 -->
+  <path d="M 490 2280 L 490 2300" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+
+  <!-- Legend -->
+  <text x="50" y="2420" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2c3e50">Legend:</text>
+  
+  <!-- Currency Exchange & Conversion -->
+  <rect x="50" y="2430" width="20" height="15" fill="#3498db" stroke="#2980b9" stroke-width="1"/>
+  <text x="80" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Currency Exchange & Conversion</text>
+  
+  <!-- Transaction Limits & Controls -->
+  <rect x="280" y="2430" width="20" height="15" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+  <text x="310" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Transaction Limits & Controls</text>
+  
+  <!-- VRP Payment Controls -->
+  <rect x="500" y="2430" width="20" height="15" fill="#ff6b6b" stroke="#c0392b" stroke-width="1"/>
+  <text x="530" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">VRP Payment Controls</text>
+  
+  <!-- Fee Calculations -->
+  <rect x="650" y="2430" width="20" height="15" fill="#f39c12" stroke="#e67e22" stroke-width="1"/>
+  <text x="680" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Fee Calculations</text>
+  
+  <!-- Transaction Processing Logic -->
+  <rect x="800" y="2430" width="20" height="15" fill="#27ae60" stroke="#229954" stroke-width="1"/>
+  <text x="830" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Transaction Processing Logic</text>
+  
+  <!-- Security & Access Control -->
+  <rect x="50" y="2450" width="20" height="15" fill="#8e44ad" stroke="#7d3c98" stroke-width="1"/>
+  <text x="80" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Security & Access Control</text>
+  
+  <!-- Balance & Aggregation Logic -->
+  <rect x="280" y="2450" width="20" height="15" fill="#16a085" stroke="#138d75" stroke-width="1"/>
+  <text x="310" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Balance & Aggregation Logic</text>
+  
+  <!-- Rate Limiting & API Management -->
+  <rect x="500" y="2450" width="20" height="15" fill="#34495e" stroke="#2c3e50" stroke-width="1"/>
+  <text x="530" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Rate Limiting & API Management</text>
+  
+  <!-- Customer Assessment & Analytics -->
+  <rect x="650" y="2450" width="20" height="15" fill="#d35400" stroke="#ba4a00" stroke-width="1"/>
+  <text x="680" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Customer Assessment & Analytics</text>
+
+  <!-- Analysis Summary -->
+  <text x="50" y="2480" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Key Insights:</text>
+  <text x="50" y="2500" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Core FX handling supports all monetary calculations (BR-001, BR-002, BR-003)</text>
+  <text x="50" y="2520" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Risk management through multi-dimensional limits (BR-004, BR-005, BR-006, BR-028)</text>
+  <text x="50" y="2540" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Transaction processing with precise amount handling (BR-007, BR-008, BR-029, BR-030)</text>
+  <text x="50" y="2560" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Comprehensive security and access controls (BR-009, BR-010, BR-011)</text>
+  <text x="50" y="2580" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Advanced rate limiting and API management (BR-012, BR-013, BR-014, BR-035)</text>
+  <text x="50" y="2600" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Customer assessment and analytics capabilities (BR-015 through BR-027)</text>
+  <text x="50" y="2620" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• PSD2 compliance and funds verification (BR-031, BR-032)</text>
+  <text x="50" y="2640" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• ATM service management and availability (BR-033, BR-034)</text>
+  
+  <text x="50" y="2670" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Analysis Date: 16-9-2025</text>
+  <text x="50" y="2690" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Total Rules: 35 across 9 categories</text>
+</svg>
