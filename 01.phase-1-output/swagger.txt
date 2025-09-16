@@ -1,0 +1,277 @@
+# Open Bank Project API - REST Endpoints
+
+## Core API Information
+GET /obp/v5.1.0/root - Get API Information
+GET /obp/v5.1.0/ui/suggested-session-timeout - Get Suggested Session Timeout
+
+## Bank Management
+GET /obp/v5.1.0/banks - Get Banks
+GET /obp/v5.1.0/banks/{bankId} - Get Bank
+
+## Agent Management
+POST /obp/v5.1.0/banks/{bankId}/agents - Create Agent
+GET /obp/v5.1.0/banks/{bankId}/agents - Get Agents
+GET /obp/v5.1.0/banks/{bankId}/agents/{agentId} - Get Agent
+PUT /obp/v5.1.0/banks/{bankId}/agents/{agentId} - Update Agent Status
+
+## Account Management
+GET /obp/v5.1.0/banks/{bankId}/accounts - Get Accounts at Bank
+POST /obp/v5.1.0/banks/{bankId}/accounts - Create Account
+GET /obp/v5.1.0/banks/{bankId}/accounts/{accountId} - Get Account
+GET /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/balances - Get Account Balances
+
+## Transaction Management
+GET /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/transactions - Get Transactions
+GET /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/transactions/{transactionId} - Get Transaction
+
+## Transaction Requests
+POST /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/SEPA/transaction-requests - Create SEPA Transaction Request
+
+## Customer Management
+GET /obp/v5.1.0/banks/{bankId}/customers - Get Customers
+POST /obp/v5.1.0/banks/{bankId}/customers - Create Customer
+
+## Consent Management
+GET /obp/v5.1.0/banks/{bankId}/my/consents - Get My Consents at Bank
+POST /obp/v5.1.0/consumer/consents - Create Consent
+
+## Berlin Group PSD2 APIs
+GET /berlin-group/v1.3/accounts - Get Account List
+GET /berlin-group/v1.3/accounts/{account-id}/balances - Get Account Balances
+POST /berlin-group/v1.3/payments/sepa-credit-transfers - Initiate SEPA Credit Transfer
+
+## UK Open Banking APIs
+GET /open-banking/v3.1.0/aisp/accounts - Get Accounts
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/balances - Get Account Balances
+
+## Australian CDR APIs
+GET /cds-au/v1.0.0/banking/accounts - Get Accounts
+
+## Additional Core Banking Endpoints (v4.0.0)
+GET /obp/v4.0.0/database/info - Get Mapper Database Info
+GET /obp/v4.0.0/users/current/logout-link - Get Logout Link
+PUT /obp/v4.0.0/management/consumers/{consumerId}/consumer/call-limits - Set Rate Limits per Consumer
+GET /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transactions/{transactionId}/double-entry-transaction - Get Double Entry Transaction
+GET /obp/v4.0.0/transactions/{transactionId}/balancing-transaction - Get Balancing Transaction
+POST /obp/v4.0.0/banks/{bankId}/settlement-accounts - Create Settlement Account
+GET /obp/v4.0.0/banks/{bankId}/settlement-accounts - Get Settlement Accounts
+
+## Transaction Request Types (v4.0.0)
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/ACCOUNT/transaction-requests - Create Account Transaction Request
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/ACCOUNT_OTP/transaction-requests - Create Account OTP Transaction Request
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/COUNTERPARTY/transaction-requests - Create Counterparty Transaction Request
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/REFUND/transaction-requests - Create Refund Transaction Request
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/FREE_FORM/transaction-requests - Create Free Form Transaction Request
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/SIMPLE/transaction-requests - Create Simple Transaction Request
+
+## User Management (v4.0.0)
+POST /obp/v4.0.0/users - Create User with Roles
+GET /obp/v4.0.0/users/current/entitlements - Get Entitlements
+GET /obp/v4.0.0/banks/{bankId}/entitlements - Get Entitlements for Bank
+PUT /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/account-labels - Update Account Label
+PUT /obp/v4.0.0/users/{userId}/lock-status - Lock User
+
+## Account Access and Views (v4.0.0)
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/views/{viewId}/account-access/grant - Grant User Access to View
+POST /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/account-access - Create User with Account Access
+DELETE /obp/v4.0.0/banks/{bankId}/accounts/{accountId}/views/{viewId}/account-access/revoke - Revoke User Access to View
+
+## Customer Attributes (v4.0.0)
+POST /obp/v4.0.0/banks/{bankId}/customers/{customerId}/attributes - Create Customer Attribute
+PUT /obp/v4.0.0/banks/{bankId}/customers/{customerId}/attributes/{customerAttributeId} - Update Customer Attribute
+GET /obp/v4.0.0/banks/{bankId}/customers/{customerId}/attributes - Get Customer Attributes
+GET /obp/v4.0.0/banks/{bankId}/customers/{customerId}/attributes/{customerAttributeId} - Get Customer Attribute by ID
+
+## Dynamic Entities (v4.0.0)
+GET /obp/v4.0.0/management/dynamic-entities - Get System Dynamic Entities
+GET /obp/v4.0.0/banks/{bankId}/dynamic-entities - Get Bank Level Dynamic Entities
+POST /obp/v4.0.0/management/dynamic-entities - Create System Dynamic Entity
+POST /obp/v4.0.0/banks/{bankId}/dynamic-entities - Create Bank Level Dynamic Entity
+PUT /obp/v4.0.0/management/dynamic-entities/{dynamicEntityId} - Update System Dynamic Entity
+PUT /obp/v4.0.0/banks/{bankId}/dynamic-entities/{dynamicEntityId} - Update Bank Level Dynamic Entity
+DELETE /obp/v4.0.0/management/dynamic-entities/{dynamicEntityId} - Delete System Dynamic Entity
+DELETE /obp/v4.0.0/banks/{bankId}/dynamic-entities/{dynamicEntityId} - Delete Bank Level Dynamic Entity
+
+## ATM Management (v5.1.0)
+POST /obp/v5.1.0/banks/{bankId}/atms - Create ATM
+PUT /obp/v5.1.0/banks/{bankId}/atms/{atmId} - Update ATM
+GET /obp/v5.1.0/banks/{bankId}/atms - Get ATMs
+GET /obp/v5.1.0/banks/{bankId}/atms/{atmId} - Get ATM
+DELETE /obp/v5.1.0/banks/{bankId}/atms/{atmId} - Delete ATM
+
+## ATM Attributes (v5.1.0)
+POST /obp/v5.1.0/banks/{bankId}/atms/{atmId}/attributes - Create ATM Attribute
+GET /obp/v5.1.0/banks/{bankId}/atms/{atmId}/attributes - Get ATM Attributes
+GET /obp/v5.1.0/banks/{bankId}/atms/{atmId}/attributes/{atmAttributeId} - Get ATM Attribute
+PUT /obp/v5.1.0/banks/{bankId}/atms/{atmId}/attributes/{atmAttributeId} - Update ATM Attribute
+DELETE /obp/v5.1.0/banks/{bankId}/atms/{atmId}/attributes/{atmAttributeId} - Delete ATM Attribute
+
+## Consumer Management (v5.1.0)
+POST /obp/v5.1.0/management/consumers - Create Consumer
+POST /obp/v5.1.0/management/my/consumers - Create My Consumer
+PUT /obp/v5.1.0/management/consumers/{consumerId}/consumer/redirect_url - Update Consumer Redirect URL
+PUT /obp/v5.1.0/management/consumers/{consumerId}/consumer/logo_url - Update Consumer Logo URL
+PUT /obp/v5.1.0/management/consumers/{consumerId}/consumer/certificate - Update Consumer Certificate
+PUT /obp/v5.1.0/management/consumers/{consumerId}/consumer/name - Update Consumer Name
+GET /obp/v5.1.0/management/consumers/{consumerId} - Get Consumer
+GET /obp/v5.1.0/management/consumers - Get Consumers
+
+## Consent Management Extended (v5.1.0)
+PUT /obp/v5.1.0/banks/{bankId}/consents/{consentId}/status - Update Consent Status
+PUT /obp/v5.1.0/banks/{bankId}/consents/{consentId}/account-access - Update Consent Account Access
+PUT /obp/v5.1.0/banks/{bankId}/consents/{consentId}/user-id - Update Consent User ID
+GET /obp/v5.1.0/my/consents - Get My Consents
+GET /obp/v5.1.0/banks/{bankId}/consents - Get Consents at Bank
+GET /obp/v5.1.0/consents - Get Consents
+GET /obp/v5.1.0/banks/{bankId}/consents/{consentId} - Get Consent by Consent ID
+DELETE /obp/v5.1.0/banks/{bankId}/consents/{consentId} - Revoke Consent at Bank
+DELETE /obp/v5.1.0/my/consents/{consentId} - Revoke My Consent
+
+## User Management Extended (v5.1.0)
+GET /obp/v5.1.0/users/{userId} - Get User by User ID
+GET /obp/v5.1.0/users/username/{username} - Get User by Username
+GET /obp/v5.1.0/users/email/{email} - Get Users by Email
+GET /obp/v5.1.0/users - Get Users
+POST /obp/v5.1.0/user-invitations - Create User Invitation
+GET /obp/v5.1.0/user-invitations/{secretLink} - Get User Invitation Anonymous
+GET /obp/v5.1.0/my/user-invitations/{secretLink} - Get User Invitation
+GET /obp/v5.1.0/my/user-invitations - Get User Invitations
+DELETE /obp/v5.1.0/users/{userId} - Delete User
+
+## Metrics and Analytics (v5.1.0)
+GET /obp/v5.1.0/management/aggregate-metrics - Get Aggregate Metrics
+GET /obp/v5.1.0/management/metrics - Get Metrics
+
+## Counterparty Limits (v5.1.0)
+POST /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/counterparty-limits - Create Counterparty Limit
+PUT /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/counterparty-limits/{counterpartyLimitId} - Update Counterparty Limit
+GET /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/counterparty-limits/{counterpartyLimitId} - Get Counterparty Limit
+DELETE /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/counterparty-limits/{counterpartyLimitId} - Delete Counterparty Limit
+
+## Custom Views (v5.1.0)
+POST /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/views - Create Custom View
+PUT /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/views/{viewId} - Update Custom View
+GET /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/views/{viewId} - Get Custom View
+DELETE /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/views/{viewId} - Delete Custom View
+
+## VRP Consent Requests (v5.1.0)
+POST /obp/v5.1.0/consumer/vrp-consent-requests - Create VRP Consent Request
+
+## Regulated Entities (v5.1.0)
+GET /obp/v5.1.0/regulated-entities - Get Regulated Entities
+GET /obp/v5.1.0/regulated-entities/{regulatedEntityId} - Get Regulated Entity by ID
+POST /obp/v5.1.0/regulated-entities - Create Regulated Entity
+DELETE /obp/v5.1.0/regulated-entities/{regulatedEntityId} - Delete Regulated Entity
+
+## Regulated Entity Attributes (v5.1.0)
+POST /obp/v5.1.0/regulated-entities/{regulatedEntityId}/attributes - Create Regulated Entity Attribute
+DELETE /obp/v5.1.0/regulated-entities/{regulatedEntityId}/attributes/{regulatedEntityAttributeId} - Delete Regulated Entity Attribute
+GET /obp/v5.1.0/regulated-entities/{regulatedEntityId}/attributes/{regulatedEntityAttributeId} - Get Regulated Entity Attribute by ID
+
+## Berlin Group Extended APIs
+GET /berlin-group/v1.3/accounts/{account-id}/transactions - Get Account Transactions
+GET /berlin-group/v1.3/accounts/{account-id} - Get Account Details
+POST /berlin-group/v1.3/consents - Create Account Information Consent
+GET /berlin-group/v1.3/consents/{consentId} - Get Consent Information
+DELETE /berlin-group/v1.3/consents/{consentId} - Delete Consent
+GET /berlin-group/v1.3/consents/{consentId}/status - Get Consent Status
+POST /berlin-group/v1.3/payments/instant-sepa-credit-transfers - Initiate Instant SEPA Credit Transfer
+GET /berlin-group/v1.3/payments/{payment-product}/{paymentId} - Get Payment Information
+GET /berlin-group/v1.3/payments/{payment-product}/{paymentId}/status - Get Payment Status
+DELETE /berlin-group/v1.3/payments/{payment-product}/{paymentId} - Cancel Payment
+POST /berlin-group/v1.3/funds-confirmations - Confirmation of Funds Request
+
+## UK Open Banking Extended APIs
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/transactions - Get Account Transactions
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/standing-orders - Get Standing Orders
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/direct-debits - Get Direct Debits
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/beneficiaries - Get Beneficiaries
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/scheduled-payments - Get Scheduled Payments
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/statements - Get Statements
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/offers - Get Offers
+GET /open-banking/v3.1.0/aisp/accounts/{AccountId}/party - Get Party
+POST /open-banking/v3.1.0/pisp/domestic-payments - Create Domestic Payment
+POST /open-banking/v3.1.0/pisp/domestic-payment-consents - Create Domestic Payment Consent
+GET /open-banking/v3.1.0/pisp/domestic-payment-consents/{ConsentId} - Get Domestic Payment Consent
+POST /open-banking/v3.1.0/cbpii/funds-confirmation-consents - Create Funds Confirmation Consent
+POST /open-banking/v3.1.0/cbpii/funds-confirmations - Create Funds Confirmation
+
+## Australian CDR Extended APIs
+GET /cds-au/v1.0.0/banking/accounts/{accountId} - Get Account Detail
+GET /cds-au/v1.0.0/banking/accounts/{accountId}/balance - Get Account Balance
+GET /cds-au/v1.0.0/banking/accounts/{accountId}/transactions - Get Account Transactions
+GET /cds-au/v1.0.0/banking/accounts/{accountId}/direct-debits - Get Account Direct Debits
+GET /cds-au/v1.0.0/banking/accounts/balances - Get Account Balances for Multiple Accounts
+GET /cds-au/v1.0.0/banking/accounts/transactions - Get Transactions for Multiple Accounts
+GET /cds-au/v1.0.0/banking/payees - Get Payees
+GET /cds-au/v1.0.0/banking/payees/{payeeId} - Get Payee Detail
+GET /cds-au/v1.0.0/banking/products - Get Products
+GET /cds-au/v1.0.0/banking/products/{productId} - Get Product Detail
+GET /cds-au/v1.0.0/common/customer - Get Customer
+GET /cds-au/v1.0.0/common/customer/detail - Get Customer Detail
+
+## Polish API Extended
+GET /polish/v2.1.1.1/accounts - Get Account List (Polish)
+GET /polish/v2.1.1.1/accounts/{account-id}/balances - Get Account Balances (Polish)
+GET /polish/v2.1.1.1/accounts/{account-id}/transactions - Get Account Transactions (Polish)
+POST /polish/v2.1.1.1/payments/domestic - Initiate Domestic Payment (Polish)
+POST /polish/v2.1.1.1/consents - Create Account Information Consent (Polish)
+
+## STET API
+GET /stet/v1.4/accounts - Get Account List (STET)
+GET /stet/v1.4/accounts/{account-id}/balances - Get Account Balances (STET)
+POST /stet/v1.4/payment-requests - Create Payment Request (STET)
+POST /stet/v1.4/funds-confirmations - Confirmation of Funds (STET)
+
+## Bahrain OBF API
+GET /bahrain-obf/v1.0.0/accounts - Get Account List (Bahrain)
+GET /bahrain-obf/v1.0.0/accounts/{AccountId}/balances - Get Account Balances (Bahrain)
+GET /bahrain-obf/v1.0.0/accounts/{AccountId}/transactions - Get Account Transactions (Bahrain)
+POST /bahrain-obf/v1.0.0/domestic-payments - Create Domestic Payment (Bahrain)
+POST /bahrain-obf/v1.0.0/account-access-consents - Create Account Access Consent (Bahrain)
+
+## MxOF API (Mexican Open Finance)
+GET /mxof/v1.0.0/atms - Get ATMs (Mexico)
+GET /mxof/v1.0.0/branches - Get Branches (Mexico)
+GET /mxof/v1.0.0/products - Get Products (Mexico)
+
+## Dynamic Endpoints
+GET /obp/dynamic-endpoint/{dynamicEndpointId} - Execute Dynamic Endpoint
+POST /obp/dynamic-endpoint/{dynamicEndpointId} - Execute Dynamic Endpoint
+PUT /obp/dynamic-endpoint/{dynamicEndpointId} - Execute Dynamic Endpoint
+DELETE /obp/dynamic-endpoint/{dynamicEndpointId} - Execute Dynamic Endpoint
+
+## Dynamic Entities Extended
+GET /obp/dynamic-entity/{dynamicEntityId} - Get Dynamic Entity
+POST /obp/dynamic-entity/{dynamicEntityId} - Create Dynamic Entity Instance
+PUT /obp/dynamic-entity/{dynamicEntityId}/{instanceId} - Update Dynamic Entity Instance
+DELETE /obp/dynamic-entity/{dynamicEntityId}/{instanceId} - Delete Dynamic Entity Instance
+
+## Management and Administration
+GET /obp/v5.1.0/management/api-collections - Get API Collections
+PUT /obp/v5.1.0/management/my/api-collections/{apiCollectionId} - Update My API Collection
+GET /obp/v5.1.0/management/connector/loopback - Test Connector Loopback
+GET /obp/v5.1.0/management/banks/{bankId}/settlement-accounts - Get Settlement Accounts
+POST /obp/v5.1.0/management/cascading-banks/{bankId} - Delete Bank Cascade
+GET /obp/v5.1.0/management/system/integrity/account-currency-check - Account Currency Check
+GET /obp/v5.1.0/management/system/integrity/orphaned-account-check - Orphaned Account Check
+
+## OAuth and Authentication
+GET /obp/v5.1.0/users/current - Get Current User
+POST /obp/v5.1.0/users/current/refresh - Refresh User
+GET /obp/v5.1.0/oauth/initiate - OAuth Initiate
+POST /obp/v5.1.0/oauth/token - OAuth Token
+GET /obp/v5.1.0/oauth/authorize - OAuth Authorize
+
+## API Documentation and Resources
+GET /obp/v5.1.0/resource-docs - Get Resource Docs
+GET /obp/v5.1.0/api-tags - Get API Tags
+GET /obp/v5.1.0/glossary - Get Glossary
+GET /obp/v5.1.0/message-docs - Get Message Docs
+
+## System Health and Status
+GET /obp/v5.1.0/config - Get Config
+GET /obp/v5.1.0/connector/loopback - Connector Loopback
+GET /obp/v5.1.0/rate-limiting - Get Rate Limiting Info
+
+## Total Endpoints: ~500+ business-facing REST API endpoints across all versions and regulatory standards
