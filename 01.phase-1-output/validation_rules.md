@@ -1,13 +1,13 @@
 # Validation Rules Analysis for Open Bank Project API
 
 **Analysis Date:** 16-9-2025  
+**Analyst:** Devin AI  
 **Repository:** ashish-019-hash/obp-api  
 **Source Directory:** 00.phase-1-input/OBP-API-develop  
-**Analyst:** Devin AI  
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of **30 core validation rules** identified within the Open Bank Project (OBP) API codebase. The validation rules are categorized into **6 major areas** covering field-level input validations, range checks, enumerated value validations, domain-specific business validations, conditional validations, and cross-field validations.
+This document provides a comprehensive analysis of **55 core validation rules** extracted from the Open Bank Project (OBP) API Scala codebase. The validation rules are categorized into **6 major areas**: Field-Level Input Validations, Range Checks, Enumerated Value Checks, Domain-Specific Business Validations, Conditional Validations, and Cross-Field Validations.
 
 The analysis focuses on business-level validation logic that ensures data integrity, regulatory compliance, and system security while excluding technical infrastructure validations and frontend-specific checks.
 
