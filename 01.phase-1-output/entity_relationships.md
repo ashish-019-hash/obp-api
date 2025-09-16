@@ -289,7 +289,236 @@ This document presents a comprehensive Entity Relationship Model (ERM) for the O
 
 ---
 
+## Additional Business Entities (Comprehensive Analysis Update)
+
+### 14. Entitlement
+**Source:** `obp-api/src/main/scala/code/entitlement/Entilement.scala` (lines 34-40)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| entitlementId | String | Unique entitlement identifier |
+| bankId | String | Reference to Bank |
+| userId | String | Reference to User |
+| roleName | String | Role name for authorization |
+| createdByProcess | String | Process that created entitlement |
+
+### 15. Meeting
+**Source:** `obp-api/src/main/scala/code/meetings/Meetings.scala` (lines 25-50)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| bankId | String | Reference to Bank |
+| staffUser | User | Staff user participating |
+| customerUser | User | Customer user participating |
+| providerId | String | Meeting provider identifier |
+| purposeId | String | Meeting purpose identifier |
+| when | Date | Meeting date and time |
+| sessionId | String | Meeting session identifier |
+| customerToken | String | Customer authentication token |
+| staffToken | String | Staff authentication token |
+| creator | ContactDetails | Meeting creator details |
+| invitees | List[Invitee] | List of meeting invitees |
+
+### 16. ContactMedium
+**Source:** `obp-api/src/main/scala/code/meetings/Meetings.scala` (lines 11-14)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| type | String | Contact medium type |
+| value | String | Contact medium value |
+
+### 17. Consent
+**Source:** `obp-api/src/main/scala/code/consent/ConsentProvider.scala` (lines 59-195)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| consentId | String | Unique consent identifier |
+| userId | String | Reference to User |
+| secret | String | Consent secret |
+| status | String | Consent status |
+| challenge | String | Hashed challenge for verification |
+| jsonWebToken | String | JWT token for consent |
+| consumerId | String | Consumer identifier |
+| consentRequestId | String | Consent request identifier |
+| apiStandard | String | API standard (OBP, Berlin-Group, UK) |
+| apiVersion | String | API version |
+| recurringIndicator | Boolean | Recurring access indicator |
+| validUntil | Date | Consent validity end date |
+| frequencyPerDay | Int | Maximum daily access frequency |
+| usesSoFarTodayCounter | Int | Current daily usage counter |
+| usesSoFarTodayCounterUpdatedAt | Date | Counter update timestamp |
+| combinedServiceIndicator | Boolean | Combined service indicator |
+| lastActionDate | Date | Last action date |
+| creationDateTime | Date | Consent creation date |
+| statusUpdateDateTime | Date | Status update date |
+| expirationDateTime | Date | Consent expiration date |
+| transactionFromDateTime | Date | Transaction query start date |
+| transactionToDateTime | Date | Transaction query end date |
+| consentReferenceId | String | Consent reference identifier |
+| note | String | Consent notes |
+
+### 18. ProductFee
+**Source:** `obp-api/src/main/scala/code/productfee/ProductFee.scala` (lines 31-53)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| bankId | String | Reference to Bank |
+| productCode | String | Reference to Product |
+| productFeeId | String | Unique fee identifier |
+| name | String | Fee name |
+| isActive | Boolean | Fee active status |
+| moreInfo | String | Additional fee information |
+| currency | String | Fee currency |
+| amount | BigDecimal | Fee amount |
+| frequency | String | Fee frequency |
+| type | String | Fee type |
+
+### 19. AccountWebhook
+**Source:** `obp-api/src/main/scala/code/webhook/AccountWebhook.scala` (lines 35-53)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| accountWebhookId | String | Unique webhook identifier |
+| bankId | String | Reference to Bank |
+| accountId | String | Reference to BankAccount |
+| triggerName | String | Webhook trigger name |
+| url | String | Webhook URL |
+| httpMethod | String | HTTP method |
+| httpProtocol | String | HTTP protocol |
+| createdByUserId | String | Reference to User |
+| isActive | Boolean | Webhook active status |
+
+### 20. CustomerMessage
+**Source:** `obp-api/src/main/scala/code/customer/CustomerMessage.scala` (lines 16-27)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| user | User | Reference to User |
+| bankId | String | Reference to Bank |
+| message | String | Message content |
+| fromDepartment | String | Sending department |
+| fromPerson | String | Sending person |
+| transport | String | Message transport method |
+
+### 21. CustomerAttribute
+**Source:** `obp-api/src/main/scala/code/customerattribute/CustomerAttribute.scala` (lines 33-60)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| customerId | String | Reference to Customer |
+| customerAttributeId | String | Unique attribute identifier |
+| name | String | Attribute name |
+| attributeType | CustomerAttributeType | Attribute type enumeration |
+| value | String | Attribute value |
+
+### 22. BankAttribute
+**Source:** `obp-api/src/main/scala/code/bankattribute/BankAttribute.scala` (lines 31-47)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| bankId | String | Reference to Bank |
+| bankAttributeId | String | Unique attribute identifier |
+| name | String | Attribute name |
+| attributeType | BankAttributeType | Attribute type enumeration |
+| value | String | Attribute value |
+| isActive | Boolean | Attribute active status |
+
+### 23. ProductAttribute
+**Source:** `obp-api/src/main/scala/code/productattribute/ProductAttribute.scala` (lines 32-49)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| bankId | String | Reference to Bank |
+| productCode | String | Reference to Product |
+| productAttributeId | String | Unique attribute identifier |
+| name | String | Attribute name |
+| attributeType | ProductAttributeType | Attribute type enumeration |
+| value | String | Attribute value |
+| isActive | Boolean | Attribute active status |
+
+### 24. CardAttribute
+**Source:** `obp-api/src/main/scala/code/cardattribute/CardAttribute.scala` (lines 30-49)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| cardId | String | Reference to PhysicalCard |
+| cardAttributeId | String | Unique attribute identifier |
+| name | String | Attribute name |
+| attributeType | CardAttributeType | Attribute type enumeration |
+| value | String | Attribute value |
+
+### 25. AtmAttribute
+**Source:** `obp-api/src/main/scala/code/atmattribute/AtmAttribute.scala` (lines 30-49)
+
+| Attribute | Type | Description |
+|-----------|------|-------------|
+| bankId | String | Reference to Bank |
+| atmId | String | Reference to ATM |
+| atmAttributeId | String | Unique attribute identifier |
+| name | String | Attribute name |
+| attributeType | AtmAttributeType | Attribute type enumeration |
+| value | String | Attribute value |
+| isActive | Boolean | Attribute active status |
+
+## Extended Entity Relationships
+
+### Additional Relationships (Comprehensive Analysis)
+
+| From Entity | To Entity | Cardinality | Description |
+|-------------|-----------|-------------|-------------|
+| Bank | Entitlement | 1:N | One bank can grant multiple entitlements |
+| Bank | Meeting | 1:N | One bank can host multiple customer meetings |
+| Bank | BankAttribute | 1:N | One bank can have multiple attributes |
+| BankAccount | AccountWebhook | 1:N | One account can have multiple webhooks |
+| User | Entitlement | 1:N | One user can have multiple entitlements/roles |
+| User | Meeting | N:M | Users (staff/customers) can participate in multiple meetings |
+| User | Consent | 1:N | One user can have multiple consents |
+| User | CustomerMessage | 1:N | One user can receive multiple messages |
+| User | AccountWebhook | 1:N | One user can create multiple webhooks |
+| Customer | Meeting | N:M | Customers can participate in multiple meetings |
+| Customer | CustomerMessage | 1:N | One customer can receive multiple messages |
+| Customer | CustomerAttribute | 1:N | One customer can have multiple attributes |
+| Product | ProductFee | 1:N | One product can have multiple fees |
+| Product | ProductAttribute | 1:N | One product can have multiple attributes |
+| PhysicalCard | CardAttribute | 1:N | One card can have multiple attributes |
+| ATM | AtmAttribute | 1:N | One ATM can have multiple attributes |
+
+### Extended Business Rules
+
+8. **Authorization Control**: Entitlements define user permissions within specific banks
+9. **Consent Management**: Consents control API access with regulatory compliance features
+10. **Meeting Coordination**: Meetings require both staff and customer participants
+11. **Webhook Integration**: Account webhooks enable real-time event notifications
+12. **Extensible Attributes**: All major entities support custom attributes for flexibility
+13. **Fee Management**: Products can have multiple fees with different frequencies and types
+14. **Message Communication**: Customer messages enable bank-customer communication
+
+## Updated Data Sources Summary
+
+| Entity Category | Primary Source Files | Line References |
+|----------------|---------------------|-----------------|
+| Core Banking | BankingModel.scala | 30-110 |
+| Customer Management | UserModel.scala, CustomerDataModel.scala | 30-85 |
+| Products | Products.scala, PhysicalCardModel.scala | 10-92 |
+| Infrastructure | Branches.scala, Atms.scala | 16-66 |
+| Authorization | Entilement.scala, ConsentProvider.scala | 34-195 |
+| Customer Interaction | Meetings.scala, CustomerMessage.scala | 11-50 |
+| Financial Products | ProductFee.scala | 31-53 |
+| Integration | AccountWebhook.scala | 35-53 |
+| Extensible Attributes | CustomerAttribute.scala, BankAttribute.scala, ProductAttribute.scala, CardAttribute.scala, AtmAttribute.scala | 30-60 |
+| Persistence Layer | MappedBank.scala, MappedBankAccount.scala, ResourceUser.scala | 6-121 |
+
+## Comprehensive Analysis Notes
+
+- **Business Focus**: This comprehensive analysis prioritizes business-relevant entities over technical implementation details
+- **Extended Coverage**: Added 12 additional business entities covering authorization, regulatory compliance, customer interaction, integration, and extensible data domains
+- **Relationship Inference**: Relationships are derived from foreign key references, collection fields, and provider method signatures
+- **Attribute Selection**: Only business-meaningful attributes are included; technical fields like timestamps are excluded unless they impact business rules
+- **Source Traceability**: All entities include precise source file references for verification and maintenance
+- **Regulatory Compliance**: Consent entities support Berlin Group and UK Open Banking standards
+- **Extensible Design**: Attribute entities enable flexible data extension across all major business entities
+
 **Generated by:** Devin AI  
 **Analysis Completion:** 16-9-2025  
-**Total Business Entities Identified:** 13 core entities + 2 supporting entities  
-**Total Relationships Mapped:** 15 primary relationships
+**Total Business Entities Identified:** 25 core entities + 2 supporting entities  
+**Total Relationships Mapped:** 31 primary relationships
