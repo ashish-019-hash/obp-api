@@ -1113,6 +1113,329 @@ The business rules exhibit several key dependency patterns:
 ---
 
 **Analysis Completed:** 16-9-2025  
-**Total Business Rules:** 27  
-**Source Files Analyzed:** 18  
-**Categories Covered:** 8
+**Total Business Rules:** 35  
+**Source Files Analyzed:** 26  
+**Categories Covered:** 9
+
+---
+
+## BR-028: VRP Multi-Dimensional Limit Validation
+
+**Description:** Complex Variable Recurring Payment (VRP) limit validation with multi-dimensional checking across single transactions, monthly limits, yearly limits, and total amounts.
+
+**Source Location:** 
+- File: `code/snippet/VrpConsentCreation.scala`
+- Lines: 73-76
+
+**Input Variables:**
+- `max_single_amount`: BigDecimal - Maximum amount per single transaction
+- `max_monthly_amount`: BigDecimal - Maximum total amount per month
+- `max_yearly_amount`: BigDecimal - Maximum total amount per year
+- `max_total_amount`: BigDecimal - Grand total maximum amount
+- `max_number_of_monthly_transactions`: Integer - Maximum transactions per month
+- `max_number_of_yearly_transactions`: Integer - Maximum transactions per year
+- `currency`: String - Currency code for all amounts
+
+**Input Conditions:**
+- All amounts must be positive values
+- Currency must be valid ISO currency code
+- Transaction counts must be positive integers
+- Monthly/yearly limits must not exceed total limits
+
+**Calculation Logic:**
+```
+VRP_VALIDATION_RULES = {
+  1) GRAND_TOTAL_CHECK: transaction_amount ≤ max_total_amount
+  2) SINGLE_AMOUNT_CHECK: transaction_amount ≤ max_single_amount  
+  3) MONTHLY_LIMIT_CHECK: monthly_total + transaction_amount ≤ max_monthly_amount
+  4) YEARLY_LIMIT_CHECK: yearly_total + transaction_amount ≤ max_yearly_amount
+  5) MONTHLY_COUNT_CHECK: monthly_transaction_count < max_number_of_monthly_transactions
+  6) YEARLY_COUNT_CHECK: yearly_transaction_count < max_number_of_yearly_transactions
+}
+
+VALIDATION_RESULT = ALL(VRP_VALIDATION_RULES) == TRUE
+```
+
+**Output Variables:**
+- `validation_result`: Boolean - True if all limits are satisfied
+- `violated_rules`: List[String] - List of any violated limit rules
+
+**Business Context:** Ensures VRP consent requests comply with multi-dimensional spending limits for regulatory compliance and risk management in open banking scenarios.
+
+**Dependencies:** None
+
+---
+
+## BR-029: Currency Decimal Place Calculations
+
+**Description:** Currency-specific decimal place determination for different currency codes to ensure proper monetary value representation and calculations.
+
+**Source Location:** 
+- File: `code/util/Helper.scala`
+- Lines: 140-150
+
+**Input Variables:**
+- `currencyCode`: String - ISO currency code (e.g., "EUR", "JPY", "USD")
+
+**Input Conditions:**
+- Currency code must be valid 3-character ISO format
+- Currency code must be supported by the system
+
+**Calculation Logic:**
+```
+CURRENCY_DECIMAL_PLACES = {
+  CASE currencyCode OF:
+    "CZK" | "JPY" | "KRW" → 0 decimal places
+    "KWD" | "OMR" → 3 decimal places  
+    DEFAULT → 2 decimal places
+}
+
+DECIMAL_PLACES = CURRENCY_DECIMAL_PLACES[currencyCode]
+```
+
+**Output Variables:**
+- `decimal_places`: Integer - Number of decimal places for the currency
+
+**Business Context:** Critical for accurate monetary calculations, display formatting, and compliance with international currency standards. Prevents rounding errors in financial transactions.
+
+**Dependencies:** Used by BR-030 (Smallest Currency Unit Conversions)
+
+---
+
+## BR-030: Smallest Currency Unit Conversions
+
+**Description:** BigDecimal conversions between currency decimal amounts and smallest currency units (e.g., dollars to cents) using currency-specific decimal place calculations.
+
+**Source Location:** 
+- File: `code/util/Helper.scala`
+- Lines: 157-161, 130-132
+
+**Input Variables:**
+- `amount`: BigDecimal - Decimal currency amount
+- `currencyCode`: String - ISO currency code
+- `units`: Long - Smallest currency units (for reverse conversion)
+
+**Input Conditions:**
+- Amount must be non-negative
+- Currency code must be valid
+- Units must be non-negative for reverse conversion
+
+**Calculation Logic:**
+```
+// Convert decimal amount to smallest units
+DECIMAL_PLACES = getCurrencyDecimalPlaces(currencyCode)
+MULTIPLIER = 10^DECIMAL_PLACES
+SMALLEST_UNITS = (amount × MULTIPLIER).toLong
+
+// Convert smallest units back to decimal
+DECIMAL_AMOUNT = BigDecimal(units, DECIMAL_PLACES)
+```
+
+**Output Variables:**
+- `smallest_units`: Long - Amount in smallest currency units
+- `decimal_amount`: BigDecimal - Amount in decimal currency format
+
+**Business Context:** Ensures precise monetary calculations without floating-point errors. Essential for payment processing, fee calculations, and financial reporting accuracy.
+
+**Dependencies:** BR-029 (Currency Decimal Place Calculations)
+
+---
+
+## BR-031: Funds Availability Verification
+
+**Description:** PSD2-compliant funds availability verification with balance comparison logic and currency matching for account fund checks.
+
+**Source Location:** 
+- File: `code/api/v3_1_0/APIMethods310.scala`
+- Lines: 674-679
+
+**Input Variables:**
+- `account_balance`: BigDecimal - Current account balance
+- `account_currency`: String - Account currency code
+- `requested_amount`: BigDecimal - Amount to check availability for
+- `requested_currency`: String - Currency of the requested amount
+- `view_permissions`: List[String] - User's view permissions
+
+**Input Conditions:**
+- User must have CAN_QUERY_AVAILABLE_FUNDS permission
+- Requested amount must be positive
+- Both currencies must be valid ISO codes
+
+**Calculation Logic:**
+```
+FUNDS_AVAILABLE = CASE OF:
+  !hasPermission(CAN_QUERY_AVAILABLE_FUNDS) → "" (no permission)
+  account_currency ≠ requested_currency → "no" (currency mismatch)
+  account_balance.compare(requested_amount) ≥ 0 → "yes" (sufficient funds)
+  DEFAULT → "no" (insufficient funds)
+```
+
+**Output Variables:**
+- `funds_available`: String - "yes", "no", or "" (no permission)
+- `availability_request_id`: String - Correlation ID for the request
+
+**Business Context:** Critical for PSD2 Payment Initiation Service Provider (PISP) compliance. Enables third-party payment providers to verify fund availability before initiating payments.
+
+**Dependencies:** None
+
+---
+
+## BR-032: Berlin Group Currency Conversion for Fund Checks
+
+**Description:** Foreign exchange rate application for cross-currency fund availability checks in Berlin Group PSD2 implementation with currency conversion logic.
+
+**Source Location:** 
+- File: `code/api/berlin/group/v1_3/ConfirmationOfFundsServicePIISApi.scala`
+- Lines: 91-99
+
+**Input Variables:**
+- `account_balance`: BigDecimal - Account balance in account currency
+- `account_currency`: String - Account's native currency
+- `requested_amount`: BigDecimal - Amount to check in requested currency
+- `requested_currency`: String - Currency of the amount to check
+- `fx_rate`: BigDecimal - Exchange rate between currencies
+
+**Input Conditions:**
+- Both currencies must be valid ISO codes
+- FX rate must be positive
+- Account balance must be available
+- Requested amount must be positive
+
+**Calculation Logic:**
+```
+IF account_currency == requested_currency THEN:
+  CONVERTED_AMOUNT = requested_amount
+ELSE:
+  CONVERTED_AMOUNT = requested_amount × fx_rate
+END IF
+
+FUNDS_SUFFICIENT = account_balance ≥ CONVERTED_AMOUNT
+```
+
+**Output Variables:**
+- `converted_amount`: BigDecimal - Requested amount in account currency
+- `funds_sufficient`: Boolean - Whether funds are sufficient after conversion
+
+**Business Context:** Enables cross-border payment verification in compliance with Berlin Group PSD2 standards. Critical for international payment processing and multi-currency account management.
+
+**Dependencies:** BR-001 (Currency Exchange Rate Calculations), BR-031 (Funds Availability Verification)
+
+---
+
+## BR-033: ATM Minimum Withdrawal Amount Calculations
+
+**Description:** ATM minimum withdrawal amount validation and configuration for cash withdrawal services with currency-specific minimum thresholds.
+
+**Source Location:** 
+- File: `code/api/MxOF/JSONFactory_MXOF_1_0_0.scala`
+- Lines: 125
+
+**Input Variables:**
+- `withdrawal_amount`: BigDecimal - Requested withdrawal amount
+- `minimum_possible_amount`: String - ATM's minimum withdrawal limit
+- `currency`: String - Currency of the withdrawal
+
+**Input Conditions:**
+- Withdrawal amount must be positive
+- Minimum amount must be configured for the ATM
+- Currency must match ATM's supported currencies
+
+**Calculation Logic:**
+```
+MIN_AMOUNT = BigDecimal(minimum_possible_amount)
+WITHDRAWAL_VALID = withdrawal_amount ≥ MIN_AMOUNT
+
+IF !WITHDRAWAL_VALID THEN:
+  ERROR = "Withdrawal amount below minimum threshold"
+END IF
+```
+
+**Output Variables:**
+- `withdrawal_valid`: Boolean - Whether withdrawal meets minimum requirements
+- `minimum_amount`: BigDecimal - Configured minimum withdrawal amount
+
+**Business Context:** Ensures ATM operations comply with cash management policies and operational constraints. Prevents small-value transactions that may be uneconomical for ATM operations.
+
+**Dependencies:** BR-029 (Currency Decimal Place Calculations)
+
+---
+
+## BR-034: ATM 24-Hour Access Determination
+
+**Description:** Boolean logic for determining 24-hour ATM availability based on comprehensive opening hours analysis across all days of the week.
+
+**Source Location:** 
+- File: `code/api/MxOF/JSONFactory_MXOF_1_0_0.scala`
+- Lines: 101-109
+
+**Input Variables:**
+- `opening_time_monday` through `opening_time_sunday`: Option[String] - Opening times for each day
+- `closing_time_monday` through `closing_time_sunday`: Option[String] - Closing times for each day
+
+**Input Conditions:**
+- Time format must be "HH:MM" (24-hour format)
+- Opening and closing times must be provided for all days
+- Opening time must be before closing time for each day
+
+**Calculation Logic:**
+```
+DAILY_24H_CHECK = FOR each day OF week:
+  opening_time == "00:00" AND closing_time == "23:59"
+
+ACCESS_24H_INDICATOR = ALL(DAILY_24H_CHECK) == TRUE
+```
+
+**Output Variables:**
+- `access_24h_indicator`: Boolean - True if ATM operates 24/7
+
+**Business Context:** Provides accurate service availability information for customer convenience and operational planning. Critical for ATM location services and customer expectations management.
+
+**Dependencies:** None
+
+---
+
+## BR-035: Pagination Parameter Validation
+
+**Description:** Business rule validation for API pagination parameters with minimum value constraints and default value assignment for offset and limit parameters.
+
+**Source Location:** 
+- File: `code/api/util/APIUtil.scala`
+- Lines: 1104-1127
+
+**Input Variables:**
+- `offset_param`: String - Requested offset value from HTTP parameters
+- `limit_param`: String - Requested limit value from HTTP parameters
+- `minimum_offset`: Integer - Minimum allowed offset (typically 0)
+- `minimum_limit`: Integer - Minimum allowed limit (typically 1)
+
+**Input Conditions:**
+- Parameters must be valid integers when provided
+- Values must meet minimum thresholds
+- Default values must be available for missing parameters
+
+**Calculation Logic:**
+```
+VALIDATE_PAGINATION_PARAM(param_value, minimum_value, default_value):
+  IF param_value IS_PROVIDED THEN:
+    parsed_value = parseInt(param_value)
+    IF parsed_value ≥ minimum_value THEN:
+      RETURN parsed_value
+    ELSE:
+      RETURN ERROR("Parameter below minimum threshold")
+    END IF
+  ELSE:
+    RETURN default_value
+  END IF
+
+offset = VALIDATE_PAGINATION_PARAM(offset_param, 0, DEFAULT_OFFSET)
+limit = VALIDATE_PAGINATION_PARAM(limit_param, 1, DEFAULT_LIMIT)
+```
+
+**Output Variables:**
+- `validated_offset`: Integer - Validated offset value
+- `validated_limit`: Integer - Validated limit value
+- `validation_errors`: List[String] - Any validation error messages
+
+**Business Context:** Ensures API responses are properly paginated with reasonable limits to prevent system overload and maintain performance. Critical for large dataset management and API rate limiting.
+
+**Dependencies:** None

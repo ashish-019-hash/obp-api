@@ -1,271 +1,184 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg width="1600" height="1200" xmlns="http://www.w3.org/2000/svg">
+<svg width="1300" height="2700" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <style>
-      .rule-box { fill: #f8f9fa; stroke: #333; stroke-width: 2; }
-      .currency-rule { fill: #e3f2fd; }
-      .limit-rule { fill: #f3e5f5; }
-      .fee-rule { fill: #e8f5e8; }
-      .processing-rule { fill: #fff3e0; }
-      .security-rule { fill: #ffebee; }
-      .balance-rule { fill: #f1f8e9; }
-      .rate-limiting-rule { fill: #fce4ec; }
-      .analytics-rule { fill: #e0f2f1; }
-      .rule-text { font-family: Arial, sans-serif; font-size: 9px; fill: #333; }
-      .rule-title { font-family: Arial, sans-serif; font-size: 10px; font-weight: bold; fill: #333; }
-      .rule-id { font-family: Arial, sans-serif; font-size: 8px; fill: #666; }
-      .dependency-arrow { stroke: #666; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
-      .critical-dependency { stroke: #d32f2f; stroke-width: 3; }
-      .secondary-dependency { stroke: #1976d2; stroke-width: 2; stroke-dasharray: 5,5; }
-      .legend-text { font-family: Arial, sans-serif; font-size: 11px; fill: #333; }
-      .legend-title { font-family: Arial, sans-serif; font-size: 13px; font-weight: bold; fill: #333; }
-    </style>
     <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2c3e50" />
     </marker>
   </defs>
 
   <!-- Title -->
-  <text x="800" y="30" text-anchor="middle" class="legend-title" font-size="18">Business Rules Dependencies - OBP API</text>
-  <text x="800" y="50" text-anchor="middle" class="legend-text">27 Core Business Rules across 8 Categories</text>
+  <text x="650" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#2c3e50">Business Rules Dependencies - OBP API</text>
+  <text x="650" y="50" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#34495e">35 Core Business Rules across 9 Categories</text>
 
-  <!-- Currency Exchange & Conversion Rules (Row 1) -->
-  <rect x="50" y="80" width="140" height="55" class="rule-box currency-rule" />
-  <text x="55" y="92" class="rule-id">BR-001</text>
-  <text x="55" y="103" class="rule-title">FX Rate Lookup</text>
-  <text x="55" y="113" class="rule-text">fx.scala:40-57</text>
-  <text x="55" y="123" class="rule-text">Fallback rates</text>
+  <!-- Currency Exchange & Conversion Rules (BR-001 to BR-003) -->
+  <rect x="50" y="80" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="60" y="100" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-001: FX Rate Lookup</text>
+  <text x="60" y="115" font-family="Arial, sans-serif" font-size="10" fill="white">Fallback exchange rate lookup</text>
+  <text x="60" y="128" font-family="Arial, sans-serif" font-size="10" fill="white">with 14 supported currencies</text>
+  <text x="60" y="145" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">fx.scala:40-57</text>
 
-  <rect x="200" y="80" width="140" height="55" class="rule-box currency-rule" />
-  <text x="205" y="92" class="rule-id">BR-002</text>
-  <text x="205" y="103" class="rule-title">Currency Conversion</text>
-  <text x="205" y="113" class="rule-text">fx.scala:127-130</text>
-  <text x="205" y="123" class="rule-text">BigDecimal multiply</text>
+  <rect x="350" y="80" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="360" y="100" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-002: Currency Conversion</text>
+  <text x="360" y="115" font-family="Arial, sans-serif" font-size="10" fill="white">BigDecimal multiplication with</text>
+  <text x="360" y="128" font-family="Arial, sans-serif" font-size="10" fill="white">HALF_UP rounding</text>
+  <text x="360" y="145" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">fx.scala:127-130</text>
 
-  <rect x="350" y="80" width="140" height="55" class="rule-box currency-rule" />
-  <text x="355" y="92" class="rule-id">BR-003</text>
-  <text x="355" y="103" class="rule-title">Rate Resolution</text>
-  <text x="355" y="113" class="rule-text">fx.scala:151-162</text>
-  <text x="355" y="123" class="rule-text">Three-tier hierarchy</text>
+  <rect x="650" y="80" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="660" y="100" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-003: Rate Resolution</text>
+  <text x="660" y="115" font-family="Arial, sans-serif" font-size="10" fill="white">Three-tier rate resolution:</text>
+  <text x="660" y="128" font-family="Arial, sans-serif" font-size="10" fill="white">bank → cached → hardcoded</text>
+  <text x="660" y="145" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">fx.scala:151-162</text>
 
-  <rect x="500" y="80" width="140" height="55" class="rule-box currency-rule" />
-  <text x="505" y="92" class="rule-id">BR-004</text>
-  <text x="505" y="103" class="rule-title">Transaction Classification</text>
-  <text x="505" y="113" class="rule-text">MappedTransaction:285</text>
-  <text x="505" y="123" class="rule-text">Credit/debit by sign</text>
+  <!-- Transaction Limits & Controls (BR-004 to BR-006) -->
+  <rect x="50" y="180" width="280" height="80" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="5"/>
+  <text x="60" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-004: Counterparty Limits</text>
+  <text x="60" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Six-dimensional limit enforcement</text>
+  <text x="60" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">with amounts and counts</text>
+  <text x="60" y="245" font-family="Arial, sans-serif" font-size="9" fill="#fdf2f2">MappedCounterpartyLimit.scala:54-75</text>
 
-  <rect x="650" y="80" width="140" height="55" class="rule-box currency-rule" />
-  <text x="655" y="92" class="rule-id">BR-005</text>
-  <text x="655" y="103" class="rule-title">Currency Unit Convert</text>
-  <text x="655" y="113" class="rule-text">MappedTransaction:111</text>
-  <text x="655" y="123" class="rule-text">Smallest to decimal</text>
+  <!-- Fee Calculations (BR-005) -->
+  <rect x="350" y="180" width="280" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+  <text x="360" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-005: Product Fee Structure</text>
+  <text x="360" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Fee calculation with amount,</text>
+  <text x="360" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">currency, frequency</text>
+  <text x="360" y="245" font-family="Arial, sans-serif" font-size="9" fill="#fef9e7">MappedProductFeeProvider.scala:39-49</text>
 
-  <!-- Transaction Limits & Controls (Row 2) -->
-  <rect x="50" y="150" width="140" height="55" class="rule-box limit-rule" />
-  <text x="55" y="162" class="rule-id">BR-006</text>
-  <text x="55" y="173" class="rule-title">Counterparty Limits</text>
-  <text x="55" y="183" class="rule-text">MappedCounterparty:54</text>
-  <text x="55" y="193" class="rule-text">Six-dimensional</text>
+  <!-- Transaction Processing Logic (BR-006 to BR-008) -->
+  <rect x="650" y="180" width="280" height="80" fill="#27ae60" stroke="#229954" stroke-width="2" rx="5"/>
+  <text x="660" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-006: Transaction Classification</text>
+  <text x="660" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Credit/debit based on amount</text>
+  <text x="660" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">sign triggering balance events</text>
+  <text x="660" y="245" font-family="Arial, sans-serif" font-size="9" fill="#e8f5e8">MappedTransaction.scala:285-296</text>
 
-  <rect x="200" y="150" width="140" height="55" class="rule-box limit-rule" />
-  <text x="205" y="162" class="rule-id">BR-007</text>
-  <text x="205" y="173" class="rule-title">Limit Structure</text>
-  <text x="205" y="183" class="rule-text">MappedCounterparty:39</text>
-  <text x="205" y="193" class="rule-text">Multi-period limits</text>
+  <!-- Security & Access Control (BR-007 to BR-009) -->
+  <rect x="950" y="180" width="280" height="80" fill="#8e44ad" stroke="#7d3c98" stroke-width="2" rx="5"/>
+  <text x="960" y="200" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-007: Challenge Threshold</text>
+  <text x="960" y="215" font-family="Arial, sans-serif" font-size="10" fill="white">Calculation with FX conversion</text>
+  <text x="960" y="228" font-family="Arial, sans-serif" font-size="10" fill="white">default: BigDecimal(1000)</text>
+  <text x="960" y="245" font-family="Arial, sans-serif" font-size="9" fill="#f4ecf7">LocalMappedConnector.scala:152-175</text>
 
-  <rect x="350" y="150" width="140" height="55" class="rule-box limit-rule" />
-  <text x="355" y="162" class="rule-id">BR-020</text>
-  <text x="355" y="173" class="rule-title">Advanced Validation</text>
-  <text x="355" y="183" class="rule-text">APIMethods400:12614</text>
-  <text x="355" y="193" class="rule-text">Multi-dim + FX</text>
-
-  <!-- Fee Calculations (Row 2 continued) -->
-  <rect x="500" y="150" width="140" height="55" class="rule-box fee-rule" />
-  <text x="505" y="162" class="rule-id">BR-008</text>
-  <text x="505" y="173" class="rule-title">Product Fee Structure</text>
-  <text x="505" y="183" class="rule-text">ProductFeeProvider:39</text>
-  <text x="505" y="193" class="rule-text">Amount, frequency</text>
-
-  <rect x="650" y="150" width="140" height="55" class="rule-box fee-rule" />
-  <text x="655" y="162" class="rule-id">BR-024</text>
-  <text x="655" y="173" class="rule-title">Product Fee Calc</text>
-  <text x="655" y="183" class="rule-text">ProductFee:39-50</text>
-  <text x="655" y="193" class="rule-text">Fee structure calc</text>
-
-  <!-- Security & Access Control (Row 3) -->
-  <rect x="50" y="220" width="140" height="55" class="rule-box security-rule" />
-  <text x="55" y="232" class="rule-id">BR-009</text>
-  <text x="55" y="243" class="rule-title">Challenge Threshold</text>
-  <text x="55" y="253" class="rule-text">LocalMapped:152</text>
-  <text x="55" y="263" class="rule-text">FX convert (1000)</text>
-
-  <rect x="200" y="220" width="140" height="55" class="rule-box security-rule" />
-  <text x="205" y="232" class="rule-id">BR-010</text>
-  <text x="205" y="243" class="rule-title">View Access Control</text>
-  <text x="205" y="253" class="rule-text">View.scala:155</text>
-  <text x="205" y="263" class="rule-text">Transaction visibility</text>
-
-  <!-- Processing Logic (Row 3 continued) -->
-  <rect x="350" y="220" width="140" height="55" class="rule-box processing-rule" />
-  <text x="355" y="232" class="rule-id">BR-011</text>
-  <text x="355" y="243" class="rule-title">Amount Visibility</text>
-  <text x="355" y="253" class="rule-text">View.scala:155</text>
-  <text x="355" y="263" class="rule-text">View-based amount</text>
-
-  <rect x="500" y="220" width="140" height="55" class="rule-box processing-rule" />
-  <text x="505" y="232" class="rule-id">BR-012</text>
-  <text x="505" y="243" class="rule-title">Balance Visibility</text>
-  <text x="505" y="253" class="rule-text">View.scala:157</text>
-  <text x="505" y="263" class="rule-text">View-based balance</text>
-
-  <!-- Rate Limiting & API Management (Row 4) -->
-  <rect x="50" y="290" width="140" height="55" class="rule-box rate-limiting-rule" />
-  <text x="55" y="302" class="rule-id">BR-018</text>
-  <text x="55" y="313" class="rule-title">Rate Limiting</text>
-  <text x="55" y="323" class="rule-text">RateLimitingUtil:21</text>
-  <text x="55" y="333" class="rule-text">Multi-period calc</text>
-
-  <rect x="200" y="290" width="140" height="55" class="rule-box rate-limiting-rule" />
-  <text x="205" y="302" class="rule-id">BR-019</text>
-  <text x="205" y="313" class="rule-title">Aggregate Metrics</text>
-  <text x="205" y="323" class="rule-text">MappedMetrics:338</text>
-  <text x="205" y="333" class="rule-text">Count, avg, min, max</text>
-
-  <rect x="350" y="290" width="140" height="55" class="rule-box rate-limiting-rule" />
-  <text x="355" y="302" class="rule-id">BR-021</text>
-  <text x="355" y="313" class="rule-title">Consumer Counters</text>
-  <text x="355" y="323" class="rule-text">RateLimitingUtil:85</text>
-  <text x="355" y="333" class="rule-text">Redis-based tracking</text>
-
-  <rect x="500" y="290" width="140" height="55" class="rule-box analytics-rule" />
-  <text x="505" y="302" class="rule-id">BR-027</text>
-  <text x="505" y="313" class="rule-title">Payment Coverage</text>
-  <text x="505" y="323" class="rule-text">CBPIIApi:39-50</text>
-  <text x="505" y="333" class="rule-text">Liquidity validation</text>
-
-  <!-- Customer Assessment & Analytics (Row 5) -->
-  <rect x="50" y="360" width="140" height="55" class="rule-box analytics-rule" />
-  <text x="55" y="372" class="rule-id">BR-022</text>
-  <text x="55" y="383" class="rule-title">Credit Rating</text>
-  <text x="55" y="393" class="rule-text">CustomerData:49-50</text>
-  <text x="55" y="403" class="rule-text">Credit assessment</text>
-
-  <rect x="200" y="360" width="140" height="55" class="rule-box analytics-rule" />
-  <text x="205" y="372" class="rule-id">BR-023</text>
-  <text x="205" y="383" class="rule-title">Standing Orders</text>
-  <text x="205" y="393" class="rule-text">MappedStanding:33,88</text>
-  <text x="205" y="403" class="rule-text">Currency conversion</text>
-
-  <rect x="350" y="360" width="140" height="55" class="rule-box analytics-rule" />
-  <text x="355" y="372" class="rule-id">BR-025</text>
-  <text x="355" y="383" class="rule-title">API Rankings</text>
-  <text x="355" y="393" class="rule-text">MappedMetrics:428</text>
-  <text x="355" y="403" class="rule-text">Usage-based ranking</text>
-
-  <rect x="500" y="360" width="140" height="55" class="rule-box analytics-rule" />
-  <text x="505" y="372" class="rule-id">BR-026</text>
-  <text x="505" y="383" class="rule-title">Consumer Rankings</text>
-  <text x="505" y="393" class="rule-text">MappedMetrics:509</text>
-  <text x="505" y="403" class="rule-text">Consumer usage rank</text>
-
-  <!-- Balance & Aggregation Logic (Row 6) -->
-  <rect x="50" y="430" width="120" height="50" class="rule-box balance-rule" />
-  <text x="55" y="442" class="rule-id">BR-013</text>
-  <text x="55" y="452" class="rule-title">Current Balance</text>
-  <text x="55" y="462" class="rule-text">Helper:1089</text>
-  <text x="55" y="472" class="rule-text">Credit - debit</text>
-
-  <rect x="180" y="430" width="120" height="50" class="rule-box balance-rule" />
-  <text x="185" y="442" class="rule-id">BR-014</text>
-  <text x="185" y="452" class="rule-title">Available Balance</text>
-  <text x="185" y="462" class="rule-text">Helper:1097</text>
-  <text x="185" y="472" class="rule-text">Current - held</text>
-
-  <rect x="310" y="430" width="120" height="50" class="rule-box balance-rule" />
-  <text x="315" y="442" class="rule-id">BR-015</text>
-  <text x="315" y="452" class="rule-title">Credit Balance</text>
-  <text x="315" y="462" class="rule-text">Helper:1105</text>
-  <text x="315" y="472" class="rule-text">Sum credits</text>
-
-  <rect x="440" y="430" width="120" height="50" class="rule-box balance-rule" />
-  <text x="445" y="442" class="rule-id">BR-016</text>
-  <text x="445" y="452" class="rule-title">Debit Balance</text>
-  <text x="445" y="462" class="rule-text">Helper:1113</text>
-  <text x="445" y="472" class="rule-text">Sum debits</text>
-
-  <rect x="570" y="430" width="120" height="50" class="rule-box balance-rule" />
-  <text x="575" y="442" class="rule-id">BR-017</text>
-  <text x="575" y="452" class="rule-title">Balance Aggregation</text>
-  <text x="575" y="462" class="rule-text">Helper:1121</text>
-  <text x="575" y="472" class="rule-text">Multi-account</text>
-
-  <!-- Dependencies -->
-  <!-- Critical Dependencies (Red solid lines) -->
-  <line x1="190" y1="107" x2="200" y2="107" class="dependency-arrow critical-dependency" />
-  <line x1="340" y1="107" x2="350" y2="107" class="dependency-arrow critical-dependency" />
-  <line x1="270" y1="135" x2="120" y2="150" class="dependency-arrow critical-dependency" />
-  <line x1="270" y1="135" x2="420" y2="150" class="dependency-arrow critical-dependency" />
-  <line x1="270" y1="135" x2="120" y2="220" class="dependency-arrow critical-dependency" />
-  <line x1="270" y1="135" x2="570" y2="290" class="dependency-arrow critical-dependency" />
-  <line x1="190" y1="135" x2="420" y2="150" class="dependency-arrow critical-dependency" />
-  <line x1="190" y1="135" x2="570" y2="290" class="dependency-arrow critical-dependency" />
-
-  <!-- Secondary Dependencies (Blue dashed lines) -->
-  <line x1="570" y1="135" x2="110" y2="430" class="dependency-arrow secondary-dependency" />
-  <line x1="570" y1="135" x2="240" y2="430" class="dependency-arrow secondary-dependency" />
-  <line x1="570" y1="135" x2="370" y2="430" class="dependency-arrow secondary-dependency" />
-  <line x1="570" y1="135" x2="500" y2="430" class="dependency-arrow secondary-dependency" />
-  <line x1="570" y1="135" x2="630" y2="430" class="dependency-arrow secondary-dependency" />
-  <line x1="270" y1="275" x2="270" y2="360" class="dependency-arrow secondary-dependency" />
-  <line x1="270" y1="345" x2="420" y2="360" class="dependency-arrow secondary-dependency" />
-  <line x1="270" y1="345" x2="570" y2="360" class="dependency-arrow secondary-dependency" />
-  <line x1="120" y1="345" x2="420" y2="290" class="dependency-arrow secondary-dependency" />
-  <line x1="270" y1="275" x2="270" y2="360" class="dependency-arrow secondary-dependency" />
+  <!-- New Business Rules BR-028 to BR-035 -->
+  
+  <!-- BR-028: VRP Multi-Dimensional Limit Validation -->
+  <rect x="50" y="2200" width="280" height="80" fill="#ff6b6b" stroke="#c0392b" stroke-width="2" rx="5"/>
+  <text x="60" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-028: VRP Multi-Dimensional Limits</text>
+  <text x="60" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">Complex VRP limit validation with</text>
+  <text x="60" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">multi-dimensional checking</text>
+  <text x="60" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#ffecec">VrpConsentCreation.scala:73-76</text>
+  
+  <!-- BR-029: Currency Decimal Place Calculations -->
+  <rect x="350" y="2200" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="360" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-029: Currency Decimal Places</text>
+  <text x="360" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">Currency-specific decimal place</text>
+  <text x="360" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">determination</text>
+  <text x="360" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">Helper.scala:140-150</text>
+  
+  <!-- BR-030: Smallest Currency Unit Conversions -->
+  <rect x="650" y="2200" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="660" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-030: Currency Unit Conversions</text>
+  <text x="660" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">BigDecimal conversions between</text>
+  <text x="660" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">currency units</text>
+  <text x="660" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">Helper.scala:157-161</text>
+  
+  <!-- BR-031: Funds Availability Verification -->
+  <rect x="950" y="2200" width="280" height="80" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="5"/>
+  <text x="960" y="2220" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-031: Funds Availability</text>
+  <text x="960" y="2235" font-family="Arial, sans-serif" font-size="10" fill="white">PSD2-compliant funds verification</text>
+  <text x="960" y="2248" font-family="Arial, sans-serif" font-size="10" fill="white">with currency matching</text>
+  <text x="960" y="2265" font-family="Arial, sans-serif" font-size="9" fill="#fdf2f2">APIMethods310.scala:674-679</text>
+  
+  <!-- BR-032: Berlin Group Currency Conversion -->
+  <rect x="50" y="2300" width="280" height="80" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="5"/>
+  <text x="60" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-032: Berlin Group FX</text>
+  <text x="60" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">Cross-currency fund availability</text>
+  <text x="60" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">with FX conversion</text>
+  <text x="60" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#e8f4fd">ConfirmationOfFundsServicePIISApi.scala:91-99</text>
+  
+  <!-- BR-033: ATM Minimum Withdrawal -->
+  <rect x="350" y="2300" width="280" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+  <text x="360" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-033: ATM Minimum Amount</text>
+  <text x="360" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">Minimum withdrawal amount</text>
+  <text x="360" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">validation for ATMs</text>
+  <text x="360" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#fef9e7">JSONFactory_MXOF_1_0_0.scala:125</text>
+  
+  <!-- BR-034: ATM 24-Hour Access -->
+  <rect x="650" y="2300" width="280" height="80" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="5"/>
+  <text x="660" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-034: ATM 24-Hour Access</text>
+  <text x="660" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">24-hour availability determination</text>
+  <text x="660" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">based on opening hours</text>
+  <text x="660" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#fef9e7">JSONFactory_MXOF_1_0_0.scala:101-109</text>
+  
+  <!-- BR-035: Pagination Parameter Validation -->
+  <rect x="950" y="2300" width="280" height="80" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="5"/>
+  <text x="960" y="2320" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="white">BR-035: Pagination Validation</text>
+  <text x="960" y="2335" font-family="Arial, sans-serif" font-size="10" fill="white">API pagination parameter</text>
+  <text x="960" y="2348" font-family="Arial, sans-serif" font-size="10" fill="white">validation with constraints</text>
+  <text x="960" y="2365" font-family="Arial, sans-serif" font-size="9" fill="#f4ecf7">APIUtil.scala:1104-1127</text>
+  
+  <!-- Dependencies for new rules -->
+  
+  <!-- BR-029 → BR-030 -->
+  <path d="M 630 2240 L 650 2240" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- BR-001 → BR-032 -->
+  <path d="M 330 140 Q 400 1000 190 2300" stroke="#e74c3c" stroke-width="2" fill="none" marker-end="url(#arrowhead)" stroke-dasharray="5,5"/>
+  
+  <!-- BR-031 → BR-032 -->
+  <path d="M 950 2240 Q 500 2250 330 2340" stroke="#e74c3c" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  
+  <!-- BR-029 → BR-033 -->
+  <path d="M 490 2280 L 490 2300" stroke="#2c3e50" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
 
   <!-- Legend -->
-  <rect x="850" y="80" width="320" height="400" fill="none" stroke="#333" stroke-width="1" />
-  <text x="1010" y="100" text-anchor="middle" class="legend-title">Legend</text>
+  <text x="50" y="2420" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#2c3e50">Legend:</text>
   
-  <!-- Rule Categories -->
-  <text x="860" y="125" class="legend-text" font-weight="bold">Rule Categories:</text>
-  <rect x="860" y="135" width="15" height="12" class="currency-rule" />
-  <text x="880" y="145" class="legend-text">Currency Exchange & Conversion</text>
-  <rect x="860" y="150" width="15" height="12" class="limit-rule" />
-  <text x="880" y="160" class="legend-text">Transaction Limits & Controls</text>
-  <rect x="860" y="165" width="15" height="12" class="fee-rule" />
-  <text x="880" y="175" class="legend-text">Fee Calculations</text>
-  <rect x="860" y="180" width="15" height="12" class="processing-rule" />
-  <text x="880" y="190" class="legend-text">Transaction Processing Logic</text>
-  <rect x="860" y="195" width="15" height="12" class="security-rule" />
-  <text x="880" y="205" class="legend-text">Security & Access Control</text>
-  <rect x="860" y="210" width="15" height="12" class="balance-rule" />
-  <text x="880" y="220" class="legend-text">Balance & Aggregation Logic</text>
-  <rect x="860" y="225" width="15" height="12" class="rate-limiting-rule" />
-  <text x="880" y="235" class="legend-text">Rate Limiting & API Management</text>
-  <rect x="860" y="240" width="15" height="12" class="analytics-rule" />
-  <text x="880" y="250" class="legend-text">Customer Assessment & Analytics</text>
+  <!-- Currency Exchange & Conversion -->
+  <rect x="50" y="2430" width="20" height="15" fill="#3498db" stroke="#2980b9" stroke-width="1"/>
+  <text x="80" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Currency Exchange & Conversion</text>
+  
+  <!-- Transaction Limits & Controls -->
+  <rect x="280" y="2430" width="20" height="15" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+  <text x="310" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Transaction Limits & Controls</text>
+  
+  <!-- VRP Payment Controls -->
+  <rect x="500" y="2430" width="20" height="15" fill="#ff6b6b" stroke="#c0392b" stroke-width="1"/>
+  <text x="530" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">VRP Payment Controls</text>
+  
+  <!-- Fee Calculations -->
+  <rect x="650" y="2430" width="20" height="15" fill="#f39c12" stroke="#e67e22" stroke-width="1"/>
+  <text x="680" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Fee Calculations</text>
+  
+  <!-- Transaction Processing Logic -->
+  <rect x="800" y="2430" width="20" height="15" fill="#27ae60" stroke="#229954" stroke-width="1"/>
+  <text x="830" y="2442" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Transaction Processing Logic</text>
+  
+  <!-- Security & Access Control -->
+  <rect x="50" y="2450" width="20" height="15" fill="#8e44ad" stroke="#7d3c98" stroke-width="1"/>
+  <text x="80" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Security & Access Control</text>
+  
+  <!-- Balance & Aggregation Logic -->
+  <rect x="280" y="2450" width="20" height="15" fill="#16a085" stroke="#138d75" stroke-width="1"/>
+  <text x="310" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Balance & Aggregation Logic</text>
+  
+  <!-- Rate Limiting & API Management -->
+  <rect x="500" y="2450" width="20" height="15" fill="#34495e" stroke="#2c3e50" stroke-width="1"/>
+  <text x="530" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Rate Limiting & API Management</text>
+  
+  <!-- Customer Assessment & Analytics -->
+  <rect x="650" y="2450" width="20" height="15" fill="#d35400" stroke="#ba4a00" stroke-width="1"/>
+  <text x="680" y="2462" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Customer Assessment & Analytics</text>
 
-  <!-- Dependency Types -->
-  <text x="860" y="275" class="legend-text" font-weight="bold">Dependency Types:</text>
-  <line x1="860" y1="285" x2="890" y2="285" class="critical-dependency" />
-  <text x="895" y="289" class="legend-text">Critical Dependencies</text>
-  <line x1="860" y1="305" x2="890" y2="305" class="secondary-dependency" />
-  <text x="895" y="309" class="legend-text">Secondary Dependencies</text>
-
-  <!-- Key Flows -->
-  <text x="860" y="335" class="legend-text" font-weight="bold">Key Dependency Flows:</text>
-  <text x="860" y="350" class="legend-text">• FX Rates → Currency Conversion</text>
-  <text x="860" y="365" class="legend-text">• Currency → Limits & Validation</text>
-  <text x="860" y="380" class="legend-text">• Metrics → Rankings & Analytics</text>
-  <text x="860" y="395" class="legend-text">• Rate Limiting → Consumer Control</text>
-  <text x="860" y="410" class="legend-text">• Transaction Class → Balances</text>
-
-  <!-- Summary -->
-  <text x="860" y="440" class="legend-text" font-weight="bold">Analysis Summary:</text>
-  <text x="860" y="455" class="legend-text">• 27 Core Business Rules</text>
-  <text x="860" y="470" class="legend-text">• 8 Major Categories</text>
-  <text x="860" y="485" class="legend-text">• 18 Source Files Analyzed</text>
-
-  <!-- Date -->
-  <text x="800" y="580" text-anchor="middle" class="legend-text">Analysis Date: 16-9-2025</text>
+  <!-- Analysis Summary -->
+  <text x="50" y="2480" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Key Insights:</text>
+  <text x="50" y="2500" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Core FX handling supports all monetary calculations (BR-001, BR-002, BR-003)</text>
+  <text x="50" y="2520" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Risk management through multi-dimensional limits (BR-004, BR-005, BR-006, BR-028)</text>
+  <text x="50" y="2540" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Transaction processing with precise amount handling (BR-007, BR-008, BR-029, BR-030)</text>
+  <text x="50" y="2560" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Comprehensive security and access controls (BR-009, BR-010, BR-011)</text>
+  <text x="50" y="2580" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Advanced rate limiting and API management (BR-012, BR-013, BR-014, BR-035)</text>
+  <text x="50" y="2600" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• Customer assessment and analytics capabilities (BR-015 through BR-027)</text>
+  <text x="50" y="2620" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• PSD2 compliance and funds verification (BR-031, BR-032)</text>
+  <text x="50" y="2640" font-family="Arial, sans-serif" font-size="12" fill="#34495e">• ATM service management and availability (BR-033, BR-034)</text>
+  
+  <text x="50" y="2670" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Analysis Date: 16-9-2025</text>
+  <text x="50" y="2690" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Total Rules: 35 across 9 categories</text>
 </svg>
