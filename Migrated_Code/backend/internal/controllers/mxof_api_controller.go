@@ -10,15 +10,18 @@ import (
 type MxOFAPIController struct {
 	accountService services.AccountService
 	balanceService services.BalanceService
+	paymentService services.PaymentService
 }
 
 func NewMxOFAPIController(
 	accountService services.AccountService,
 	balanceService services.BalanceService,
+	paymentService services.PaymentService,
 ) *MxOFAPIController {
 	return &MxOFAPIController{
 		accountService: accountService,
 		balanceService: balanceService,
+		paymentService: paymentService,
 	}
 }
 
@@ -65,4 +68,86 @@ func (c *MxOFAPIController) GetAccountTransactions(ctx *gin.Context) {
 	}
 	
 	ctx.JSON(http.StatusOK, gin.H{"transactions": transactions})
+}
+func (c *MxOFAPIController) GetAccount(ctx *gin.Context) {
+	accountID := ctx.Param("accountId")
+	
+	account := map[string]interface{}{
+		"accountId": accountID,
+		"currency":  "MXN",
+		"name":      "Sample Account",
+	}
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (c *MxOFAPIController) CreatePayment(ctx *gin.Context) {
+	var paymentRequest map[string]interface{}
+	if err := ctx.ShouldBindJSON(&paymentRequest); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	paymentID, err := c.paymentService.InitiatePayment(ctx.Request.Context(), paymentRequest)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	
+	ctx.JSON(http.StatusCreated, gin.H{
+		"paymentId":         paymentID,
+		"transactionStatus": "RCVD",
+	})
+}
+
+func (c *MxOFAPIController) GetPayment(ctx *gin.Context) {
+	paymentID := ctx.Param("paymentId")
+	
+	payment := map[string]interface{}{
+		"paymentId":         paymentID,
+		"transactionStatus": "ACSC",
+	}
+	ctx.JSON(http.StatusOK, payment)
+}
+
+func (c *MxOFAPIController) CreateConsent(ctx *gin.Context) {
+	var consentData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&consentData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	consentID := "consent-123"
+	ctx.JSON(http.StatusCreated, gin.H{
+		"consentId":     consentID,
+		"consentStatus": "received",
+	})
+}
+
+func (c *MxOFAPIController) GetConsent(ctx *gin.Context) {
+	consentID := ctx.Param("consentId")
+	
+	consent := map[string]interface{}{
+		"consentId":     consentID,
+		"consentStatus": "valid",
+	}
+	ctx.JSON(http.StatusOK, consent)
+}
+
+func (c *MxOFAPIController) DeleteConsent(ctx *gin.Context) {
+	consentID := ctx.Param("consentId")
+	
+	ctx.JSON(http.StatusOK, gin.H{
+		"message":   "Consent deleted",
+		"consentId": consentID,
+	})
+}
+
+func (c *MxOFAPIController) GetConsentStatus(ctx *gin.Context) {
+	consentID := ctx.Param("consentId")
+	
+	status := map[string]interface{}{
+		"consentId":     consentID,
+		"consentStatus": "valid",
+	}
+	ctx.JSON(http.StatusOK, status)
 }

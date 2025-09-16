@@ -156,3 +156,30 @@ func (c *BerlinGroupController) GetConsentStatus(ctx *gin.Context) {
 		"consentStatus": "valid",
 	})
 }
+
+func (c *BerlinGroupController) CreateConsent(ctx *gin.Context) {
+	var consentData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&consentData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	consentData["consentId"] = "consent-123"
+	consentData["consentStatus"] = "received"
+	ctx.JSON(http.StatusCreated, consentData)
+}
+
+func (c *BerlinGroupController) GetConsent(ctx *gin.Context) {
+	consentID := ctx.Param("consentId")
+	consent := map[string]interface{}{
+		"consentId": consentID,
+		"access": map[string]interface{}{
+			"accounts": []string{},
+			"balances": []string{},
+			"transactions": []string{},
+		},
+		"recurringIndicator": false,
+		"validUntil": "2024-12-31",
+		"frequencyPerDay": 4,
+	}
+	ctx.JSON(http.StatusOK, consent)
+}

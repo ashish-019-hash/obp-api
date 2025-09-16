@@ -143,3 +143,86 @@ func (c *AustralianCDRController) GetCustomerDetail(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, response)
 }
+
+func (c *AustralianCDRController) GetAccountTransactionDetail(ctx *gin.Context) {
+	accountID := ctx.Param("accountId")
+	transactionID := ctx.Param("transactionId")
+	
+	response := map[string]interface{}{
+		"data": map[string]interface{}{
+			"accountId":     accountID,
+			"transactionId": transactionID,
+			"status":        "POSTED",
+		},
+		"links": map[string]interface{}{
+			"self": "/cds-au/v1/banking/accounts/" + accountID + "/transactions/" + transactionID,
+		},
+		"meta": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (c *AustralianCDRController) GetAccountDirectDebits(ctx *gin.Context) {
+	accountID := ctx.Param("accountId")
+	
+	directDebits := []map[string]interface{}{}
+	
+	response := map[string]interface{}{
+		"data": map[string]interface{}{
+			"directDebits": directDebits,
+		},
+		"links": map[string]interface{}{
+			"self": "/cds-au/v1/banking/accounts/" + accountID + "/direct-debits",
+		},
+		"meta": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (c *AustralianCDRController) GetAccountScheduledPayments(ctx *gin.Context) {
+	accountID := ctx.Param("accountId")
+	
+	scheduledPayments := []map[string]interface{}{}
+	
+	response := map[string]interface{}{
+		"data": map[string]interface{}{
+			"scheduledPayments": scheduledPayments,
+		},
+		"links": map[string]interface{}{
+			"self": "/cds-au/v1/banking/accounts/" + accountID + "/payments/scheduled",
+		},
+		"meta": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (c *AustralianCDRController) GetProducts(ctx *gin.Context) {
+	products := []map[string]interface{}{}
+	
+	response := map[string]interface{}{
+		"data": map[string]interface{}{
+			"products": products,
+		},
+		"links": map[string]interface{}{
+			"self": "/cds-au/v1/banking/products",
+		},
+		"meta": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, response)
+}
+
+func (c *AustralianCDRController) GetProductDetail(ctx *gin.Context) {
+	productID := ctx.Param("productId")
+	
+	response := map[string]interface{}{
+		"data": map[string]interface{}{
+			"productId": productID,
+			"name":      "Sample Product",
+		},
+		"links": map[string]interface{}{
+			"self": "/cds-au/v1/banking/products/" + productID,
+		},
+		"meta": map[string]interface{}{},
+	}
+	ctx.JSON(http.StatusOK, response)
+}

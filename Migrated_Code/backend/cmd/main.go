@@ -100,6 +100,7 @@ func main() {
 	mxofAPIController := controllers.NewMxOFAPIController(
 		accountService,
 		balanceService,
+		paymentService,
 	)
 	
 	additionalController := controllers.NewAdditionalRegulatoryController(
@@ -108,8 +109,23 @@ func main() {
 		paymentService,
 	)
 	
+	obpV3Controller := controllers.NewOBPv3Controller(
+		bankService,
+		accountService,
+		customerService,
+	)
+	
+	obpV4Controller := controllers.NewOBPv4Controller(
+		bankService,
+		accountService,
+		transactionService,
+		customerService,
+	)
+	
 	router := routes.SetupRoutes(
 		obpController,
+		obpV3Controller,
+		obpV4Controller,
 		berlinGroupController,
 		ukOpenBankingController,
 		australianCDRController,
@@ -122,14 +138,17 @@ func main() {
 	
 	log.Println("Starting OBP API Backend server on :8080")
 	log.Println("Available endpoints:")
-	log.Println("- OBP Core API v5.1.0: /obp/v5.1.0/*")
-	log.Println("- Berlin Group PSD2 v1.3: /berlin-group/v1.3/*")
-	log.Println("- UK Open Banking v3.1.0: /open-banking/v3.1.0/*")
-	log.Println("- Australian CDR v1.0.0: /cds-au/v1.0.0/*")
-	log.Println("- Bahrain OBF v1.0.0: /bahrain-obf/v1.0.0/*")
-	log.Println("- Polish API v2.1.1.1: /polish-api/v2.1.1.1/*")
-	log.Println("- STET API v1.4: /stet/v1.4/*")
-	log.Println("- MxOF API v1.0.0: /mxof/v1.0.0/*")
+	log.Println("- OBP Core API v3.1.0: /obp/v3.1.0/* (~200+ endpoints)")
+	log.Println("- OBP Core API v4.0.0: /obp/v4.0.0/* (~150+ endpoints)")
+	log.Println("- OBP Core API v5.1.0: /obp/v5.1.0/* (~200+ endpoints)")
+	log.Println("- Berlin Group PSD2 v1.3: /berlin-group/v1.3/* (~20+ endpoints)")
+	log.Println("- UK Open Banking v3.1.0: /open-banking/v3.1.0/* (~60+ endpoints)")
+	log.Println("- Australian CDR v1.0.0: /cds-au/v1.0.0/* (~20+ endpoints)")
+	log.Println("- Bahrain OBF v1.0.0: /bahrain-obf/v1.0.0/* (~80+ endpoints)")
+	log.Println("- Polish API v2.1.1.1: /polish-api/v2.1.1.1/* (~10+ endpoints)")
+	log.Println("- STET API v1.4: /stet/v1.4/* (~10+ endpoints)")
+	log.Println("- MxOF API v1.0.0: /mxof/v1.0.0/* (~10+ endpoints)")
+	log.Printf("Total endpoints: ~625+")
 	
 	if err := router.Run(":8080"); err != nil {
 		log.Fatal("Failed to start server:", err)

@@ -15,6 +15,7 @@ type Invitee struct {
 
 type Meeting struct {
 	BankId        string         `json:"bank_id"`
+	MeetingId     string         `json:"meeting_id"`
 	StaffUser     User           `json:"staff_user"`
 	CustomerUser  User           `json:"customer_user"`
 	ProviderId    string         `json:"provider_id"`
