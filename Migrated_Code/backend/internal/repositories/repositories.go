@@ -16,14 +16,6 @@ type BankRepository interface {
 	List(ctx context.Context, limit, offset int) ([]*models.Bank, error)
 }
 
-type BankAccountRepository interface {
-	Create(ctx context.Context, account *models.BankAccount) error
-	GetByID(ctx context.Context, accountID string) (*models.BankAccount, error)
-	GetByBankID(ctx context.Context, bankID string) ([]*models.BankAccount, error)
-	Update(ctx context.Context, account *models.BankAccount) error
-	Delete(ctx context.Context, accountID string) error
-	GetAccountsByRouting(ctx context.Context, scheme, address string) ([]*models.BankAccount, error)
-}
 
 type TransactionRepository interface {
 	Create(ctx context.Context, transaction *models.Transaction) error

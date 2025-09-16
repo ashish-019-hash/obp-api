@@ -7,6 +7,7 @@ import (
 
 	"obp-api-backend/internal/models"
 	"obp-api-backend/internal/repositories"
+	"obp-api-backend/internal/utils"
 )
 
 type TransactionService interface {
@@ -15,6 +16,8 @@ type TransactionService interface {
 	ValidateTransaction(ctx context.Context, transaction *models.Transaction) error
 	ApplyBusinessRules(ctx context.Context, transaction *models.Transaction) error
 	CalculateNewBalance(ctx context.Context, accountID string, transactionAmount *big.Float) (*big.Float, error)
+	GetTransactionsByAccountID(ctx context.Context, accountID string, limit, offset int) ([]*models.Transaction, error)
+	GetTransactionByID(ctx context.Context, transactionID string) (*models.Transaction, error)
 }
 
 type TransactionClassification struct {
@@ -139,15 +142,15 @@ func (s *transactionService) categorizeTransaction(transaction *models.Transacti
 	
 	description := *transaction.Description
 	
-	if contains(description, "ATM") {
+	if utils.Contains(description, "ATM") {
 		return "ATM_WITHDRAWAL"
-	} else if contains(description, "TRANSFER") {
+	} else if utils.Contains(description, "TRANSFER") {
 		return "TRANSFER"
-	} else if contains(description, "PAYMENT") {
+	} else if utils.Contains(description, "PAYMENT") {
 		return "PAYMENT"
-	} else if contains(description, "DEPOSIT") {
+	} else if utils.Contains(description, "DEPOSIT") {
 		return "DEPOSIT"
-	} else if contains(description, "FEE") {
+	} else if utils.Contains(description, "FEE") {
 		return "FEE"
 	}
 	
@@ -181,14 +184,11 @@ func (s *transactionService) requiresApproval(ctx context.Context, transaction *
 	return false
 }
 
-func parseAmount(amountStr string) *big.Float {
-	amount, ok := new(big.Float).SetString(amountStr)
-	if !ok {
-		return big.NewFloat(0)
-	}
-	return amount
+
+func (s *transactionService) GetTransactionsByAccountID(ctx context.Context, accountID string, limit, offset int) ([]*models.Transaction, error) {
+	return s.transactionRepo.GetByAccountID(ctx, accountID, limit, offset)
 }
 
-func contains(s, substr string) bool {
-	return len(s) >= len(substr) && s[:len(substr)] == substr
+func (s *transactionService) GetTransactionByID(ctx context.Context, transactionID string) (*models.Transaction, error) {
+	return s.transactionRepo.GetByID(ctx, transactionID)
 }

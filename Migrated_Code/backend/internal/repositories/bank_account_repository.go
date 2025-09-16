@@ -9,6 +9,15 @@ import (
 	"obp-api-backend/pkg/db"
 )
 
+type BankAccountRepository interface {
+	Create(ctx context.Context, account *models.BankAccount) error
+	GetByID(ctx context.Context, id string) (*models.BankAccount, error)
+	GetByBankID(ctx context.Context, bankID string, limit, offset int) ([]*models.BankAccount, error)
+	Update(ctx context.Context, account *models.BankAccount) error
+	Delete(ctx context.Context, id string) error
+	GetAccountsByRouting(ctx context.Context, routingScheme, routingAddress string) ([]*models.BankAccount, error)
+}
+
 type bankAccountRepository struct {
 	db *sql.DB
 }
@@ -66,7 +75,7 @@ func (r *bankAccountRepository) GetByID(ctx context.Context, accountID string) (
 	return account, nil
 }
 
-func (r *bankAccountRepository) GetByBankID(ctx context.Context, bankID string) ([]*models.BankAccount, error) {
+func (r *bankAccountRepository)	GetByBankID(ctx context.Context, bankID string, limit, offset int) ([]*models.BankAccount, error) {
 	query := `SELECT account_id, bank_id, label, number, type, balance_currency, balance_amount 
 			  FROM bank_accounts WHERE bank_id = ?`
 	
