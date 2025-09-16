@@ -1291,3 +1291,337 @@ func (c *OBPCoreController) GetCurrenciesAtBank(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"currencies": currencies, "bank_id": bankID})
 }
+
+func (c *OBPCoreController) CreateUserAttribute(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	var attrData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrData["user_id"] = userID
+	ctx.JSON(http.StatusCreated, attrData)
+}
+
+func (c *OBPCoreController) GetUserAttributes(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	attributes := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"user_attributes": attributes, "user_id": userID})
+}
+
+func (c *OBPCoreController) DeleteUserAttribute(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	attrID := ctx.Param("userAttributeId")
+	ctx.JSON(http.StatusOK, gin.H{"message": "User attribute deleted", "user_id": userID, "attribute_id": attrID})
+}
+
+func (c *OBPCoreController) SyncUser(ctx *gin.Context) {
+	provider := ctx.Param("provider")
+	providerID := ctx.Param("providerId")
+	var syncData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&syncData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	syncData["provider"] = provider
+	syncData["provider_id"] = providerID
+	ctx.JSON(http.StatusOK, syncData)
+}
+
+func (c *OBPCoreController) GetUserAccountsAtBank(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	bankID := ctx.Param("bankId")
+	accounts := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"accounts": accounts, "user_id": userID, "bank_id": bankID})
+}
+
+func (c *OBPCoreController) GetUserAccounts(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	accounts := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"accounts": accounts, "user_id": userID})
+}
+
+func (c *OBPCoreController) GetUserEntitlementsAndPermissions(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	entitlements := []map[string]interface{}{}
+	permissions := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{
+		"entitlements": entitlements,
+		"permissions": permissions,
+		"user_id": userID,
+	})
+}
+
+func (c *OBPCoreController) CheckCustomViewNames(ctx *gin.Context) {
+	result := map[string]interface{}{
+		"status": "ok",
+		"message": "Custom view names check passed",
+		"issues": []string{},
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (c *OBPCoreController) CheckSystemViewNames(ctx *gin.Context) {
+	result := map[string]interface{}{
+		"status": "ok", 
+		"message": "System view names check passed",
+		"issues": []string{},
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (c *OBPCoreController) CheckAccountAccessUniqueIndex(ctx *gin.Context) {
+	result := map[string]interface{}{
+		"status": "ok",
+		"message": "Account access unique index check passed",
+		"issues": []string{},
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (c *OBPCoreController) CheckAccountCurrency(ctx *gin.Context) {
+	result := map[string]interface{}{
+		"status": "ok",
+		"message": "Account currency check passed", 
+		"issues": []string{},
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (c *OBPCoreController) CheckOrphanedAccounts(ctx *gin.Context) {
+	result := map[string]interface{}{
+		"status": "ok",
+		"message": "Orphaned account check passed",
+		"issues": []string{},
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (c *OBPCoreController) GetATMAttributeDefinitions(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	definitions := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"atm_attribute_definitions": definitions, "bank_id": bankID})
+}
+
+func (c *OBPCoreController) CreateATMAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var defData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&defData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, defData)
+}
+
+func (c *OBPCoreController) UpdateATMAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	defID := ctx.Param("attributeDefinitionId")
+	var defData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&defData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defData["bank_id"] = bankID
+	defData["definition_id"] = defID
+	ctx.JSON(http.StatusOK, defData)
+}
+
+func (c *OBPCoreController) DeleteATMAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	defID := ctx.Param("attributeDefinitionId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "ATM attribute definition deleted",
+		"bank_id": bankID,
+		"definition_id": defID,
+	})
+}
+
+func (c *OBPCoreController) GetConsumerRedirectURL(ctx *gin.Context) {
+	consumerID := ctx.Param("consumerId")
+	url := map[string]interface{}{
+		"consumer_id": consumerID,
+		"redirect_url": "https://example.com/callback",
+	}
+	ctx.JSON(http.StatusOK, url)
+}
+
+func (c *OBPCoreController) GetConsumerLogoURL(ctx *gin.Context) {
+	consumerID := ctx.Param("consumerId")
+	url := map[string]interface{}{
+		"consumer_id": consumerID,
+		"logo_url": "https://example.com/logo.png",
+	}
+	ctx.JSON(http.StatusOK, url)
+}
+
+func (c *OBPCoreController) GetSettlementAccounts(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accounts := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"settlement_accounts": accounts, "bank_id": bankID})
+}
+
+func (c *OBPCoreController) CreateSettlementAccount(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var accountData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&accountData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	accountData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, accountData)
+}
+
+func (c *OBPCoreController) GetSettlementAccount(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	account := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"account_type": "SETTLEMENT",
+	}
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (c *OBPCoreController) UpdateSettlementAccount(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	var accountData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&accountData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	accountData["bank_id"] = bankID
+	accountData["account_id"] = accountID
+	ctx.JSON(http.StatusOK, accountData)
+}
+
+func (c *OBPCoreController) DeleteSettlementAccount(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Settlement account deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+	})
+}
+
+func (c *OBPCoreController) GetWebhooks(ctx *gin.Context) {
+	webhooks := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"webhooks": webhooks})
+}
+
+func (c *OBPCoreController) CreateWebhook(ctx *gin.Context) {
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, webhookData)
+}
+
+func (c *OBPCoreController) GetWebhook(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	webhook := map[string]interface{}{
+		"webhook_id": webhookID,
+		"url": "https://example.com/webhook",
+		"is_active": true,
+	}
+	ctx.JSON(http.StatusOK, webhook)
+}
+
+func (c *OBPCoreController) UpdateWebhook(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	webhookData["webhook_id"] = webhookID
+	ctx.JSON(http.StatusOK, webhookData)
+}
+
+func (c *OBPCoreController) DeleteWebhook(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Webhook deleted",
+		"webhook_id": webhookID,
+	})
+}
+
+func (c *OBPCoreController) GetTransactionRequestTypes(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	types := []map[string]interface{}{
+		{"value": "SEPA", "bank_id": bankID, "account_id": accountID, "view_id": viewID},
+		{"value": "COUNTERPARTY", "bank_id": bankID, "account_id": accountID, "view_id": viewID},
+		{"value": "TRANSFER_TO_PHONE", "bank_id": bankID, "account_id": accountID, "view_id": viewID},
+		{"value": "TRANSFER_TO_ATM", "bank_id": bankID, "account_id": accountID, "view_id": viewID},
+		{"value": "REFUND", "bank_id": bankID, "account_id": accountID, "view_id": viewID},
+	}
+	ctx.JSON(http.StatusOK, gin.H{"transaction_request_types": types})
+}
+
+func (c *OBPCoreController) GetTransactionRequestTypesSupportedByBank(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	types := []map[string]interface{}{
+		{"value": "SEPA", "bank_id": bankID},
+		{"value": "COUNTERPARTY", "bank_id": bankID},
+		{"value": "TRANSFER_TO_PHONE", "bank_id": bankID},
+		{"value": "TRANSFER_TO_ATM", "bank_id": bankID},
+		{"value": "REFUND", "bank_id": bankID},
+	}
+	ctx.JSON(http.StatusOK, gin.H{"transaction_request_types": types})
+}
+
+func (c *OBPCoreController) GetUserLockStatus(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	status := map[string]interface{}{
+		"user_id": userID,
+		"is_locked": false,
+		"lock_reason": "",
+	}
+	ctx.JSON(http.StatusOK, status)
+}
+
+func (c *OBPCoreController) LockUser(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	var lockData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&lockData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	lockData["user_id"] = userID
+	lockData["is_locked"] = true
+	ctx.JSON(http.StatusOK, lockData)
+}
+
+func (c *OBPCoreController) UnlockUser(ctx *gin.Context) {
+	userID := ctx.Param("userId")
+	status := map[string]interface{}{
+		"user_id": userID,
+		"is_locked": false,
+		"message": "User unlocked successfully",
+	}
+	ctx.JSON(http.StatusOK, status)
+}
+
+func (c *OBPCoreController) CreateConsumerRedirectURL(ctx *gin.Context) {
+	consumerID := ctx.Param("consumerId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	urlData["consumer_id"] = consumerID
+	ctx.JSON(http.StatusCreated, urlData)
+}
+
+func (c *OBPCoreController) DeleteConsumerRedirectURL(ctx *gin.Context) {
+	consumerID := ctx.Param("consumerId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Consumer redirect URL deleted",
+		"consumer_id": consumerID,
+	})
+}

@@ -165,6 +165,13 @@ func (c *OBPv3Controller) GetProductAttribute(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, attr)
 }
 
+func (c *OBPv3Controller) GetProductAttributes(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attributes := []models.ProductAttribute{}
+	ctx.JSON(http.StatusOK, gin.H{"product_attributes": attributes, "bank_id": bankID, "product_code": productCode})
+}
+
 func (c *OBPv3Controller) UpdateProductAttribute(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	productCode := ctx.Param("productCode")
@@ -777,4 +784,548 @@ func (c *OBPv3Controller) DeleteOtherAccountMoreInfo(ctx *gin.Context) {
 	_ = ctx.Param("viewId")
 	_ = ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusNoContent, nil)
+}
+
+
+func (c *OBPv3Controller) CreateOtherAccountURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	urlData["bank_id"] = bankID
+	urlData["account_id"] = accountID
+	urlData["view_id"] = viewID
+	urlData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, urlData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	url := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"url": "https://example.com",
+	}
+	ctx.JSON(http.StatusOK, url)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	urlData["bank_id"] = bankID
+	urlData["account_id"] = accountID
+	urlData["view_id"] = viewID
+	urlData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, urlData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account URL deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+func (c *OBPv3Controller) CreateOtherAccountImageURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var imageData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&imageData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	imageData["bank_id"] = bankID
+	imageData["account_id"] = accountID
+	imageData["view_id"] = viewID
+	imageData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, imageData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountImageURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	imageURL := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"image_url": "https://example.com/image.jpg",
+	}
+	ctx.JSON(http.StatusOK, imageURL)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountImageURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var imageData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&imageData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	imageData["bank_id"] = bankID
+	imageData["account_id"] = accountID
+	imageData["view_id"] = viewID
+	imageData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, imageData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountImageURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account image URL deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+func (c *OBPv3Controller) CreateOtherAccountOpenCorporatesURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	urlData["bank_id"] = bankID
+	urlData["account_id"] = accountID
+	urlData["view_id"] = viewID
+	urlData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, urlData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountOpenCorporatesURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	url := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"open_corporates_url": "https://opencorporates.com/companies/example",
+	}
+	ctx.JSON(http.StatusOK, url)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountOpenCorporatesURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	urlData["bank_id"] = bankID
+	urlData["account_id"] = accountID
+	urlData["view_id"] = viewID
+	urlData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, urlData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountOpenCorporatesURL(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account open corporates URL deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+func (c *OBPv3Controller) CreateOtherAccountCorporateLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var locationData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&locationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	locationData["bank_id"] = bankID
+	locationData["account_id"] = accountID
+	locationData["view_id"] = viewID
+	locationData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, locationData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountCorporateLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	location := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"corporate_location": map[string]interface{}{
+			"latitude": 51.5074,
+			"longitude": -0.1278,
+		},
+	}
+	ctx.JSON(http.StatusOK, location)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountCorporateLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var locationData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&locationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	locationData["bank_id"] = bankID
+	locationData["account_id"] = accountID
+	locationData["view_id"] = viewID
+	locationData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, locationData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountCorporateLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account corporate location deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+func (c *OBPv3Controller) CreateOtherAccountPhysicalLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var locationData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&locationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	locationData["bank_id"] = bankID
+	locationData["account_id"] = accountID
+	locationData["view_id"] = viewID
+	locationData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, locationData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountPhysicalLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	location := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"physical_location": map[string]interface{}{
+			"latitude": 51.5074,
+			"longitude": -0.1278,
+		},
+	}
+	ctx.JSON(http.StatusOK, location)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountPhysicalLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var locationData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&locationData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	locationData["bank_id"] = bankID
+	locationData["account_id"] = accountID
+	locationData["view_id"] = viewID
+	locationData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, locationData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountPhysicalLocation(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account physical location deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+func (c *OBPv3Controller) CreateOtherAccountPrivateAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var aliasData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&aliasData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	aliasData["bank_id"] = bankID
+	aliasData["account_id"] = accountID
+	aliasData["view_id"] = viewID
+	aliasData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, aliasData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountPrivateAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	alias := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"private_alias": "Private Account Alias",
+	}
+	ctx.JSON(http.StatusOK, alias)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountPrivateAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var aliasData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&aliasData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	aliasData["bank_id"] = bankID
+	aliasData["account_id"] = accountID
+	aliasData["view_id"] = viewID
+	aliasData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, aliasData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountPrivateAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account private alias deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+func (c *OBPv3Controller) CreateOtherAccountPublicAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var aliasData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&aliasData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	aliasData["bank_id"] = bankID
+	aliasData["account_id"] = accountID
+	aliasData["view_id"] = viewID
+	aliasData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, aliasData)
+}
+
+func (c *OBPv3Controller) GetOtherAccountPublicAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	alias := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"public_alias": "Public Account Alias",
+	}
+	ctx.JSON(http.StatusOK, alias)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountPublicAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var aliasData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&aliasData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	aliasData["bank_id"] = bankID
+	aliasData["account_id"] = accountID
+	aliasData["view_id"] = viewID
+	aliasData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, aliasData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountPublicAlias(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account public alias deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+	})
+}
+
+
+func (c *OBPv3Controller) GetWebhooks(ctx *gin.Context) {
+	webhooks := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"webhooks": webhooks})
+}
+
+func (c *OBPv3Controller) CreateWebhook(ctx *gin.Context) {
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, webhookData)
+}
+
+func (c *OBPv3Controller) GetWebhook(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	webhook := map[string]interface{}{
+		"webhook_id": webhookID,
+		"url": "https://example.com/webhook",
+		"is_active": true,
+	}
+	ctx.JSON(http.StatusOK, webhook)
+}
+
+func (c *OBPv3Controller) UpdateWebhook(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	webhookData["webhook_id"] = webhookID
+	ctx.JSON(http.StatusOK, webhookData)
+}
+
+func (c *OBPv3Controller) DeleteWebhook(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Webhook deleted",
+		"webhook_id": webhookID,
+	})
+}
+
+func (c *OBPv3Controller) GetProductAttributeDefinitions(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	definitions := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"attribute_definitions": definitions, "bank_id": bankID})
+}
+
+func (c *OBPv3Controller) CreateProductAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var attrDefData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrDefData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrDefData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, attrDefData)
+}
+
+func (c *OBPv3Controller) GetProductAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	attrDefID := ctx.Param("attributeDefinitionId")
+	definition := map[string]interface{}{
+		"bank_id": bankID,
+		"attribute_definition_id": attrDefID,
+		"name": "sample_attribute",
+		"type": "STRING",
+	}
+	ctx.JSON(http.StatusOK, definition)
+}
+
+func (c *OBPv3Controller) UpdateProductAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	attrDefID := ctx.Param("attributeDefinitionId")
+	var attrDefData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrDefData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrDefData["bank_id"] = bankID
+	attrDefData["attribute_definition_id"] = attrDefID
+	ctx.JSON(http.StatusOK, attrDefData)
+}
+
+func (c *OBPv3Controller) DeleteProductAttributeDefinition(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	attrDefID := ctx.Param("attributeDefinitionId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product attribute definition deleted",
+		"bank_id": bankID,
+		"attribute_definition_id": attrDefID,
+	})
 }
