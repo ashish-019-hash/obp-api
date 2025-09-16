@@ -199,6 +199,91 @@ The OBP-API uses the Lift web framework with a sitemap-based navigation system. 
 - **Navigates To**: External SDK repositories and documentation
 - **Condition/Notes**: SDK showcase and download links
 
+### 24. VRP Consent Request Screen
+- **Screen ID**: VRP_CONSENT_REQUEST
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/webapp/confirm-vrp-consent-request.html` + `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/VrpConsentCreation.scala`
+- **Trigger**: Access to `/confirm-vrp-consent-request` with VRP_CONSENT_ID parameter (requires login)
+- **Navigates To**:
+  - VRP_CONSENT_CONFIRM (on "Confirm" button with form validation)
+  - HOME (on "Deny" button)
+  - VRP_CONSENT_REQUEST (on validation errors)
+- **Condition/Notes**: Variable Recurring Payments consent with account selection, amount limits, and frequency settings
+
+### 25. VRP Consent Confirmation Screen
+- **Screen ID**: VRP_CONSENT_CONFIRM
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/webapp/confirm-vrp-consent.html` + `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/VrpConsentCreation.scala`
+- **Trigger**: Redirect from VRP_CONSENT_REQUEST with VRP_CONSENT_ID
+- **Navigates To**:
+  - EXTERNAL_REDIRECT (on successful OTP validation)
+  - VRP_CONSENT_CONFIRM (on OTP validation failure)
+- **Condition/Notes**: OTP validation for VRP consent confirmation
+
+### 26. Admin Login Screen
+- **Screen ID**: ADMIN_LOGIN
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/model/dataAccess/Admin.scala` (loginXhtml method)
+- **Trigger**: Access to admin areas requiring Admin.loginFirst authentication
+- **Navigates To**:
+  - ADMIN_AREA (on successful admin login via POST /admin_mgt/login)
+  - ADMIN_LOGIN (on authentication failure)
+  - ADMIN_PASSWORD_RESET (via "recover password" link)
+- **Condition/Notes**: Separate admin authentication system with custom login form
+
+### 27. User Information Display Screen
+- **Screen ID**: USER_INFO_DISPLAY
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/UserInformation.scala`
+- **Trigger**: Access to user information display functionality
+- **Navigates To**: Various navigation based on user data and form interactions
+- **Condition/Notes**: Displays user details form with username, email, provider, and token information (requires login)
+
+### 28. OpenID Connect Provider Selection
+- **Screen ID**: OIDC_PROVIDER_SELECT
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/OpenIDConnectSnippet.scala`
+- **Trigger**: OpenID Connect button display on login screen (conditional)
+- **Navigates To**: External OpenID Connect provider authentication
+- **Condition/Notes**: Buttons shown only if client ID configured and no login_challenge present
+
+### 29. Enhanced Payment OTP Screen
+- **Screen ID**: PAYMENT_OTP_ENHANCED
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/PaymentOTP.scala` + existing otp.html
+- **Trigger**: Payment or transaction_request flow requiring OTP validation
+- **Navigates To**:
+  - PAYMENT_SUCCESS (on successful OTP validation for payment flow)
+  - TRANSACTION_SUCCESS (on successful OTP validation for transaction_request flow)
+  - PAYMENT_OTP_ENHANCED (on validation failure with error message)
+- **Condition/Notes**: Enhanced flow differentiation between payment and transaction_request validation
+
+### 30. OAuth Completion Redirect Screen
+- **Screen ID**: OAUTH_COMPLETION_REDIRECT
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/OAuthWorkedThanks.scala`
+- **Trigger**: OAuth completion with mobile app redirect URL
+- **Navigates To**:
+  - External mobile application (on valid redirect URL)
+  - OAUTH_THANKS (on invalid redirect URL with error message)
+- **Condition/Notes**: URL validation and automatic redirection for mobile app OAuth completion
+
+### 31. Navigation Menu System
+- **Screen ID**: NAV_MENU_SYSTEM
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/Nav.scala`
+- **Trigger**: Dynamic menu generation based on sitemap and authentication state
+- **Navigates To**: Various screens based on menu item selection and access permissions
+- **Condition/Notes**: Dynamic menu visibility based on user authentication and role permissions
+
+### 32. WebUI Enhanced Features
+- **Screen ID**: WEBUI_ENHANCED
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/scala/code/snippet/WebUI.scala`
+- **Trigger**: Various UI enhancement features (language switching, external content loading)
+- **Navigates To**:
+  - Current page reload (on language change)
+  - External content display (on vendor support URL loading)
+- **Condition/Notes**: UI enhancement features including language switching and external content integration
+
+### 33. Berlin Group Consent Redirect URI Screen
+- **Screen ID**: BG_CONSENT_REDIRECT_URI
+- **Source**: `/home/ubuntu/repos/obp-api-ashish/00.phase-1-input/OBP-API-develop/obp-api/src/main/webapp/confirm-bg-consent-request-redirect-uri.html`
+- **Trigger**: Final step in Berlin Group consent flow after SCA completion
+- **Navigates To**: External TPP application (automatic redirect)
+- **Condition/Notes**: Final redirect step in Berlin Group PSD2 consent flow
+
 ## Navigation Patterns
 
 ### Authentication Flow
@@ -218,9 +303,33 @@ The OBP-API uses the Lift web framework with a sitemap-based navigation system. 
 1. External app → BG_CONSENT_REQUEST → BG_CONSENT_SCA (if needed) → External app
 2. User → CONSENTS → CONSENTS (AJAX updates)
 
+### VRP Consent Management Flow
+1. External app → VRP_CONSENT_REQUEST → VRP_CONSENT_CONFIRM → OTP validation → External app
+2. VRP_CONSENT_REQUEST → Form validation → Error display (on validation failure)
+
+### Enhanced Payment Authorization Flow
+1. Payment initiation → PAYMENT_OTP_ENHANCED → PAYMENT_SUCCESS (payment flow)
+2. Transaction request → PAYMENT_OTP_ENHANCED → TRANSACTION_SUCCESS (transaction_request flow)
+3. OTP validation failure → PAYMENT_OTP_ENHANCED (with error message)
+
+### Admin Authentication Flow
+1. Admin area access → ADMIN_LOGIN → ADMIN_AREA (on success)
+2. Admin authentication failure → ADMIN_LOGIN (with error)
+3. Admin password recovery → ADMIN_PASSWORD_RESET
+
+### User Information Management Flow
+1. User → USER_INFO_DISPLAY → Display user details (username, email, provider, tokens)
+
+### OpenID Connect Integration Flow
+1. LOGIN → OIDC_PROVIDER_SELECT → External provider → Authentication → Return to application
+
+### Enhanced OAuth Completion Flow
+1. OAuth success → OAUTH_COMPLETION_REDIRECT → Mobile app (valid URL)
+2. OAuth success → OAUTH_THANKS → Error display (invalid URL)
+
 ### Administrative Flows
 1. User → TERMS_CONDITIONS → HOME
-2. User → PRIVACY_POLICY → HOME
+2. User → PRIVACY_POLICY → HOME (with enhanced reset functionality)
 3. User → CREATE_ACCOUNT → CREATE_ACCOUNT_SUCCESS
 
 ## Key Navigation Components
@@ -244,7 +353,10 @@ The OBP-API uses the Lift web framework with a sitemap-based navigation system. 
 - **User role checks**: Admin vs regular user flows
 - **Authentication state**: Logged in vs anonymous flows
 - **Validation results**: Success vs error flows
-- **Feature flags**: Hydra integration, Keycloak integration
+- **Feature flags**: Hydra integration, Keycloak integration, OpenID Connect configuration
+- **Flow differentiation**: Payment vs transaction_request OTP flows
+- **URL validation**: Mobile app redirect URL validation in OAuth flows
+- **Menu visibility**: Dynamic navigation menu based on authentication and permissions
 
 ## Error Handling
 
@@ -260,5 +372,33 @@ The OBP-API uses the Lift web framework with a sitemap-based navigation system. 
 - Session management for authenticated users
 - Account ownership validation for consent flows
 
+## Enhanced Navigation Components
+
+### VRP Consent Management
+- **VrpConsentCreation.scala**: Handles Variable Recurring Payments consent creation and validation
+- **Form validation**: Account selection, amount limits, frequency settings
+- **OTP integration**: Two-step consent process with OTP confirmation
+
+### Admin Authentication System
+- **Admin.scala**: Separate admin authentication system independent of regular user auth
+- **Custom login form**: Admin-specific login form with recovery options
+- **Role-based access**: Admin.loginFirst protection for administrative areas
+
+### OpenID Connect Integration
+- **OpenIDConnectSnippet.scala**: Conditional OIDC button display
+- **Configuration-based**: Buttons shown only when client ID configured
+- **External provider integration**: Seamless integration with external OIDC providers
+
+### Enhanced Payment Flows
+- **PaymentOTP.scala**: Differentiated handling for payment vs transaction_request flows
+- **Flow-specific validation**: Different success paths based on flow type
+- **Error handling**: Comprehensive error display and retry mechanisms
+
+### Dynamic UI Components
+- **Nav.scala**: Dynamic menu generation with authentication-based visibility
+- **WebUI.scala**: Language switching and external content integration
+- **User information display**: Comprehensive user data presentation
+
 ---
-*Analysis completed on 16-9-2025 for ashish-019-hash/obp-api repository*
+*Comprehensive analysis completed on 16-9-2025 for ashish-019-hash/obp-api repository*
+*Total screens analyzed: 33 (increased from 23 to include all missing navigation flows)*
