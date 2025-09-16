@@ -1232,3 +1232,15 @@ func (c *BahrainOBFController) GetDomesticFutureDatedPaymentDetailsNew(ctx *gin.
 	}
 	ctx.JSON(http.StatusOK, details)
 }
+
+
+func (c *BahrainOBFController) PatchDomesticFutureDatedPaymentNew(ctx *gin.Context) {
+	paymentID := ctx.Param("DomesticFutureDatedPaymentId")
+	var patchData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&patchData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	patchData["payment_id"] = paymentID
+	ctx.JSON(http.StatusOK, patchData)
+}

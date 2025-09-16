@@ -1235,6 +1235,201 @@ func (c *OBPv3Controller) DeleteOtherAccountPublicAlias(ctx *gin.Context) {
 	})
 }
 
+func (c *OBPv3Controller) GetWebhooksNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	webhooks := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"webhooks": webhooks, "bank_id": bankID})
+}
+
+func (c *OBPv3Controller) CreateWebhookNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	webhookData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, webhookData)
+}
+
+func (c *OBPv3Controller) GetWebhookNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	webhookID := ctx.Param("webhookId")
+	webhook := map[string]interface{}{
+		"bank_id": bankID,
+		"webhook_id": webhookID,
+		"url": "https://example.com/webhook",
+		"is_active": true,
+	}
+	ctx.JSON(http.StatusOK, webhook)
+}
+
+func (c *OBPv3Controller) UpdateWebhookNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	webhookID := ctx.Param("webhookId")
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	webhookData["bank_id"] = bankID
+	webhookData["webhook_id"] = webhookID
+	ctx.JSON(http.StatusOK, webhookData)
+}
+
+func (c *OBPv3Controller) DeleteWebhookNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	webhookID := ctx.Param("webhookId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Webhook deleted",
+		"bank_id": bankID,
+		"webhook_id": webhookID,
+	})
+}
+
+func (c *OBPv3Controller) CreateProductAttributeV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	var attrData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrData["bank_id"] = bankID
+	attrData["product_code"] = productCode
+	ctx.JSON(http.StatusCreated, attrData)
+}
+
+func (c *OBPv3Controller) GetProductAttributesV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attributes := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"product_attributes": attributes, "bank_id": bankID, "product_code": productCode})
+}
+
+func (c *OBPv3Controller) UpdateProductAttributeV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attrID := ctx.Param("attributeId")
+	var attrData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&attrData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	attrData["bank_id"] = bankID
+	attrData["product_code"] = productCode
+	attrData["attribute_id"] = attrID
+	ctx.JSON(http.StatusOK, attrData)
+}
+
+func (c *OBPv3Controller) DeleteProductAttributeV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	productCode := ctx.Param("productCode")
+	attrID := ctx.Param("attributeId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product attribute deleted",
+		"bank_id": bankID,
+		"product_code": productCode,
+		"attribute_id": attrID,
+	})
+}
+
+
+func (c *OBPv3Controller) GetWebhooksV3(ctx *gin.Context) {
+	webhooks := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"webhooks": webhooks})
+}
+
+func (c *OBPv3Controller) CreateWebhookV3(ctx *gin.Context) {
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusCreated, webhookData)
+}
+
+func (c *OBPv3Controller) GetWebhookV3(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	webhook := map[string]interface{}{
+		"webhook_id": webhookID,
+		"url": "https://example.com/webhook",
+		"is_active": true,
+	}
+	ctx.JSON(http.StatusOK, webhook)
+}
+
+func (c *OBPv3Controller) UpdateWebhookV3(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	var webhookData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	webhookData["webhook_id"] = webhookID
+	ctx.JSON(http.StatusOK, webhookData)
+}
+
+func (c *OBPv3Controller) DeleteWebhookV3(ctx *gin.Context) {
+	webhookID := ctx.Param("webhookId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Webhook deleted",
+		"webhook_id": webhookID,
+	})
+}
+
+func (c *OBPv3Controller) GetProductAttributeDefinitionsV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	definitions := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"product_attribute_definitions": definitions, "bank_id": bankID})
+}
+
+func (c *OBPv3Controller) CreateProductAttributeDefinitionV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var defData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&defData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, defData)
+}
+
+func (c *OBPv3Controller) GetProductAttributeDefinitionV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	defID := ctx.Param("attributeDefinitionId")
+	definition := map[string]interface{}{
+		"bank_id": bankID,
+		"attribute_definition_id": defID,
+		"name": "sample_attribute",
+		"type": "STRING",
+	}
+	ctx.JSON(http.StatusOK, definition)
+}
+
+func (c *OBPv3Controller) UpdateProductAttributeDefinitionV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	defID := ctx.Param("attributeDefinitionId")
+	var defData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&defData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	defData["bank_id"] = bankID
+	defData["attribute_definition_id"] = defID
+	ctx.JSON(http.StatusOK, defData)
+}
+
+func (c *OBPv3Controller) DeleteProductAttributeDefinitionV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	defID := ctx.Param("attributeDefinitionId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Product attribute definition deleted",
+		"bank_id": bankID,
+		"attribute_definition_id": defID,
+	})
+}
+
 
 func (c *OBPv3Controller) GetWebhooks(ctx *gin.Context) {
 	webhooks := []map[string]interface{}{}
@@ -1278,6 +1473,7 @@ func (c *OBPv3Controller) DeleteWebhook(ctx *gin.Context) {
 		"webhook_id": webhookID,
 	})
 }
+
 
 func (c *OBPv3Controller) GetProductAttributeDefinitions(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
@@ -1331,49 +1527,65 @@ func (c *OBPv3Controller) DeleteProductAttributeDefinition(ctx *gin.Context) {
 	})
 }
 
-func (c *OBPv3Controller) CreateProductAttributeV3(ctx *gin.Context) {
+func (c *OBPv3Controller) CreateOtherAccountURLV3(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
-	productCode := ctx.Param("productCode")
-	var attrData map[string]interface{}
-	if err := ctx.ShouldBindJSON(&attrData); err != nil {
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	attrData["bank_id"] = bankID
-	attrData["product_code"] = productCode
-	ctx.JSON(http.StatusCreated, attrData)
+	urlData["bank_id"] = bankID
+	urlData["account_id"] = accountID
+	urlData["view_id"] = viewID
+	urlData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusCreated, urlData)
 }
 
-func (c *OBPv3Controller) GetProductAttributesV3(ctx *gin.Context) {
+func (c *OBPv3Controller) GetOtherAccountURLV3(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
-	productCode := ctx.Param("productCode")
-	attributes := []map[string]interface{}{}
-	ctx.JSON(http.StatusOK, gin.H{"product_attributes": attributes, "bank_id": bankID, "product_code": productCode})
-}
-
-func (c *OBPv3Controller) UpdateProductAttributeV3(ctx *gin.Context) {
-	bankID := ctx.Param("bankId")
-	productCode := ctx.Param("productCode")
-	attrID := ctx.Param("attributeId")
-	var attrData map[string]interface{}
-	if err := ctx.ShouldBindJSON(&attrData); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	attrData["bank_id"] = bankID
-	attrData["product_code"] = productCode
-	attrData["attribute_id"] = attrID
-	ctx.JSON(http.StatusOK, attrData)
-}
-
-func (c *OBPv3Controller) DeleteProductAttributeV3(ctx *gin.Context) {
-	bankID := ctx.Param("bankId")
-	productCode := ctx.Param("productCode")
-	attrID := ctx.Param("attributeId")
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Product attribute deleted",
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	url := map[string]interface{}{
 		"bank_id": bankID,
-		"product_code": productCode,
-		"attribute_id": attrID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
+		"url": "https://example.com",
+	}
+	ctx.JSON(http.StatusOK, url)
+}
+
+func (c *OBPv3Controller) UpdateOtherAccountURLV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	var urlData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&urlData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	urlData["bank_id"] = bankID
+	urlData["account_id"] = accountID
+	urlData["view_id"] = viewID
+	urlData["other_account_id"] = otherAccountID
+	ctx.JSON(http.StatusOK, urlData)
+}
+
+func (c *OBPv3Controller) DeleteOtherAccountURLV3(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	viewID := ctx.Param("viewId")
+	otherAccountID := ctx.Param("otherAccountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Other account URL deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+		"view_id": viewID,
+		"other_account_id": otherAccountID,
 	})
 }

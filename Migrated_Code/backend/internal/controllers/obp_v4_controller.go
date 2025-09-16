@@ -1162,3 +1162,73 @@ func (c *OBPv4Controller) AnswerRefundTransactionRequestChallengeNew(ctx *gin.Co
 	challengeData["transaction_request_id"] = transactionRequestID
 	ctx.JSON(http.StatusOK, challengeData)
 }
+
+
+func (c *OBPv4Controller) GetSettlementAccountsNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accounts := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"settlement_accounts": accounts, "bank_id": bankID})
+}
+
+func (c *OBPv4Controller) CreateSettlementAccountNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var accountData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&accountData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	accountData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, accountData)
+}
+
+func (c *OBPv4Controller) GetSettlementAccountNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	account := map[string]interface{}{
+		"bank_id": bankID,
+		"account_id": accountID,
+		"account_type": "SETTLEMENT",
+		"status": "ACTIVE",
+	}
+	ctx.JSON(http.StatusOK, account)
+}
+
+func (c *OBPv4Controller) UpdateSettlementAccountNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	var accountData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&accountData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	accountData["bank_id"] = bankID
+	accountData["account_id"] = accountID
+	ctx.JSON(http.StatusOK, accountData)
+}
+
+func (c *OBPv4Controller) DeleteSettlementAccountNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	accountID := ctx.Param("accountId")
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Settlement account deleted",
+		"bank_id": bankID,
+		"account_id": accountID,
+	})
+}
+
+func (c *OBPv4Controller) CreateTransactionRequestTypeNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	var typeData map[string]interface{}
+	if err := ctx.ShouldBindJSON(&typeData); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	typeData["bank_id"] = bankID
+	ctx.JSON(http.StatusCreated, typeData)
+}
+
+func (c *OBPv4Controller) GetTransactionRequestTypesNew(ctx *gin.Context) {
+	bankID := ctx.Param("bankId")
+	types := []map[string]interface{}{}
+	ctx.JSON(http.StatusOK, gin.H{"transaction_request_types": types, "bank_id": bankID})
+}
