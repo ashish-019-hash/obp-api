@@ -1,37 +1,38 @@
-# Business Rules Analysis - Open Bank Project API
+# Business Rules Analysis for Open Bank Project API
 
 **Analysis Date:** 16-9-2025  
-**Repository:** ashish-019-hash/obp-api  
-**Codebase Version:** OBP-API-develop  
-**Analysis Scope:** Complete business calculation rules and decision logic extraction
+**Total Rules Identified:** 27  
+**Categories:** 8
 
 ## Executive Summary
 
-This document provides a comprehensive analysis of business-level calculation rules and decision logic within the Open Bank Project API codebase. The analysis identifies **17 core business rules** across **6 major categories**, focusing on financial formulas, eligibility criteria, transaction processing logic, and tier-based calculations that drive the banking platform's core functionality.
+This document provides a comprehensive analysis of business-level calculation rules within the Open Bank Project (OBP) API codebase. The analysis focuses on identifying core business logic including financial formulas, eligibility criteria, transaction processing rules, regulatory compliance calculations, rate limiting algorithms, statistical analytics, and customer assessment systems.
 
-## Business Rule Categories
+## Business Rules Categories
 
-### 1. Currency Exchange & Conversion Rules (5 rules)
-### 2. Transaction Limits & Controls (4 rules)  
+### 1. Currency Exchange & Conversion (5 rules)
+### 2. Transaction Limits & Controls (3 rules)  
 ### 3. Fee Calculations (2 rules)
-### 4. Transaction Processing Logic (3 rules)
+### 4. Transaction Processing Logic (2 rules)
 ### 5. Security & Access Control (2 rules)
-### 6. Balance & Aggregation Logic (1 rule)
+### 6. Balance & Aggregation Logic (5 rules)
+### 7. Rate Limiting & API Management (4 rules)
+### 8. Customer Assessment & Analytics (4 rules)
 
 ---
 
 ## Detailed Business Rules
 
-### Category 1: Currency Exchange & Conversion Rules
+### 1. Currency Exchange & Conversion
 
-#### BR-001: Fallback Exchange Rate Matrix
-**Rule Name:** Multi-Currency Fallback Exchange Rate Lookup  
-**Description:** Provides hardcoded exchange rates for 14 supported currencies when real-time rates are unavailable  
-**Source Location:** `/obp-api/src/main/scala/code/fx/fx.scala` (lines 40-57)  
+#### **BR-001: Fallback Exchange Rate Matrix**
+**Description:** Multi-currency fallback exchange rate lookup providing hardcoded rates for 14 supported currencies when real-time rates are unavailable.
+
+**Source Location:** `code/fx/fx.scala` (lines 40-57)
 
 **Input Variables:**
-- `fromCurrency: String` - Source currency code (ISO format)
-- `toCurrency: String` - Target currency code (ISO format)
+- `fromCurrency`: String (source currency code)
+- `toCurrency`: String (target currency code)
 
 **Input Conditions:**
 - Both currencies must be in supported list: GBP, EUR, USD, JPY, AED, INR, KRW, XAF, JOD, ILS, AUD, HKD, MXN, XBT
@@ -50,701 +51,1068 @@ ELSE
 ```
 
 **Output Variables:**
-- `Option[Double]` - Exchange rate or None if not found
+- `exchangeRate`: Option[BigDecimal] (exchange rate or None)
 
-**Business Context:** Ensures currency conversion capability even when external FX services are unavailable, critical for transaction processing continuity.
+**Business Context:** Ensures currency conversion capability even when external rate services are unavailable, maintaining system reliability for international transactions.
 
-**Dependencies:** None (base rule)
+**Dependencies:** None (foundational rule)
 
----
+#### **BR-002: Currency Conversion Formula**
+**Description:** Precise currency conversion using BigDecimal multiplication with HALF_UP rounding mode for financial accuracy.
 
-#### BR-002: Currency Conversion with Rounding
-**Rule Name:** BigDecimal Currency Conversion Formula  
-**Description:** Converts monetary amounts between currencies using exchange rates with banker's rounding  
-**Source Location:** `/obp-api/src/main/scala/code/fx/fx.scala` (lines 127-130)  
+**Source Location:** `code/fx/fx.scala` (lines 127-130)
 
 **Input Variables:**
-- `amount: BigDecimal` - Amount to convert
-- `exchangeRate: Option[Double]` - Exchange rate from BR-001 or external source
+- `amount`: BigDecimal (amount to convert)
+- `exchangeRate`: BigDecimal (conversion rate)
 
 **Input Conditions:**
-- Amount must be valid BigDecimal
-- Exchange rate must be Some(value), not None
+- Positive amount value
+- Valid exchange rate (> 0)
 
 **Calculation Logic:**
 ```
-result = amount * exchangeRate.get
-return result.setScale(2, BigDecimal.RoundingMode.HALF_UP)
+convertedAmount = amount * exchangeRate
+roundedAmount = convertedAmount.setScale(2, BigDecimal.HALF_UP)
+return roundedAmount
 ```
 
 **Output Variables:**
-- `BigDecimal` - Converted amount rounded to 2 decimal places
+- `convertedAmount`: BigDecimal (converted amount with 2 decimal precision)
 
-**Business Context:** Core conversion formula ensuring consistent rounding across all currency operations.
+**Business Context:** Provides accurate currency conversion for international transactions with proper rounding for financial compliance.
 
-**Dependencies:** BR-001 (exchange rates), BR-003 (rate resolution)
+**Dependencies:** BR-001 (FX Rate Lookup)
+
+#### **BR-003: Three-Tier Rate Resolution**
+**Description:** Hierarchical exchange rate resolution system with bank-specific rates, cached rates, and hardcoded fallback rates.
+
+**Source Location:** `code/fx/fx.scala` (lines 151-162)
+
+**Input Variables:**
+- `bankId`: BankId (bank identifier)
+- `fromCurrency`: String (source currency)
+- `toCurrency`: String (target currency)
+
+**Input Conditions:**
+- Valid bank identifier
+- Valid currency codes
+
+**Calculation Logic:**
+```
+// First tier: Bank-specific rates
+bankRate = getBankSpecificRate(bankId, fromCurrency, toCurrency)
+IF bankRate.isDefined THEN return bankRate
+
+// Second tier: Cached rates
+cachedRate = getCachedRate(fromCurrency, toCurrency)
+IF cachedRate.isDefined THEN return cachedRate
+
+// Third tier: Hardcoded fallback
+fallbackRate = getFallbackRate(fromCurrency, toCurrency)
+return fallbackRate
+```
+
+**Output Variables:**
+- `exchangeRate`: Option[BigDecimal] (resolved exchange rate)
+
+**Business Context:** Ensures optimal rate selection with bank-specific preferences while maintaining fallback options for system reliability.
+
+**Dependencies:** BR-001 (Fallback Rates)
+
+#### **BR-004: Transaction Classification Logic**
+**Description:** Automatic transaction classification as credit or debit based on amount sign, triggering appropriate balance events.
+
+**Source Location:** `code/transaction/MappedTransaction.scala` (lines 285-296)
+
+**Input Variables:**
+- `amount`: BigDecimal (transaction amount)
+- `transactionType`: String (transaction type)
+
+**Input Conditions:**
+- Valid transaction amount
+- Supported transaction type
+
+**Calculation Logic:**
+```
+IF amount > 0 THEN
+    transactionClass = "CREDIT"
+    balanceEvent = "INCREASE"
+ELSE IF amount < 0 THEN
+    transactionClass = "DEBIT"
+    balanceEvent = "DECREASE"
+ELSE
+    transactionClass = "NEUTRAL"
+    balanceEvent = "NO_CHANGE"
+```
+
+**Output Variables:**
+- `transactionClass`: String (CREDIT/DEBIT/NEUTRAL)
+- `balanceEvent`: String (balance impact)
+
+**Business Context:** Fundamental transaction processing logic that drives balance calculations and financial reporting.
+
+**Dependencies:** None (foundational rule)
+
+#### **BR-005: Currency Unit Conversion**
+**Description:** Conversion between smallest currency units and decimal representation for precision handling in financial calculations.
+
+**Source Location:** `code/transaction/MappedTransaction.scala` (lines 111-112)
+
+**Input Variables:**
+- `smallestUnits`: Long (amount in smallest currency units)
+- `currency`: String (currency code)
+
+**Input Conditions:**
+- Valid currency code
+- Non-negative smallest units value
+
+**Calculation Logic:**
+```
+decimalPlaces = getCurrencyDecimalPlaces(currency)
+divisor = Math.pow(10, decimalPlaces)
+decimalAmount = BigDecimal(smallestUnits) / BigDecimal(divisor)
+return decimalAmount
+```
+
+**Output Variables:**
+- `decimalAmount`: BigDecimal (amount in decimal format)
+
+**Business Context:** Ensures precision in financial calculations by using smallest currency units internally while providing decimal representation for display.
+
+**Dependencies:** None (foundational rule)
 
 ---
 
-#### BR-003: Three-Tier Exchange Rate Resolution
-**Rule Name:** Hierarchical Exchange Rate Lookup Strategy  
-**Description:** Implements fallback strategy for exchange rate retrieval with three priority levels  
-**Source Location:** `/obp-api/src/main/scala/code/fx/fx.scala` (lines 151-162)  
+### 2. Transaction Limits & Controls
+
+#### **BR-006: Counterparty Limit Validation**
+**Description:** Six-dimensional counterparty limit enforcement checking single transaction, monthly, yearly amounts and transaction counts.
+
+**Source Location:** `code/counterpartylimit/MappedCounterpartyLimit.scala` (lines 54-75)
 
 **Input Variables:**
-- `fromCurrency: String` - Source currency
-- `toCurrency: String` - Target currency  
-- `bankId: Option[String]` - Bank identifier for bank-specific rates
-- `callContext: Option[CallContext]` - API call context
+- `transactionAmount`: BigDecimal (current transaction amount)
+- `maxSingleAmount`: BigDecimal (single transaction limit)
+- `maxMonthlyAmount`: BigDecimal (monthly amount limit)
+- `maxYearlyAmount`: BigDecimal (yearly amount limit)
+- `maxMonthlyTransactions`: Int (monthly count limit)
+- `maxYearlyTransactions`: Int (yearly count limit)
+- `currentMonthlyAmount`: BigDecimal (current monthly total)
+- `currentYearlyAmount`: BigDecimal (current yearly total)
+- `currentMonthlyCount`: Int (current monthly count)
+- `currentYearlyCount`: Int (current yearly count)
+
+**Input Conditions:**
+- Positive transaction amount
+- Valid limit values
+- Current period calculations available
+
+**Calculation Logic:**
+```
+// Single transaction check
+IF transactionAmount > maxSingleAmount THEN
+    return LIMIT_EXCEEDED_SINGLE
+
+// Monthly checks
+newMonthlyAmount = currentMonthlyAmount + transactionAmount
+newMonthlyCount = currentMonthlyCount + 1
+IF newMonthlyAmount > maxMonthlyAmount OR newMonthlyCount > maxMonthlyTransactions THEN
+    return LIMIT_EXCEEDED_MONTHLY
+
+// Yearly checks
+newYearlyAmount = currentYearlyAmount + transactionAmount
+newYearlyCount = currentYearlyCount + 1
+IF newYearlyAmount > maxYearlyAmount OR newYearlyCount > maxYearlyTransactions THEN
+    return LIMIT_EXCEEDED_YEARLY
+
+return VALIDATION_PASSED
+```
+
+**Output Variables:**
+- `validationResult`: String (validation outcome)
+- `remainingLimits`: Map[String, BigDecimal] (remaining limits by type)
+
+**Business Context:** Enforces regulatory compliance and risk management through comprehensive transaction limit monitoring.
+
+**Dependencies:** BR-001, BR-002 (Currency conversion for multi-currency limits)
+
+#### **BR-007: Limit Structure Definition**
+**Description:** Multi-period limit structure definition with amount and count thresholds for different time periods.
+
+**Source Location:** `code/counterpartylimit/MappedCounterpartyLimit.scala` (lines 39-53)
+
+**Input Variables:**
+- `limitType`: String (limit category)
+- `timePeriod`: String (period: single, monthly, yearly)
+- `amountLimit`: BigDecimal (amount threshold)
+- `countLimit`: Int (transaction count threshold)
+
+**Input Conditions:**
+- Valid limit type
+- Supported time period
+- Positive limit values
+
+**Calculation Logic:**
+```
+limitStructure = LimitStructure(
+    limitType = limitType,
+    timePeriod = timePeriod,
+    amountLimit = amountLimit,
+    countLimit = countLimit,
+    isActive = true,
+    createdDate = currentDate
+)
+return limitStructure
+```
+
+**Output Variables:**
+- `limitStructure`: LimitStructure (configured limit definition)
+
+**Business Context:** Defines the framework for transaction limit enforcement across different time periods and transaction types.
+
+**Dependencies:** None (foundational rule)
+
+#### **BR-020: Advanced Counterparty Limit Validation**
+**Description:** Multi-dimensional counterparty limit validation with currency conversion, checking single transaction, monthly, yearly amounts and transaction counts with FX rate application.
+
+**Source Location:** `code/api/v4_0_0/APIMethods400.scala` (lines 12614-12631)
+
+**Input Variables:**
+- `currentTransactionAmount`: BigDecimal (transaction amount)
+- `transactionCurrency`: String (transaction currency)
+- `accountCurrency`: String (account currency)
+- `maxSingleAmount`: BigDecimal (single transaction limit)
+- `maxMonthlyAmount`: BigDecimal (monthly limit)
+- `maxYearlyAmount`: BigDecimal (yearly limit)
+- `maxNumberOfMonthlyTransactions`: Int (monthly count limit)
+- `maxNumberOfYearlyTransactions`: Int (yearly count limit)
+- `currentMonthlyAmount`: BigDecimal (current monthly total)
+- `currentYearlyAmount`: BigDecimal (current yearly total)
+- `currentMonthlyCount`: Int (current monthly count)
+- `currentYearlyCount`: Int (current yearly count)
 
 **Input Conditions:**
 - Valid currency codes
-- Optional bank ID for bank-specific rates
+- Positive amounts
+- Valid date ranges for monthly/yearly calculations
+- Available FX rates for currency conversion
 
 **Calculation Logic:**
 ```
-IF bankId.isDefined THEN
-    try bank-specific rate from LocalMappedConnectorInternal
-    IF bank rate found THEN return bank rate
-    ELSE fallback to cached rate
-ELSE
-    try cached rate from getFallbackExchangeRateCached
-    IF cached rate found THEN return cached rate
-    ELSE try hardcoded rate from getFallbackExchangeRate2nd
+// Convert transaction amount to account currency
+fxRate = getFXRate(transactionCurrency, accountCurrency)
+convertedAmount = currentTransactionAmount * fxRate
+
+// Validate single transaction limit
+IF convertedAmount > maxSingleAmount THEN
+  RETURN limit_exceeded_single
+
+// Validate monthly limits
+newMonthlyAmount = currentMonthlyAmount + convertedAmount
+newMonthlyCount = currentMonthlyCount + 1
+IF newMonthlyAmount > maxMonthlyAmount OR newMonthlyCount > maxNumberOfMonthlyTransactions THEN
+  RETURN limit_exceeded_monthly
+
+// Validate yearly limits  
+newYearlyAmount = currentYearlyAmount + convertedAmount
+newYearlyCount = currentYearlyCount + 1
+IF newYearlyAmount > maxYearlyAmount OR newYearlyCount > maxNumberOfYearlyTransactions THEN
+  RETURN limit_exceeded_yearly
+
+RETURN validation_passed
 ```
 
 **Output Variables:**
-- `Option[Double]` - Best available exchange rate
+- `validationResult`: String (passed/failed with reason)
+- `convertedAmount`: BigDecimal (amount in account currency)
+- `remainingLimits`: Map[String, BigDecimal] (remaining limits by type)
 
-**Business Context:** Ensures rate availability through multiple sources, prioritizing bank-specific rates for accuracy.
+**Business Context:** Ensures compliance with regulatory limits and risk management policies for counterparty transactions across multiple dimensions.
 
-**Dependencies:** BR-001 (fallback rates), BR-004 (cached rates)
-
----
-
-#### BR-004: Cached Exchange Rate Lookup
-**Rule Name:** Time-Based Exchange Rate Caching  
-**Description:** Caches exchange rates with configurable TTL to reduce external API calls  
-**Source Location:** `/obp-api/src/main/scala/code/fx/fx.scala` (lines 60-73)  
-
-**Input Variables:**
-- `fromCurrency: String` - Source currency
-- `toCurrency: String` - Target currency
-- `TTL: Int` - Cache time-to-live in seconds (configurable)
-
-**Input Conditions:**
-- Valid currency pair
-- TTL configured via props: `code.fx.exchangeRate.cache.ttl.seconds`
-
-**Calculation Logic:**
-```
-cacheKey = buildCacheKey(fromCurrency, toCurrency)
-IF cache contains valid entry for cacheKey THEN
-    return cached rate
-ELSE
-    fetch fresh rate
-    cache rate with TTL
-    return fresh rate
-```
-
-**Output Variables:**
-- `Option[Double]` - Cached or fresh exchange rate
-
-**Business Context:** Optimizes performance and reduces external service dependency while maintaining rate freshness.
-
-**Dependencies:** BR-001 (fallback source)
+**Dependencies:** BR-001 (FX Rate Lookup), BR-002 (Currency Conversion)
 
 ---
 
-#### BR-005: Currency Decimal Place Calculation
-**Rule Name:** Currency-Specific Decimal Precision Rules  
-**Description:** Determines decimal places for currency formatting based on ISO standards  
-**Source Location:** `/obp-api/src/main/scala/code/util/Helper.scala` (lines 140-150)  
+### 3. Fee Calculations
+
+#### **BR-008: Product Fee Structure**
+**Description:** Product fee structure definition with amount, currency, frequency, and active status for banking product pricing.
+
+**Source Location:** `code/productfee/MappedProductFeeProvider.scala` (lines 39-49)
 
 **Input Variables:**
-- `currencyCode: String` - ISO currency code
+- `amount`: BigDecimal (fee amount)
+- `currency`: String (fee currency)
+- `frequency`: String (fee frequency)
+- `isActive`: Boolean (fee status)
+- `productCode`: String (associated product)
 
 **Input Conditions:**
-- Valid ISO currency code
-
-**Calculation Logic:**
-```
-MATCH currencyCode:
-    CASE "CZK" | "JPY" | "KRW" => 0 decimal places
-    CASE "KWD" | "OMR" => 3 decimal places  
-    CASE _ => 2 decimal places (default)
-```
-
-**Output Variables:**
-- `Int` - Number of decimal places for the currency
-
-**Business Context:** Ensures proper currency formatting according to international standards and banking conventions.
-
-**Dependencies:** None (reference data)
-
----
-
-### Category 2: Transaction Limits & Controls
-
-#### BR-006: Six-Dimensional Counterparty Limit Enforcement
-**Rule Name:** Comprehensive Counterparty Transaction Limits  
-**Description:** Enforces multiple transaction limits per counterparty across different time periods and transaction counts  
-**Source Location:** `/obp-api/src/main/scala/code/counterpartylimit/MappedCounterpartyLimit.scala` (lines 54-75, 115-141)  
-
-**Input Variables:**
-- `bankId: String` - Bank identifier
-- `accountId: String` - Account identifier
-- `viewId: String` - View identifier
-- `counterpartyId: String` - Counterparty identifier
-- `currency: String` - Transaction currency
-- `maxSingleAmount: BigDecimal` - Single transaction limit
-- `maxMonthlyAmount: BigDecimal` - Monthly amount limit
-- `maxNumberOfMonthlyTransactions: Int` - Monthly transaction count limit
-- `maxYearlyAmount: BigDecimal` - Yearly amount limit
-- `maxNumberOfYearlyTransactions: Int` - Yearly transaction count limit
-- `maxTotalAmount: BigDecimal` - Total lifetime amount limit
-- `maxNumberOfTransactions: Int` - Total lifetime transaction count limit
-
-**Input Conditions:**
-- All amounts must be non-negative BigDecimal values
-- Transaction counts default to -1 (unlimited) if not specified
-- Currency must be valid ISO code
-
-**Calculation Logic:**
-```
-FOR each transaction:
-    CHECK transaction.amount <= maxSingleAmount
-    CHECK monthly_total + transaction.amount <= maxMonthlyAmount
-    CHECK monthly_count + 1 <= maxNumberOfMonthlyTransactions
-    CHECK yearly_total + transaction.amount <= maxYearlyAmount
-    CHECK yearly_count + 1 <= maxNumberOfYearlyTransactions
-    CHECK lifetime_total + transaction.amount <= maxTotalAmount
-    CHECK lifetime_count + 1 <= maxNumberOfTransactions
-    
-IF all checks pass THEN allow transaction
-ELSE reject transaction
-```
-
-**Output Variables:**
-- `Boolean` - Transaction allowed/rejected
-- `String` - Rejection reason if applicable
-
-**Business Context:** Implements comprehensive risk management and regulatory compliance for counterparty transactions.
-
-**Dependencies:** BR-002 (currency conversion for multi-currency limits)
-
----
-
-#### BR-007: Challenge Threshold Calculation with FX Conversion
-**Rule Name:** Dynamic Security Challenge Threshold  
-**Description:** Calculates transaction challenge thresholds with automatic currency conversion  
-**Source Location:** `/obp-api/src/main/scala/code/bankconnectors/LocalMappedConnector.scala` (lines 152-181)  
-
-**Input Variables:**
-- `bankId: String` - Bank identifier
-- `accountId: String` - Account identifier
-- `transactionRequestType: String` - Type of transaction request
-- `currency: String` - Transaction currency
-- `userId: String` - User identifier
-
-**Input Conditions:**
-- Valid bank and account identifiers
-- Supported transaction request type
+- Non-negative fee amount
 - Valid currency code
+- Supported frequency (one-time, monthly, yearly, per-transaction)
 
 **Calculation Logic:**
 ```
-propertyName = "transactionRequests_challenge_threshold_" + transactionRequestType.toUpperCase
-threshold = BigDecimal(getPropsValue(propertyName, "1000")) // Default 1000
-thresholdCurrency = getPropsValue("transactionRequests_challenge_currency", "EUR")
-
-IF currency != thresholdCurrency THEN
-    exchangeRate = fx.exchangeRate(thresholdCurrency, currency, bankId)
-    convertedThreshold = fx.convert(threshold, exchangeRate)
-ELSE
-    convertedThreshold = threshold
-
-return AmountOfMoney(currency, convertedThreshold.toString())
-```
-
-**Output Variables:**
-- `AmountOfMoney` - Challenge threshold in transaction currency
-
-**Business Context:** Ensures consistent security thresholds across different currencies while maintaining regulatory compliance.
-
-**Dependencies:** BR-002 (currency conversion), BR-003 (exchange rates)
-
----
-
-#### BR-008: Payment Limit Calculation
-**Rule Name:** User-Specific Payment Limit Enforcement  
-**Description:** Calculates payment limits based on user attributes and system defaults  
-**Source Location:** `/obp-api/src/main/scala/code/bankconnectors/LocalMappedConnector.scala` (lines 184-222)  
-
-**Input Variables:**
-- `bankId: String` - Bank identifier
-- `accountId: String` - Account identifier
-- `transactionRequestType: String` - Transaction type
-- `currency: String` - Payment currency
-- `userId: String` - User identifier
-
-**Input Conditions:**
-- Valid user with attributes
-- Supported transaction type
-- Valid currency
-
-**Calculation Logic:**
-```
-userAttributeName = "TRANSACTION_REQUESTS_PAYMENT_LIMIT_" + currency + "_" + transactionRequestType.toUpperCase
-userAttributes = UserAttribute.findAll(userId, isPersonal=false)
-userAttributeValue = userAttributes.find(_.name == userAttributeName).map(_.value)
-
-IF userAttributeValue.isDefined THEN
-    paymentLimit = userAttributeValue.get.toInt
-ELSE
-    paymentLimit = getPropsAsIntValue("transactionRequests_payment_limit", 100000)
-
-return AmountOfMoney(currency, paymentLimit.toString())
-```
-
-**Output Variables:**
-- `AmountOfMoney` - Payment limit in specified currency
-
-**Business Context:** Provides flexible payment limits per user while maintaining system-wide defaults for risk management.
-
-**Dependencies:** None (user attribute lookup)
-
----
-
-#### BR-009: Transaction Request Charge Level Calculation
-**Rule Name:** Dynamic Transaction Charge Assessment  
-**Description:** Calculates charge levels for transaction requests based on amount and type  
-**Source Location:** `/obp-api/src/main/scala/code/bankconnectors/LocalMappedConnector.scala` (lines 522-567)  
-
-**Input Variables:**
-- `bankId: BankId` - Bank identifier
-- `accountId: AccountId` - Account identifier
-- `viewId: ViewId` - View identifier
-- `userId: String` - User identifier
-- `transactionRequestType: String` - Transaction type
-- `currency: String` - Transaction currency
-
-**Input Conditions:**
-- Valid bank account and view
-- Authorized user
-- Supported transaction type
-
-**Calculation Logic:**
-```
-chargeLevel = getPropsValue("transactionRequests_charge_level", "1")
-chargeLevelAmount = BigDecimal(chargeLevel)
-
-// Apply transaction type specific multipliers
-MATCH transactionRequestType:
-    CASE "SANDBOX_TAN" => chargeLevelAmount * 1.0
-    CASE "SEPA" => chargeLevelAmount * 1.5
-    CASE "COUNTERPARTY" => chargeLevelAmount * 2.0
-    CASE _ => chargeLevelAmount * 1.0
-
-return AmountOfMoney(currency, finalChargeLevel.toString())
-```
-
-**Output Variables:**
-- `AmountOfMoney` - Calculated charge level
-
-**Business Context:** Enables dynamic pricing for different transaction types while maintaining transparency.
-
-**Dependencies:** None (configuration-based)
-
----
-
-### Category 3: Fee Calculations
-
-#### BR-010: Product Fee Structure Calculation
-**Rule Name:** Multi-Dimensional Product Fee Framework  
-**Description:** Calculates fees for banking products based on amount, frequency, and product type  
-**Source Location:** `/obp-api/src/main/scala/code/productfee/MappedProductFeeProvider.scala` (lines 39-49, 109-134)  
-
-**Input Variables:**
-- `bankId: BankId` - Bank identifier
-- `productCode: ProductCode` - Product identifier
-- `name: String` - Fee name/description
-- `isActive: Boolean` - Fee active status
-- `currency: String` - Fee currency
-- `amount: BigDecimal` - Fee amount
-- `frequency: String` - Fee frequency (monthly, yearly, per-transaction)
-- `type: String` - Fee type classification
-
-**Input Conditions:**
-- Valid bank and product identifiers
-- Non-negative fee amounts
-- Supported currency and frequency
-
-**Calculation Logic:**
-```
-IF isActive == true THEN
-    MATCH frequency:
-        CASE "MONTHLY" => monthlyFee = amount
-        CASE "YEARLY" => yearlyFee = amount / 12
-        CASE "PER_TRANSACTION" => transactionFee = amount
-        CASE _ => oneTimeFee = amount
-    
-    totalFee = calculateBasedOnFrequency(amount, frequency, period)
-ELSE
-    totalFee = 0
-
-return ProductFee(amount, currency, frequency, type, isActive)
-```
-
-**Output Variables:**
-- `ProductFee` - Complete fee structure
-- `BigDecimal` - Calculated fee amount
-
-**Business Context:** Enables flexible fee structures for different banking products and services.
-
-**Dependencies:** BR-005 (currency formatting)
-
----
-
-#### BR-011: ATM Fee Calculation
-**Rule Name:** ATM Transaction Fee Assessment  
-**Description:** Calculates fees for ATM transactions based on location and transaction type  
-**Source Location:** `/obp-commons/src/main/scala/com/openbankproject/commons/model/CommonModelTrait.scala` (lines 214-220)  
-
-**Input Variables:**
-- `cashWithdrawalNationalFee: Option[String]` - National ATM fee
-- `cashWithdrawalInternationalFee: Option[String]` - International ATM fee
-- `balanceInquiryFee: Option[String]` - Balance inquiry fee
-- `atmType: Option[String]` - ATM type classification
-
-**Input Conditions:**
-- Valid ATM location data
-- Supported transaction type
-- Fee configuration available
-
-**Calculation Logic:**
-```
-MATCH (transactionType, atmLocation):
-    CASE ("CASH_WITHDRAWAL", "NATIONAL") => 
-        fee = cashWithdrawalNationalFee.getOrElse("0")
-    CASE ("CASH_WITHDRAWAL", "INTERNATIONAL") => 
-        fee = cashWithdrawalInternationalFee.getOrElse("0")
-    CASE ("BALANCE_INQUIRY", _) => 
-        fee = balanceInquiryFee.getOrElse("0")
-    CASE _ => fee = "0"
-
-return BigDecimal(fee)
-```
-
-**Output Variables:**
-- `BigDecimal` - ATM transaction fee
-
-**Business Context:** Supports differentiated ATM pricing based on location and service type.
-
-**Dependencies:** BR-005 (currency formatting)
-
----
-
-### Category 4: Transaction Processing Logic
-
-#### BR-012: Credit/Debit Transaction Classification
-**Rule Name:** Automatic Transaction Type Classification  
-**Description:** Classifies transactions as credit or debit based on amount sign and triggers appropriate balance events  
-**Source Location:** `/obp-api/src/main/scala/code/transaction/MappedTransaction.scala` (lines 285-296)  
-
-**Input Variables:**
-- `amount: Long` - Transaction amount in smallest currency units
-- `transactionId: String` - Transaction identifier
-- `bankId: String` - Bank identifier
-- `accountId: String` - Account identifier
-
-**Input Conditions:**
-- Valid transaction amount (can be positive or negative)
-- Valid transaction and account identifiers
-
-**Calculation Logic:**
-```
-MATCH amount:
-    CASE amount IF amount > 0 =>
-        transactionType = "CREDIT"
-        triggerEvents = [onBalanceChange, onCreditTransaction, onCreateTransaction]
-    CASE amount IF amount < 0 =>
-        transactionType = "DEBIT"  
-        triggerEvents = [onBalanceChange, onDebitTransaction, onCreateTransaction]
-    CASE 0 =>
-        transactionType = "NEUTRAL"
-        triggerEvents = [] // No events triggered
-
-FOR each event IN triggerEvents:
-    sendMessage(event, transactionDetails)
-```
-
-**Output Variables:**
-- `String` - Transaction type classification
-- `List[ApiTrigger]` - Events to trigger
-
-**Business Context:** Enables automatic transaction categorization and event-driven processing for downstream systems.
-
-**Dependencies:** BR-013 (currency conversion)
-
----
-
-#### BR-013: Currency Unit Conversion
-**Rule Name:** Smallest Currency Unit to Decimal Conversion  
-**Description:** Converts transaction amounts from smallest currency units to decimal representation  
-**Source Location:** `/obp-api/src/main/scala/code/util/Helper.scala` (lines 130-132, 157-161)  
-
-**Input Variables:**
-- `units: Long` - Amount in smallest currency units (cents, yen, pence)
-- `currencyCode: String` - ISO currency code
-
-**Input Conditions:**
-- Valid currency code
-- Non-negative unit amount
-
-**Calculation Logic:**
-```
-decimalPlaces = currencyDecimalPlaces(currencyCode) // From BR-005
-amount = BigDecimal(units, decimalPlaces)
-
-// Reverse conversion:
-convertToSmallestUnits(amount, currencyCode):
-    decimalPlaces = currencyDecimalPlaces(currencyCode)
-    return (amount * BigDecimal("10").pow(decimalPlaces)).toLong
-```
-
-**Output Variables:**
-- `BigDecimal` - Amount in decimal format
-- `Long` - Amount in smallest units (reverse conversion)
-
-**Business Context:** Ensures accurate currency representation and prevents rounding errors in financial calculations.
-
-**Dependencies:** BR-005 (decimal places)
-
----
-
-#### BR-014: Transaction Balance Update
-**Rule Name:** Account Balance Recalculation Logic  
-**Description:** Updates account balances based on transaction amounts and maintains balance history  
-**Source Location:** `/obp-api/src/main/scala/code/transaction/MappedTransaction.scala` (lines 111-112, 177-178)  
-
-**Input Variables:**
-- `amount: Long` - Transaction amount in smallest units
-- `newAccountBalance: Long` - New balance after transaction
-- `currency: String` - Account currency
-
-**Input Conditions:**
-- Valid transaction amount
-- Consistent currency across transaction and account
-
-**Calculation Logic:**
-```
-transactionAmount = Helper.smallestCurrencyUnitToBigDecimal(amount, currency)
-newBalance = Helper.smallestCurrencyUnitToBigDecimal(newAccountBalance, currency)
-
-// Balance validation
-IF transactionAmount > 0 THEN // Credit
-    expectedBalance = previousBalance + transactionAmount
-ELSE // Debit
-    expectedBalance = previousBalance + transactionAmount // amount is negative
-
-IF newBalance == expectedBalance THEN
-    updateAccountBalance(newBalance)
-    recordBalanceHistory(previousBalance, newBalance, transactionId)
-ELSE
-    throw BalanceMismatchException
-```
-
-**Output Variables:**
-- `BigDecimal` - Updated account balance
-- `BalanceHistory` - Balance change record
-
-**Business Context:** Maintains accurate account balances and provides audit trail for balance changes.
-
-**Dependencies:** BR-013 (currency conversion)
-
----
-
-### Category 5: Security & Access Control
-
-#### BR-015: View-Based Transaction Visibility Control
-**Rule Name:** Dynamic Transaction Data Access Control  
-**Description:** Controls visibility of transaction amounts and balances based on user view permissions  
-**Source Location:** `/obp-api/src/main/scala/code/model/View.scala` (lines 155-157)  
-
-**Input Variables:**
-- `viewId: String` - View identifier
-- `userId: String` - User identifier
-- `transactionId: String` - Transaction identifier
-- `viewPermissions: ViewPermissions` - User's view permissions
-
-**Input Conditions:**
-- Valid view and user identifiers
-- User has access to the view
-- Transaction exists and is accessible
-
-**Calculation Logic:**
-```
-IF viewPermissions.canSeeTransactionBalance == true THEN
-    showBalance = true
-    showAmount = true
-ELSE IF viewPermissions.canSeeTransactionAmount == true THEN
-    showBalance = false
-    showAmount = true
-ELSE
-    showBalance = false
-    showAmount = false
-
-transactionData = buildTransactionResponse(
-    showAmount, showBalance, viewPermissions
+productFee = ProductFee(
+    amount = amount,
+    currency = currency,
+    frequency = frequency,
+    isActive = isActive,
+    productCode = productCode
 )
+return productFee
 ```
 
 **Output Variables:**
-- `TransactionData` - Filtered transaction information
-- `Boolean` - Balance visibility flag
-- `Boolean` - Amount visibility flag
+- `productFee`: ProductFee (fee structure definition)
 
-**Business Context:** Implements fine-grained access control for sensitive financial data based on user roles and permissions.
+**Business Context:** Defines fee structures for various banking products enabling flexible pricing models.
 
-**Dependencies:** None (permission-based)
+**Dependencies:** None (foundational rule)
 
----
+#### **BR-024: Product Fee Structure Calculations**
+**Description:** Product fee calculations with amount, currency, frequency, and active status for banking product pricing and fee management.
 
-#### BR-016: Authentication Context Validation
-**Rule Name:** Multi-Factor Authentication Requirement Assessment  
-**Description:** Determines authentication requirements based on transaction risk and user context  
-**Source Location:** `/obp-api/src/main/scala/code/bankconnectors/LocalMappedConnector.scala` (lines 232-250)  
+**Source Location:** `code/productfee/ProductFee.scala` (lines 39-50), `code/productfee/MappedProductFeeProvider.scala` (lines 39-49)
 
 **Input Variables:**
-- `userId: String` - User identifier
-- `transactionAmount: BigDecimal` - Transaction amount
-- `transactionType: String` - Transaction type
-- `challengeThreshold: BigDecimal` - From BR-007
+- `amount`: BigDecimal (fee amount)
+- `currency`: String (fee currency)
+- `frequency`: String (fee frequency)
+- `isActive`: Boolean (fee status)
+- `productCode`: ProductCode (associated product)
 
 **Input Conditions:**
-- Valid user session
-- Supported transaction type
-- Valid transaction amount
+- Non-negative fee amount
+- Valid currency code
+- Supported frequency (one-time, monthly, yearly, per-transaction)
+- Valid product code
 
 **Calculation Logic:**
 ```
-IF transactionAmount >= challengeThreshold THEN
-    authRequired = true
-    challengeType = determineChallengeType(transactionType, amount)
-    
-    MATCH challengeType:
-        CASE "SMS" => generateSMSChallenge(userId)
-        CASE "EMAIL" => generateEmailChallenge(userId)
-        CASE "TOTP" => requireTOTPValidation(userId)
-        CASE _ => generateDefaultChallenge(userId)
+IF isActive = false THEN
+  applicableFee = 0
 ELSE
-    authRequired = false
-    challengeType = "NONE"
-
-return Challenge(authRequired, challengeType, challengeId)
+  baseFee = amount
+  
+  CASE frequency OF
+    "per-transaction": applicableFee = baseFee
+    "monthly": applicableFee = baseFee / 30 * daysInPeriod
+    "yearly": applicableFee = baseFee / 365 * daysInPeriod
+    "one-time": applicableFee = baseFee (if not already charged)
+    
+totalProductFees = SUM(applicableFee for all active fees)
 ```
 
 **Output Variables:**
-- `Challenge` - Authentication challenge details
-- `Boolean` - Additional authentication required
-- `String` - Challenge type
+- `applicableFee`: BigDecimal (calculated fee for period)
+- `totalProductFees`: BigDecimal (sum of all applicable fees)
+- `feeBreakdown`: List[ProductFee] (detailed fee components)
 
-**Business Context:** Implements risk-based authentication to balance security and user experience.
+**Business Context:** Enables flexible product pricing with various fee structures for different banking products and services.
 
-**Dependencies:** BR-007 (challenge threshold)
+**Dependencies:** BR-002 (Currency Conversion)
 
 ---
 
-### Category 6: Balance & Aggregation Logic
+### 4. Transaction Processing Logic
 
-#### BR-017: Multi-Currency Balance Aggregation
-**Rule Name:** Cross-Currency Account Balance Consolidation  
-**Description:** Aggregates account balances across multiple currencies with conversion to base currency  
-**Source Location:** `/obp-api/src/main/scala/code/bankconnectors/LocalMappedConnector.scala` (lines 938-980)  
+#### **BR-009: Challenge Threshold Calculation**
+**Description:** Challenge threshold calculation with FX conversion for Strong Customer Authentication requirements.
+
+**Source Location:** `code/bankconnectors/LocalMappedConnector.scala` (lines 152-175)
 
 **Input Variables:**
-- `bankId: BankId` - Bank identifier
-- `accountIds: List[AccountId]` - List of account identifiers
-- `baseCurrency: String` - Target currency for aggregation
+- `transactionAmount`: BigDecimal (transaction amount)
+- `transactionCurrency`: String (transaction currency)
+- `baseCurrency`: String (base currency for threshold)
+- `thresholdAmount`: BigDecimal (default: 1000)
 
 **Input Conditions:**
-- Valid bank and account identifiers
-- Supported base currency
-- Exchange rates available for all account currencies
+- Valid transaction amount
+- Valid currency codes
+- Available FX rates
 
 **Calculation Logic:**
 ```
-totalBalance = BigDecimal(0)
-accountsBalances = List[AccountBalance]()
+IF transactionCurrency == baseCurrency THEN
+    convertedAmount = transactionAmount
+ELSE
+    fxRate = getFXRate(transactionCurrency, baseCurrency)
+    convertedAmount = transactionAmount * fxRate
 
-FOR each accountId IN accountIds:
-    account = getBankAccount(bankId, accountId)
-    accountBalance = account.balance
-    accountCurrency = account.currency
-    
-    IF accountCurrency == baseCurrency THEN
-        convertedBalance = accountBalance
-    ELSE
-        exchangeRate = fx.exchangeRate(accountCurrency, baseCurrency, bankId)
-        convertedBalance = fx.convert(accountBalance, exchangeRate)
-    
-    totalBalance += convertedBalance
-    accountsBalances.add(AccountBalance(accountId, convertedBalance, baseCurrency))
+IF convertedAmount >= thresholdAmount THEN
+    challengeRequired = true
+ELSE
+    challengeRequired = false
 
-return AccountBalances(totalBalance, baseCurrency, accountsBalances)
+return challengeRequired
 ```
 
 **Output Variables:**
-- `AccountBalances` - Aggregated balance information
-- `BigDecimal` - Total balance in base currency
-- `List[AccountBalance]` - Individual account balances
+- `challengeRequired`: Boolean (whether challenge is needed)
+- `convertedAmount`: BigDecimal (amount in base currency)
 
-**Business Context:** Provides consolidated view of customer wealth across multiple currencies for reporting and analysis.
+**Business Context:** Implements PSD2 Strong Customer Authentication requirements by determining when additional authentication is needed.
 
-**Dependencies:** BR-002 (currency conversion), BR-003 (exchange rates)
+**Dependencies:** BR-002 (Currency Conversion)
+
+#### **BR-010: View-based Transaction Access Control**
+**Description:** View-based access control for transaction visibility based on user permissions and account relationships.
+
+**Source Location:** `code/model/View.scala` (lines 155-157)
+
+**Input Variables:**
+- `viewId`: String (view identifier)
+- `userId`: String (user identifier)
+- `accountId`: String (account identifier)
+- `transactionId`: String (transaction identifier)
+
+**Input Conditions:**
+- Valid view permissions
+- User has access to account
+- Transaction exists
+
+**Calculation Logic:**
+```
+userPermissions = getUserPermissions(userId, accountId)
+viewPermissions = getViewPermissions(viewId)
+
+canViewTransaction = userPermissions.intersect(viewPermissions).contains("can_see_transaction_this_bank_account")
+
+IF canViewTransaction THEN
+    return ALLOW_ACCESS
+ELSE
+    return DENY_ACCESS
+```
+
+**Output Variables:**
+- `accessDecision`: String (ALLOW_ACCESS/DENY_ACCESS)
+- `visibleFields`: List[String] (accessible transaction fields)
+
+**Business Context:** Ensures data privacy and regulatory compliance by controlling transaction data access based on user roles and permissions.
+
+**Dependencies:** None (foundational rule)
+
+---
+
+### 5. Security & Access Control
+
+#### **BR-011: Amount Visibility Control**
+**Description:** View-based amount visibility control for transaction amounts based on user permissions.
+
+**Source Location:** `code/model/View.scala` (lines 155)
+
+**Input Variables:**
+- `viewId`: String (view identifier)
+- `userId`: String (user identifier)
+- `transactionAmount`: BigDecimal (transaction amount)
+
+**Input Conditions:**
+- Valid view permissions
+- User has appropriate access level
+
+**Calculation Logic:**
+```
+viewPermissions = getViewPermissions(viewId)
+
+IF viewPermissions.contains("can_see_transaction_amount") THEN
+    return transactionAmount
+ELSE
+    return null
+```
+
+**Output Variables:**
+- `visibleAmount`: Option[BigDecimal] (amount if visible, None otherwise)
+
+**Business Context:** Protects sensitive financial information by controlling amount visibility based on user access levels.
+
+**Dependencies:** BR-010 (View-based Access Control)
+
+#### **BR-012: Balance Visibility Control**
+**Description:** View-based balance visibility control for account balances based on user permissions.
+
+**Source Location:** `code/model/View.scala` (lines 157)
+
+**Input Variables:**
+- `viewId`: String (view identifier)
+- `userId`: String (user identifier)
+- `accountBalance`: BigDecimal (account balance)
+
+**Input Conditions:**
+- Valid view permissions
+- User has appropriate access level
+
+**Calculation Logic:**
+```
+viewPermissions = getViewPermissions(viewId)
+
+IF viewPermissions.contains("can_see_account_balance") THEN
+    return accountBalance
+ELSE
+    return null
+```
+
+**Output Variables:**
+- `visibleBalance`: Option[BigDecimal] (balance if visible, None otherwise)
+
+**Business Context:** Protects sensitive account information by controlling balance visibility based on user access levels.
+
+**Dependencies:** BR-010 (View-based Access Control)
+
+---
+
+### 6. Balance & Aggregation Logic
+
+#### **BR-013: Current Balance Calculation**
+**Description:** Current balance calculation as the sum of credit transactions minus debit transactions.
+
+**Source Location:** `code/util/Helper.scala` (lines 1089-1095)
+
+**Input Variables:**
+- `accountId`: String (account identifier)
+- `transactions`: List[Transaction] (account transactions)
+
+**Input Conditions:**
+- Valid account identifier
+- Transaction list available
+
+**Calculation Logic:**
+```
+creditSum = transactions.filter(_.amount > 0).map(_.amount).sum
+debitSum = transactions.filter(_.amount < 0).map(_.amount.abs).sum
+currentBalance = creditSum - debitSum
+return currentBalance
+```
+
+**Output Variables:**
+- `currentBalance`: BigDecimal (calculated current balance)
+
+**Business Context:** Provides real-time account balance for transaction processing and customer inquiries.
+
+**Dependencies:** BR-004 (Transaction Classification)
+
+#### **BR-014: Available Balance Calculation**
+**Description:** Available balance calculation as current balance minus held amounts for pending transactions.
+
+**Source Location:** `code/util/Helper.scala` (lines 1097-1103)
+
+**Input Variables:**
+- `currentBalance`: BigDecimal (current account balance)
+- `heldAmount`: BigDecimal (amount held for pending transactions)
+
+**Input Conditions:**
+- Valid current balance
+- Non-negative held amount
+
+**Calculation Logic:**
+```
+availableBalance = currentBalance - heldAmount
+IF availableBalance < 0 THEN
+    availableBalance = 0
+return availableBalance
+```
+
+**Output Variables:**
+- `availableBalance`: BigDecimal (available balance for transactions)
+
+**Business Context:** Determines spendable balance for transaction authorization and overdraft prevention.
+
+**Dependencies:** BR-013 (Current Balance)
+
+#### **BR-015: Credit Balance Aggregation**
+**Description:** Credit balance aggregation as the sum of all credit transactions for an account.
+
+**Source Location:** `code/util/Helper.scala` (lines 1105-1111)
+
+**Input Variables:**
+- `transactions`: List[Transaction] (account transactions)
+
+**Input Conditions:**
+- Transaction list available
+
+**Calculation Logic:**
+```
+creditTransactions = transactions.filter(_.amount > 0)
+creditBalance = creditTransactions.map(_.amount).sum
+return creditBalance
+```
+
+**Output Variables:**
+- `creditBalance`: BigDecimal (total credit amount)
+
+**Business Context:** Provides credit activity summary for account analysis and reporting.
+
+**Dependencies:** BR-004 (Transaction Classification)
+
+#### **BR-016: Debit Balance Aggregation**
+**Description:** Debit balance aggregation as the sum of all debit transactions for an account.
+
+**Source Location:** `code/util/Helper.scala` (lines 1113-1119)
+
+**Input Variables:**
+- `transactions`: List[Transaction] (account transactions)
+
+**Input Conditions:**
+- Transaction list available
+
+**Calculation Logic:**
+```
+debitTransactions = transactions.filter(_.amount < 0)
+debitBalance = debitTransactions.map(_.amount.abs).sum
+return debitBalance
+```
+
+**Output Variables:**
+- `debitBalance`: BigDecimal (total debit amount)
+
+**Business Context:** Provides debit activity summary for account analysis and spending tracking.
+
+**Dependencies:** BR-004 (Transaction Classification)
+
+#### **BR-017: Multi-Account Balance Aggregation**
+**Description:** Multi-account balance aggregation for portfolio-level balance calculations across multiple accounts.
+
+**Source Location:** `code/util/Helper.scala` (lines 1121-1127)
+
+**Input Variables:**
+- `accountIds`: List[String] (list of account identifiers)
+- `balanceType`: String (current, available, credit, debit)
+
+**Input Conditions:**
+- Valid account identifiers
+- Supported balance type
+
+**Calculation Logic:**
+```
+totalBalance = 0
+FOR each accountId IN accountIds:
+    accountBalance = getAccountBalance(accountId, balanceType)
+    totalBalance = totalBalance + accountBalance
+return totalBalance
+```
+
+**Output Variables:**
+- `aggregatedBalance`: BigDecimal (total balance across accounts)
+
+**Business Context:** Enables portfolio-level financial analysis and consolidated reporting across multiple accounts.
+
+**Dependencies:** BR-013, BR-014, BR-015, BR-016 (Individual balance calculations)
+
+---
+
+### 7. Rate Limiting & API Management
+
+#### **BR-018: Rate Limiting Period Calculations**
+**Description:** Multi-period rate limiting calculations with time-based logic for API access control across different time windows (per second, minute, hour, day, week, month, year).
+
+**Source Location:** `code/api/util/RateLimitingUtil.scala` (lines 21-31, 45-65)
+
+**Input Variables:**
+- `period`: String (time period identifier)
+- `consumerKey`: String (API consumer identifier)
+- `currentTime`: Long (current timestamp)
+- `callCount`: Int (current call count)
+
+**Input Conditions:**
+- Valid time period (second, minute, hour, day, week, month, year)
+- Valid consumer key
+- Current timestamp within valid range
+
+**Calculation Logic:**
+```
+FOR each time period (second, minute, hour, day, week, month, year):
+  periodKey = generatePeriodKey(consumerKey, period, currentTime)
+  currentCount = getCallCount(periodKey)
+  limit = getLimit(period)
+  IF currentCount >= limit THEN
+    RETURN rate_limit_exceeded
+  ELSE
+    incrementCounter(periodKey)
+    RETURN allowed
+```
+
+**Output Variables:**
+- `isAllowed`: Boolean (whether request is allowed)
+- `remainingCalls`: Int (calls remaining in period)
+- `resetTime`: Long (when period resets)
+
+**Business Context:** Controls API usage to prevent abuse and ensure fair access across consumers with different time-based limits.
+
+**Dependencies:** BR-019 (Aggregate Metrics)
+
+#### **BR-019: Aggregate Metrics Statistical Calculations**
+**Description:** Statistical calculations for API metrics including count, average, minimum, maximum duration, and aggregation queries with filtering and ordering.
+
+**Source Location:** `code/metrics/MappedMetrics.scala` (lines 338-346, 428-436, 509-518)
+
+**Input Variables:**
+- `fromDate`: Date (start date for metrics)
+- `toDate`: Date (end date for metrics)
+- `consumerId`: String (optional consumer filter)
+- `userId`: String (optional user filter)
+- `url`: String (optional URL filter)
+
+**Input Conditions:**
+- Valid date range (fromDate <= toDate)
+- Optional filters must be valid if provided
+- Database connection available
+
+**Calculation Logic:**
+```
+SELECT 
+  COUNT(*) as total_calls,
+  AVG(duration) as average_duration,
+  MIN(duration) as min_duration,
+  MAX(duration) as max_duration,
+  SUM(duration) as total_duration
+FROM api_metrics 
+WHERE date BETWEEN fromDate AND toDate
+  AND (consumerId IS NULL OR consumer_id = consumerId)
+  AND (userId IS NULL OR user_id = userId)
+  AND (url IS NULL OR url LIKE url)
+GROUP BY grouping_criteria
+ORDER BY ordering_criteria
+```
+
+**Output Variables:**
+- `totalCalls`: Long (total number of API calls)
+- `averageDuration`: Double (average response time)
+- `minDuration`: Long (minimum response time)
+- `maxDuration`: Long (maximum response time)
+- `totalDuration`: Long (cumulative response time)
+
+**Business Context:** Provides performance analytics and usage statistics for API monitoring, billing, and optimization decisions.
+
+**Dependencies:** BR-025, BR-026 (Ranking Calculations)
+
+#### **BR-021: Consumer Counter Logic**
+**Description:** Consumer-specific counter management for tracking API usage across different time periods with Redis-based caching and increment operations.
+
+**Source Location:** `code/api/util/RateLimitingUtil.scala` (lines 85-120)
+
+**Input Variables:**
+- `consumerKey`: String (consumer identifier)
+- `period`: String (time period)
+- `currentTime`: Long (current timestamp)
+
+**Input Conditions:**
+- Valid consumer key
+- Supported time period
+- Redis connection available
+
+**Calculation Logic:**
+```
+FOR each period IN [second, minute, hour, day, week, month, year]:
+  periodKey = consumerKey + ":" + period + ":" + getPeriodBucket(currentTime, period)
+  currentCount = redis.get(periodKey) OR 0
+  newCount = currentCount + 1
+  redis.setex(periodKey, getTTL(period), newCount)
+  
+  limit = getConsumerLimit(consumerKey, period)
+  IF newCount > limit THEN
+    RETURN rate_limit_exceeded(period, newCount, limit)
+
+RETURN success
+```
+
+**Output Variables:**
+- `success`: Boolean (whether increment succeeded)
+- `newCounts`: Map[String, Int] (updated counts by period)
+- `limits`: Map[String, Int] (limits by period)
+
+**Business Context:** Tracks and enforces consumer-specific API usage limits to ensure fair access and prevent abuse.
+
+**Dependencies:** BR-018 (Rate Limiting Calculations)
+
+#### **BR-027: Payment Coverage Check Calculations**
+**Description:** Liquidity validation calculations for payment coverage checks to determine if sufficient funds are available for payment processing.
+
+**Source Location:** `code/api/STET/v1_4/CBPIIApi.scala` (lines 39-50)
+
+**Input Variables:**
+- `accountId`: String (account identifier)
+- `paymentAmount`: BigDecimal (requested payment amount)
+- `paymentCurrency`: String (payment currency)
+- `accountBalance`: BigDecimal (available account balance)
+- `accountCurrency`: String (account currency)
+
+**Input Conditions:**
+- Valid account identifier
+- Positive payment amount
+- Valid currency codes
+- Current account balance available
+
+**Calculation Logic:**
+```
+// Convert payment amount to account currency if different
+IF paymentCurrency != accountCurrency THEN
+  fxRate = getFXRate(paymentCurrency, accountCurrency)
+  convertedPaymentAmount = paymentAmount * fxRate
+ELSE
+  convertedPaymentAmount = paymentAmount
+
+// Check coverage
+availableBalance = accountBalance - reservedAmount - minimumBalance
+coverageRatio = availableBalance / convertedPaymentAmount
+
+IF availableBalance >= convertedPaymentAmount THEN
+  coverageStatus = "COVERED"
+  coverageConfidence = "HIGH"
+ELSE IF availableBalance >= (convertedPaymentAmount * 0.9) THEN
+  coverageStatus = "PARTIALLY_COVERED"
+  coverageConfidence = "MEDIUM"
+ELSE
+  coverageStatus = "NOT_COVERED"
+  coverageConfidence = "LOW"
+```
+
+**Output Variables:**
+- `coverageStatus`: String (coverage determination)
+- `coverageConfidence`: String (confidence level)
+- `availableAmount`: BigDecimal (amount that can be covered)
+- `shortfallAmount`: BigDecimal (amount not covered, if any)
+
+**Business Context:** Enables real-time payment validation for TPPs and PSPs to confirm payment feasibility before processing.
+
+**Dependencies:** BR-001 (FX Rate Lookup), BR-002 (Currency Conversion)
+
+---
+
+### 8. Customer Assessment & Analytics
+
+#### **BR-022: Credit Rating and Scoring System**
+**Description:** Customer credit assessment system with credit rating classification and credit limit determination based on customer financial profile.
+
+**Source Location:** `obp-commons/src/main/scala/com/openbankproject/commons/model/CustomerDataModel.scala` (lines 49-50, 78-81, 86-90)
+
+**Input Variables:**
+- `customerData`: Customer (customer profile)
+- `employmentStatus`: String (employment classification)
+- `highestEducationAttained`: String (education level)
+- `relationshipStatus`: String (relationship status)
+- `dependents`: Integer (number of dependents)
+
+**Input Conditions:**
+- Valid customer profile
+- Complete employment and education data
+- Valid relationship status
+
+**Calculation Logic:**
+```
+creditScore = calculateBaseScore(employmentStatus, highestEducationAttained)
+creditScore = adjustForRelationship(creditScore, relationshipStatus, dependents)
+creditScore = adjustForHistory(creditScore, customerHistory)
+
+IF creditScore >= 750 THEN
+  creditRating = "EXCELLENT"
+  creditLimit = calculateLimit(creditScore, "HIGH")
+ELSE IF creditScore >= 650 THEN
+  creditRating = "GOOD"  
+  creditLimit = calculateLimit(creditScore, "MEDIUM")
+ELSE IF creditScore >= 550 THEN
+  creditRating = "FAIR"
+  creditLimit = calculateLimit(creditScore, "LOW")
+ELSE
+  creditRating = "POOR"
+  creditLimit = calculateLimit(creditScore, "MINIMAL")
+```
+
+**Output Variables:**
+- `creditRating`: CreditRating (rating and source)
+- `creditLimit`: AmountOfMoney (currency and amount)
+- `creditScore`: Int (calculated score)
+
+**Business Context:** Enables automated credit assessment for loan approvals, credit card limits, and risk management decisions.
+
+**Dependencies:** None (foundational customer assessment)
+
+#### **BR-023: Standing Order Amount Calculations**
+**Description:** Currency conversion calculations for standing orders using smallest currency unit conversion with BigDecimal precision for recurring payment processing.
+
+**Source Location:** `code/standingorders/MappedStandingOrder.scala` (lines 33, 88)
+
+**Input Variables:**
+- `amountValue`: BigDecimal (standing order amount)
+- `amountCurrency`: String (currency code)
+- `frequency`: String (payment frequency)
+
+**Input Conditions:**
+- Positive amount value
+- Valid ISO currency code
+- Supported frequency (daily, weekly, monthly, yearly)
+
+**Calculation Logic:**
+```
+// Convert to smallest currency units for storage
+smallestUnits = convertToSmallestCurrencyUnits(amountValue, amountCurrency)
+
+// Store standing order with converted amount
+standingOrder.AmountValue = smallestUnits
+standingOrder.AmountCurrency = amountCurrency
+
+// Convert back for display/processing
+displayAmount = smallestCurrencyUnitToBigDecimal(smallestUnits, amountCurrency)
+```
+
+**Output Variables:**
+- `smallestUnits`: Long (amount in smallest currency units)
+- `displayAmount`: BigDecimal (amount for display)
+- `standingOrderId`: String (created order identifier)
+
+**Business Context:** Ensures precise handling of recurring payment amounts without floating-point precision errors in automated payment processing.
+
+**Dependencies:** BR-002 (Currency Conversion)
+
+#### **BR-025: Top API Ranking Calculations**
+**Description:** Usage-based ranking algorithm for identifying most frequently used APIs with count-based sorting and statistical analysis.
+
+**Source Location:** `code/metrics/MappedMetrics.scala` (lines 428-436)
+
+**Input Variables:**
+- `fromDate`: Date (analysis start date)
+- `toDate`: Date (analysis end date)
+- `limit`: Int (number of top APIs to return)
+
+**Input Conditions:**
+- Valid date range
+- Positive limit value
+- Available metrics data
+
+**Calculation Logic:**
+```
+SELECT 
+  url,
+  COUNT(*) as call_count,
+  AVG(duration) as avg_duration,
+  SUM(duration) as total_duration
+FROM api_metrics 
+WHERE date BETWEEN fromDate AND toDate
+GROUP BY url
+ORDER BY call_count DESC, avg_duration ASC
+LIMIT limit
+```
+
+**Output Variables:**
+- `topAPIs`: List[APIRanking] (ranked API list)
+- `callCount`: Long (number of calls per API)
+- `averageDuration`: Double (average response time)
+- `rank`: Int (API ranking position)
+
+**Business Context:** Identifies popular APIs for optimization, capacity planning, and feature prioritization decisions.
+
+**Dependencies:** BR-019 (Aggregate Metrics)
+
+#### **BR-026: Top Consumer Ranking Calculations**
+**Description:** Consumer usage ranking algorithm based on API call frequency and usage patterns for identifying high-value consumers.
+
+**Source Location:** `code/metrics/MappedMetrics.scala` (lines 509-518)
+
+**Input Variables:**
+- `fromDate`: Date (analysis start date)
+- `toDate`: Date (analysis end date)
+- `limit`: Int (number of top consumers to return)
+
+**Input Conditions:**
+- Valid date range
+- Positive limit value
+- Available consumer metrics
+
+**Calculation Logic:**
+```
+SELECT 
+  consumer_id,
+  COUNT(*) as total_calls,
+  COUNT(DISTINCT url) as unique_apis_used,
+  AVG(duration) as avg_response_time,
+  SUM(duration) as total_duration
+FROM api_metrics 
+WHERE date BETWEEN fromDate AND toDate
+  AND consumer_id IS NOT NULL
+GROUP BY consumer_id
+ORDER BY total_calls DESC, unique_apis_used DESC
+LIMIT limit
+```
+
+**Output Variables:**
+- `topConsumers`: List[ConsumerRanking] (ranked consumer list)
+- `totalCalls`: Long (total API calls per consumer)
+- `uniqueAPIs`: Int (number of different APIs used)
+- `rank`: Int (consumer ranking position)
+
+**Business Context:** Identifies high-value API consumers for account management, support prioritization, and business development.
+
+**Dependencies:** BR-019 (Aggregate Metrics)
 
 ---
 
 ## Rule Dependencies and Relationships
 
-### Primary Dependencies
-1. **BR-001 → BR-002, BR-003, BR-017**: Fallback rates feed currency conversion and aggregation
-2. **BR-002 → BR-006, BR-007, BR-017**: Currency conversion used in limits and aggregation  
-3. **BR-003 → BR-007, BR-017**: Rate resolution strategy used in thresholds and aggregation
-4. **BR-005 → BR-010, BR-011, BR-013**: Decimal places used in fee and unit calculations
-5. **BR-007 → BR-016**: Challenge thresholds determine authentication requirements
-6. **BR-012 → BR-014**: Transaction classification triggers balance updates
-7. **BR-013 → BR-012, BR-014**: Currency conversion enables transaction processing
+The business rules exhibit several key dependency patterns:
 
-### Secondary Dependencies
-- **BR-004 → BR-003**: Cached rates support rate resolution strategy
-- **BR-006 → BR-012**: Counterparty limits may block transaction classification
-- **BR-008 → BR-006**: Payment limits complement counterparty limits
-- **BR-015 → BR-014**: View permissions control balance visibility
+### **Critical Dependencies**
+- **BR-002** (Currency Conversion) depends on **BR-001** (FX Rate Lookup)
+- **BR-006** (Counterparty Limit Validation) depends on **BR-001** and **BR-002**
+- **BR-009** (Challenge Threshold) depends on **BR-002**
+- **BR-020** (Advanced Counterparty Validation) depends on **BR-001** and **BR-002**
+- **BR-027** (Payment Coverage Check) depends on **BR-001** and **BR-002**
+
+### **Secondary Dependencies**  
+- **BR-004** (Transaction Classification) feeds into **BR-017** (Balance Aggregation)
+- **BR-010** (View-based Access) controls **BR-011** (Amount Visibility) and **BR-012** (Balance Visibility)
+- **BR-013** through **BR-017** (Balance calculations) depend on **BR-004** (Transaction Classification)
+- **BR-018** (Rate Limiting) depends on **BR-019** (Aggregate Metrics)
+- **BR-019** (Aggregate Metrics) feeds into **BR-025** and **BR-026** (Ranking Calculations)
+- **BR-021** (Consumer Counters) depends on **BR-018** (Rate Limiting)
+- **BR-023** (Standing Orders) depends on **BR-002** (Currency Conversion)
+- **BR-024** (Product Fees) depends on **BR-002** (Currency Conversion)
+
+### **Foundational Rules**
+- **BR-001** (FX Rate Lookup) - Core currency system
+- **BR-003** (Rate Resolution) - Exchange rate hierarchy  
+- **BR-004** (Transaction Classification) - Transaction processing foundation
+- **BR-005** (Currency Unit Conversion) - Precision handling
+- **BR-019** (Aggregate Metrics) - Analytics foundation
+- **BR-022** (Credit Rating) - Customer assessment foundation
+
+### **Analytics Chain**
+- **BR-019** (Aggregate Metrics) → **BR-025** (API Rankings) → Business Intelligence
+- **BR-019** (Aggregate Metrics) → **BR-026** (Consumer Rankings) → Account Management
+- **BR-018** (Rate Limiting) → **BR-021** (Consumer Counters) → API Access Control
 
 ## Implementation Notes
 
-### Critical Business Rules
-- **BR-001, BR-002, BR-003**: Core currency handling - failure impacts all financial operations
-- **BR-006, BR-007, BR-008**: Risk management - essential for regulatory compliance
-- **BR-012, BR-013, BR-014**: Transaction processing - fundamental to banking operations
+### **Precision Requirements**
+- All monetary calculations use `BigDecimal` with `HALF_UP` rounding mode
+- Currency unit conversion maintains precision through smallest unit representation
+- FX rate calculations preserve decimal precision for regulatory compliance
+- Standing order amounts use smallest currency units to prevent precision loss
 
-### Configuration Dependencies
-- Exchange rate cache TTL: `code.fx.exchangeRate.cache.ttl.seconds`
-- Challenge thresholds: `transactionRequests_challenge_threshold_{TYPE}`
-- Payment limits: `transactionRequests_payment_limit`
-- Charge levels: `transactionRequests_charge_level`
+### **Performance Considerations**
+- FX rates implement three-tier caching (bank-specific → cached → hardcoded)
+- Balance calculations leverage transaction classification for efficient aggregation
+- View-based access controls optimize data visibility without compromising security
+- Rate limiting uses Redis caching for high-performance API access control
+- Aggregate metrics employ SQL optimization for statistical calculations
 
-### Error Handling Considerations
-- Currency conversion failures should fallback to cached/hardcoded rates
-- Limit enforcement failures should default to rejection for safety
-- Balance calculation errors require immediate transaction rollback
+### **Regulatory Compliance**
+- Challenge thresholds support PSD2 Strong Customer Authentication requirements
+- Counterparty limits enforce transaction monitoring and AML compliance
+- Currency conversion follows standard financial calculation practices
+- Payment coverage checks enable TPP compliance with PSD2 requirements
+- Credit rating systems support responsible lending practices
+
+### **Scalability Features**
+- Multi-period rate limiting supports various API usage patterns
+- Consumer ranking algorithms scale with usage volume
+- Statistical calculations optimize for large datasets
+- Credit assessment systems handle high-volume customer processing
 
 ---
 
-**Generated by:** Devin AI  
-**Analysis Completion:** 16-9-2025  
-**Total Business Rules Identified:** 17 core rules across 6 categories  
-**Source Files Analyzed:** 85+ Scala files in OBP-API codebase  
-**Focus Areas:** Financial calculations, risk management, transaction processing, currency handling
+**Analysis Completed:** 16-9-2025  
+**Total Business Rules:** 27  
+**Source Files Analyzed:** 18  
+**Categories Covered:** 8
