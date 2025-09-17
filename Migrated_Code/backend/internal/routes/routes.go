@@ -72,6 +72,7 @@ func SetupRoutes(
 		v5.DELETE("/banks/:bankId/customers/:customerId", obpController.DeleteCustomer)
 
 		v5.GET("/users", obpController.GetUsers)
+		v5.GET("/users/current", obpController.GetCurrentUser)
 		v5.GET("/users/:userId", obpController.GetUser)
 		v5.POST("/users", obpController.CreateUser)
 		v5.PUT("/users/:userId", obpController.UpdateUser)
@@ -89,10 +90,8 @@ func SetupRoutes(
 		v5.POST("/users/:userId/user-attributes-new", obpController.CreateUserAttributeNew)
 		v5.GET("/users/:userId/user-attributes-new", obpController.GetUserAttributesNew)
 		v5.DELETE("/users/:userId/user-attributes-new/:userAttributeId", obpController.DeleteUserAttributeNew)
-		v5.POST("/users/sync/:provider/:providerId", obpController.SyncUser)
-		v5.POST("/users/sync-new/:provider/:providerId", obpController.SyncUserNew)
-		
-		
+		v5.POST("/users-sync/:provider/:providerId", obpController.SyncUser)
+		v5.POST("/users-sync-new/:provider/:providerId", obpController.SyncUserNew)
 		v5.GET("/users/:userId/accounts-at-bank/:bankId", obpController.GetUserAccountsAtBank)
 		v5.GET("/users/:userId/accounts", obpController.GetUserAccounts)
 		v5.GET("/users/:userId/entitlements-and-permissions", obpController.GetUserEntitlementsAndPermissions)
@@ -343,14 +342,6 @@ func SetupRoutes(
 		v5.GET("/management/system/integrity/account-currency", obpController.CheckAccountCurrency)
 		v5.GET("/management/system/integrity/orphaned-accounts", obpController.CheckOrphanedAccounts)
 		
-		v5.POST("/users/:userId/attributes", obpController.CreateUserAttribute)
-		v5.GET("/users/:userId/attributes", obpController.GetUserAttributes)
-		v5.PUT("/users/:userId/attributes/:userAttributeId", obpController.UpdateUserAttribute)
-		v5.DELETE("/users/:userId/attributes/:userAttributeId", obpController.DeleteUserAttribute)
-		v5.POST("/users/:provider/:providerId/sync", obpController.SyncUser)
-		v5.GET("/users/:userId/accounts/:bankId", obpController.GetUserAccountsAtBank)
-		v5.GET("/users/:userId/accounts", obpController.GetUserAccounts)
-		v5.GET("/users/:userId/entitlements-and-permissions", obpController.GetUserEntitlementsAndPermissions)
 
 		v5.GET("/banks/:bankId/settlement-accounts-new", obpController.GetSettlementAccountsAtBankNew)
 		v5.POST("/banks/:bankId/settlement-accounts-new", obpController.CreateSettlementAccountAtBankNew)
@@ -358,12 +349,8 @@ func SetupRoutes(
 
 		v4.POST("/verify-request-sign-response", obpV4Controller.VerifyRequestSignResponse)
 		
-		v4.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests/:transactionRequestId/refund", obpV4Controller.GetRefundTransactionRequest)
-		v4.POST("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests/:transactionRequestId/refund/challenge", obpV4Controller.AnswerRefundTransactionRequestChallenge)
 		v4.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests-new/:transactionRequestId/refund", obpV4Controller.GetRefundTransactionRequestNew)
 		v4.POST("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests-new/:transactionRequestId/refund/challenge", obpV4Controller.AnswerRefundTransactionRequestChallengeNew)
-		v4.DELETE("/banks/:bankId/transaction-request-attribute-definitions/:attributeDefinitionId", obpV4Controller.DeleteTransactionRequestAttributeDefinition)
-		v4.DELETE("/banks/:bankId/transaction-request-attribute-definitions/:attributeDefinitionId", obpV4Controller.DeleteTransactionRequestAttributeDefinitionNew)
 	}
 
 	v3 := router.Group("/obp/v3.1.0")

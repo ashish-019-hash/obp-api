@@ -1061,10 +1061,23 @@ func (c *OBPCoreController) GetUsersByEmail(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"users": users})
 }
 
+func (c *OBPCoreController) GetCurrentUser(ctx *gin.Context) {
+	user := map[string]interface{}{
+		"user_id":    "current_user_123",
+		"username":   "current_user",
+		"email":      "current.user@example.com",
+		"first_name": "Current",
+		"last_name":  "User",
+		"is_active":  true,
+	}
+	ctx.JSON(http.StatusOK, user)
+}
+
 func (c *OBPCoreController) GetUsers(ctx *gin.Context) {
 	users := []map[string]interface{}{}
 	ctx.JSON(http.StatusOK, gin.H{"users": users})
 }
+
 
 func (c *OBPCoreController) CreateUserInvitation(ctx *gin.Context) {
 	var invitationData map[string]interface{}
