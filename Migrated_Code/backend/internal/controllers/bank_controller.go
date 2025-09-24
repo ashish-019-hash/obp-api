@@ -7,6 +7,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ashish-019-hash/obp-api-backend/internal/services"
 	"github.com/ashish-019-hash/obp-api-backend/internal/utils"
+	"github.com/ashish-019-hash/obp-api-backend/internal/models"
+	"github.com/ashish-019-hash/obp-api-backend/pkg/db"
 )
 
 type BankController struct {
@@ -56,34 +58,66 @@ func (c *BankController) CreateBank(ctx *gin.Context) {
 		return
 	}
 
-	response := BankResponse{
-		ID:               req.ID,
-		ShortName:        req.ShortName,
-		FullName:         req.FullName,
-		Logo:             req.Logo,
-		Website:          req.Website,
-		BankRoutingScheme: req.BankRoutingScheme,
+	var existingBank models.Bank
+	if err := db.GetDB().Where("bank_id = ?", req.ID).First(&existingBank).Error; err == nil {
+		utils.SendErrorResponse(ctx, http.StatusConflict, "Bank ID already exists", "A bank with this ID already exists")
+		return
+	}
+
+	bank := models.Bank{
+		BankID:             req.ID,
+		ShortName:          req.ShortName,
+		FullName:           req.FullName,
+		LogoURL:            req.Logo,
+		WebsiteURL:         req.Website,
+		BankRoutingScheme:  req.BankRoutingScheme,
 		BankRoutingAddress: req.BankRoutingAddress,
-		CreatedAt:        time.Now(),
+		CreatedAt:          time.Now(),
+		UpdatedAt:          time.Now(),
+	}
+
+	if err := db.GetDB().Create(&bank).Error; err != nil {
+		utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Failed to create bank", err.Error())
+		return
+	}
+
+	response := BankResponse{
+		ID:               bank.BankID,
+		ShortName:        bank.ShortName,
+		FullName:         bank.FullName,
+		Logo:             bank.LogoURL,
+		Website:          bank.WebsiteURL,
+		BankRoutingScheme: bank.BankRoutingScheme,
+		BankRoutingAddress: bank.BankRoutingAddress,
+		CreatedAt:        bank.CreatedAt,
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)
 }
 
 func (c *BankController) GetBanks(ctx *gin.Context) {
+	var banks []models.Bank
+	if err := db.GetDB().Find(&banks).Error; err != nil {
+		utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Failed to retrieve banks", err.Error())
+		return
+	}
+
+	bankResponses := make([]BankResponse, len(banks))
+	for i, bank := range banks {
+		bankResponses[i] = BankResponse{
+			ID:               bank.BankID,
+			ShortName:        bank.ShortName,
+			FullName:         bank.FullName,
+			Logo:             bank.LogoURL,
+			Website:          bank.WebsiteURL,
+			BankRoutingScheme: bank.BankRoutingScheme,
+			BankRoutingAddress: bank.BankRoutingAddress,
+			CreatedAt:        bank.CreatedAt,
+		}
+	}
+
 	response := BanksResponse{
-		Banks: []BankResponse{
-			{
-				ID:               "bank_001",
-				ShortName:        "OBP Bank",
-				FullName:         "Open Bank Project Demo Bank",
-				Logo:             "https://static.openbankproject.com/images/sandbox/bank_x.png",
-				Website:          "https://www.example.com",
-				BankRoutingScheme: "OBP",
-				BankRoutingAddress: "obp.bank.001",
-				CreatedAt:        time.Now(),
-			},
-		},
+		Banks: bankResponses,
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)
@@ -92,15 +126,21 @@ func (c *BankController) GetBanks(ctx *gin.Context) {
 func (c *BankController) GetBankById(ctx *gin.Context) {
 	bankId := ctx.Param("bankId")
 
+	var bank models.Bank
+	if err := db.GetDB().Where("bank_id = ?", bankId).First(&bank).Error; err != nil {
+		utils.SendErrorResponse(ctx, http.StatusNotFound, "Bank not found", "Bank with ID "+bankId+" does not exist")
+		return
+	}
+
 	response := BankResponse{
-		ID:               bankId,
-		ShortName:        "OBP Bank",
-		FullName:         "Open Bank Project Demo Bank",
-		Logo:             "https://static.openbankproject.com/images/sandbox/bank_x.png",
-		Website:          "https://www.example.com",
-		BankRoutingScheme: "OBP",
-		BankRoutingAddress: "obp.bank." + bankId,
-		CreatedAt:        time.Now(),
+		ID:               bank.BankID,
+		ShortName:        bank.ShortName,
+		FullName:         bank.FullName,
+		Logo:             bank.LogoURL,
+		Website:          bank.WebsiteURL,
+		BankRoutingScheme: bank.BankRoutingScheme,
+		BankRoutingAddress: bank.BankRoutingAddress,
+		CreatedAt:        bank.CreatedAt,
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)

@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/ashish-019-hash/obp-api-backend/internal/services"
 	"github.com/ashish-019-hash/obp-api-backend/internal/utils"
+	"github.com/ashish-019-hash/obp-api-backend/internal/models"
+	"github.com/ashish-019-hash/obp-api-backend/pkg/db"
 )
 
 type UserController struct {
@@ -120,6 +122,37 @@ func (c *UserController) SyncExternalUser(ctx *gin.Context) {
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)
 }
 
+type UsersResponse struct {
+	Users []UserResponse `json:"users"`
+}
+
+func (c *UserController) GetUsers(ctx *gin.Context) {
+	var users []models.User
+	if err := db.GetDB().Find(&users).Error; err != nil {
+		utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Failed to retrieve users", err.Error())
+		return
+	}
+
+	userResponses := make([]UserResponse, len(users))
+	for i, user := range users {
+		userResponses[i] = UserResponse{
+			UserID:      user.UserID,
+			Username:    user.Name,
+			Provider:    user.Provider,
+			Email:       user.EmailAddress,
+			DisplayName: user.Name,
+			IsLocked:    false,
+			IsValidated: true,
+		}
+	}
+
+	response := UsersResponse{
+		Users: userResponses,
+	}
+
+	utils.SendJSONResponse(ctx, http.StatusOK, response)
+}
+
 type CreateUserRequest struct {
 	Username   string `json:"username" binding:"required"`
 	Email      string `json:"email" binding:"required"`
@@ -140,14 +173,37 @@ func (c *UserController) CreateUser(ctx *gin.Context) {
 		req.Provider = "local"
 	}
 
+	var existingUser models.User
+	if err := db.GetDB().Where("email_address = ? OR name = ?", req.Email, req.Username).First(&existingUser).Error; err == nil {
+		utils.SendErrorResponse(ctx, http.StatusConflict, "User already exists", "A user with this email or username already exists")
+		return
+	}
+
+	userID := "user_" + strconv.FormatInt(time.Now().Unix(), 10)
+	user := models.User{
+		UserID:         userID,
+		Provider:       req.Provider,
+		EmailAddress:   req.Email,
+		Name:           req.Username,
+		IsOriginalUser: true,
+		IsConsentUser:  false,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	if err := db.GetDB().Create(&user).Error; err != nil {
+		utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Failed to create user", err.Error())
+		return
+	}
+
 	response := UserResponse{
-		UserID:      "user_" + strconv.FormatInt(time.Now().Unix(), 10),
-		Username:    req.Username,
-		Provider:    req.Provider,
-		Email:       req.Email,
+		UserID:      user.UserID,
+		Username:    user.Name,
+		Provider:    user.Provider,
+		Email:       user.EmailAddress,
 		DisplayName: req.FirstName + " " + req.LastName,
 		IsLocked:    false,
-		IsValidated: false,
+		IsValidated: true,
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusCreated, response)

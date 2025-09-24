@@ -49,6 +49,7 @@ func SetupV510Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	v510.GET("/banks/:bankId", bankController.GetBankById)
 
 	v510.POST("/users", userController.CreateUser)
+	v510.GET("/users", userController.GetUsers)
 
 	v510.GET("/banks/:bankId/accounts/:accountId/views/:viewId", accountController.GetCoreAccountByIdThroughView)
 
