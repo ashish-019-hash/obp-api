@@ -115,6 +115,7 @@ func SetupV510Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	v510.DELETE("/my/consents/:consentId", consentController.RevokeMyConsent)
 	v510.POST("/banks/:bankId/consents", consentController.CreateConsent)
 	v510.POST("/my/consents/:scaMethod", consentController.CreateConsentImplicit)
+	v510.PUT("/consents/:consentId/status", consentController.UpdateConsentStatus)
 
 	v510.GET("/banks/:bankId/accounts/:accountId/views/:viewId/counterparties", counterpartyController.GetCounterparties)
 	v510.POST("/banks/:bankId/accounts/:accountId/views/:viewId/counterparties", counterpartyController.CreateCounterparty)

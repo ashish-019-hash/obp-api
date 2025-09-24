@@ -124,6 +124,10 @@ func (c *V510Controller) CreateRegulatedEntity(ctx *gin.Context) {
 		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
 		return
 	}
+	
+	if req.EntityType == "" {
+		req.EntityType = "BANK"
+	}
 
 	response := RegulatedEntityResponse{
 		RegulatedEntityID: "entity_" + strconv.FormatInt(time.Now().Unix(), 10),

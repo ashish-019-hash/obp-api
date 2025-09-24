@@ -187,22 +187,6 @@ func (c *ConsentController) RevokeMyConsent(ctx *gin.Context) {
 }
 
 func (c *ConsentController) CreateConsent(ctx *gin.Context) {
-	scaMethod := ctx.Param("scaMethod")
-
-	validMethods := []string{"SMS", "EMAIL", "IMPLICIT"}
-	isValid := false
-	for _, method := range validMethods {
-		if scaMethod == method {
-			isValid = true
-			break
-		}
-	}
-
-	if !isValid {
-		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid SCA method", "")
-		return
-	}
-
 	var req CreateConsentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Invalid JSON format", err.Error())
