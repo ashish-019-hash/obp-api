@@ -35,6 +35,11 @@ func InitDB() error {
 		&models.UserCustomerLink{},
 		&models.CustomerAccountLink{},
 		&models.AccountRouting{},
+		&models.Consumer{},
+		&models.Token{},
+		&models.UserCredential{},
+		&models.Entitlement{},
+		&models.LoginAttempt{},
 	)
 	if err != nil {
 		return err

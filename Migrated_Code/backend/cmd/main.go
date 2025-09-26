@@ -4,10 +4,13 @@ import (
 	"log"
 
 	"github.com/ashish-019-hash/obp-api-backend/internal/config"
+	"github.com/ashish-019-hash/obp-api-backend/internal/controllers"
+	"github.com/ashish-019-hash/obp-api-backend/internal/middleware"
 	"github.com/ashish-019-hash/obp-api-backend/internal/repositories"
 	"github.com/ashish-019-hash/obp-api-backend/internal/routes"
 	"github.com/ashish-019-hash/obp-api-backend/internal/services"
 	"github.com/ashish-019-hash/obp-api-backend/pkg/db"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -42,7 +45,19 @@ func main() {
 		consentRepo,
 	)
 
-	router := routes.SetupRoutes(orchestrationService)
+	authRepo := repositories.NewAuthRepository(db.GetDB())
+	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret)
+	authController := controllers.NewAuthController(authService)
+	authMiddleware := middleware.NewAuthMiddleware(authService, cfg.JWT.Secret)
+
+	router := gin.Default()
+
+	router.Use(middleware.CORSMiddleware())
+	router.Use(middleware.LoggerMiddleware())
+
+	routes.SetupRoutes(router, orchestrationService)
+	routes.SetupAuthRoutes(router, authController, authMiddleware)
+	routes.SetupV510Routes(router, orchestrationService, authMiddleware)
 
 	port := ":" + cfg.Port
 	log.Printf("Starting OBP-API Backend Server on port %s", cfg.Port)
@@ -54,18 +69,26 @@ func main() {
 	log.Println("  - Counterparty Limit Service (6-dimensional validation)")
 	log.Println("  - Security Service (challenge thresholds)")
 	log.Println("  - Orchestration Service (workflow coordination)")
+	log.Println("  - Authentication Service (JWT, OAuth, DirectLogin)")
+	log.Println("Authentication endpoints:")
+	log.Println("  POST /auth/direct-login - DirectLogin authentication")
+	log.Println("  POST /auth/consumers - Consumer registration")
+	log.Println("  POST /auth/users - User registration")
+	log.Println("  POST /oauth/initiate - OAuth request token")
+	log.Println("  POST /oauth/token - OAuth access token")
+	log.Println("  GET /oauth/authorize - OAuth authorization")
+	log.Println("  GET /my/user - Current user info (protected)")
 	log.Println("Server endpoints:")
 	log.Println("  GET /health - Health check")
 	log.Println("  GET /ping - Ping endpoint")
 	log.Println("  GET /api/v1/health - API health check")
-	log.Println("v5.1.0 API endpoints:")
-	log.Println("  GET /root - API info")
-	log.Println("  GET /ui/suggested-session-timeout - Session timeout")
-	log.Println("  GET /well-known - OAuth2 well-known URIs")
-	log.Println("  POST /banks/{bankId}/agents - Create agent")
-	log.Println("  GET /my/consents - Get user consents")
-	log.Println("  POST /banks/{bankId}/accounts/{accountId}/views/{viewId}/counterparties/{counterpartyId}/limits - Create counterparty limit")
-	log.Println("  ... and 40+ more v5.1.0 endpoints")
+	log.Println("v5.1.0 API endpoints (protected):")
+	log.Println("  GET /obp/v5.1.0/root - API info (public)")
+	log.Println("  GET /obp/v5.1.0/well-known - OAuth2 well-known URIs (public)")
+	log.Println("  GET /obp/v5.1.0/banks - Get banks (protected)")
+	log.Println("  POST /obp/v5.1.0/banks - Create bank (protected)")
+	log.Println("  GET /obp/v5.1.0/my/consents - Get user consents (protected)")
+	log.Println("  ... and 40+ more protected v5.1.0 endpoints")
 
 	if err := router.Run(port); err != nil {
 		log.Fatal("Failed to start server:", err)
