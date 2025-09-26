@@ -11,9 +11,10 @@ import (
 )
 
 type AuthenticationService struct {
-	db             *gorm.DB
-	authRepo       repositories.AuthRepository
-	jwtSecret      string
+	db            *gorm.DB
+	authRepo      repositories.AuthRepository
+	jwtSecret     string
+	configService *ConfigService
 }
 
 func NewAuthenticationService(db *gorm.DB, authRepo repositories.AuthRepository, jwtSecret string, configService *ConfigService) *AuthenticationService {

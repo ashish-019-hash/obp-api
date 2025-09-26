@@ -47,12 +47,12 @@ func main() {
 
 	authRepo := repositories.NewAuthRepository(db.GetDB())
 	configService := services.NewConfigService(db.GetDB())
+	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret, configService)
+	rateLimiter := services.NewRateLimiter(configService, db.GetDB())
 	randomService := services.NewSecureRandomService()
 	sessionService := services.NewSessionService(db.GetDB(), configService, randomService)
 	dauthService := services.NewDAuthService(db.GetDB(), configService, randomService, cfg.JWT.Secret)
 	gatewayService := services.NewGatewayLoginService(db.GetDB(), configService, randomService, cfg.JWT.Secret)
-	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret, configService)
-	rateLimiter := services.NewRateLimiter(configService, db.GetDB())
 	authController := controllers.NewAuthController(authService)
 	authMiddleware := middleware.NewAuthMiddleware(authService, rateLimiter, dauthService, gatewayService, cfg.JWT.Secret)
 
