@@ -16,11 +16,12 @@ type AuthenticationService struct {
 	jwtSecret      string
 }
 
-func NewAuthenticationService(db *gorm.DB, authRepo repositories.AuthRepository, jwtSecret string) *AuthenticationService {
+func NewAuthenticationService(db *gorm.DB, authRepo repositories.AuthRepository, jwtSecret string, configService *ConfigService) *AuthenticationService {
 	return &AuthenticationService{
-		db:        db,
-		authRepo:  authRepo,
-		jwtSecret: jwtSecret,
+		db:            db,
+		authRepo:      authRepo,
+		jwtSecret:     jwtSecret,
+		configService: configService,
 	}
 }
 
@@ -148,7 +149,8 @@ func (as *AuthenticationService) CreateDirectLoginToken(username, password, cons
 		return "", errors.New("account is locked")
 	}
 
-	duration := time.Duration(2419200) * time.Second // 4 weeks
+	tokenConfig, _ := as.configService.GetTokenConfiguration("DirectLogin")
+	duration := time.Duration(tokenConfig.ExpirationSeconds) * time.Second
 	claims := jwt.MapClaims{
 		"user_id":     credential.UserID,
 		"consumer_id": consumer.ConsumerID,
@@ -236,7 +238,8 @@ func (as *AuthenticationService) CreateOAuthRequestToken(consumerKey, callbackUR
 	tokenValue := as.generateSecureToken()
 	tokenSecret := as.generateSecureToken()
 
-	token := models.NewToken("request", tokenValue, consumer.ConsumerID, 3600) // 1 hour
+	tokenConfig, _ := as.configService.GetTokenConfiguration("OAuth")
+	token := models.NewToken("request", tokenValue, consumer.ConsumerID, tokenConfig.ExpirationSeconds)
 	token.TokenSecret = tokenSecret
 	token.CallbackURL = callbackURL
 
@@ -267,7 +270,8 @@ func (as *AuthenticationService) CreateOAuthAccessToken(oauthToken, oauthVerifie
 	tokenValue := as.generateSecureToken()
 	tokenSecret := as.generateSecureToken()
 
-	accessToken := models.NewToken("access", tokenValue, requestToken.ConsumerID, 2419200) // 4 weeks
+	tokenConfig, _ := as.configService.GetTokenConfiguration("OAuth")
+	accessToken := models.NewToken("access", tokenValue, requestToken.ConsumerID, tokenConfig.ExpirationSeconds)
 	accessToken.TokenSecret = tokenSecret
 	accessToken.UserID = requestToken.UserID
 
@@ -282,8 +286,11 @@ func (as *AuthenticationService) CreateOAuthAccessToken(oauthToken, oauthVerifie
 func (as *AuthenticationService) incrementFailedLoginAttempts(userCred *models.UserCredential) {
 	userCred.FailedLoginAttempts++
 
-	if userCred.FailedLoginAttempts >= 5 {
-		lockUntil := time.Now().Add(30 * time.Minute)
+	maxAttempts := as.configService.GetConfigInt("max.bad.login.attempts", 5)
+	lockDurationSeconds := as.configService.GetConfigInt("user.lock.duration.seconds", 1800)
+	
+	if userCred.FailedLoginAttempts >= maxAttempts {
+		lockUntil := time.Now().Add(time.Duration(lockDurationSeconds) * time.Second)
 		userCred.LockedUntil = &lockUntil
 	}
 
@@ -334,7 +341,8 @@ func (as *AuthenticationService) CreateUser(username, password, email, firstName
 		return nil, err
 	}
 	
-	credential, err := models.NewUserCredential(user.UserID, username, password)
+	bcryptCost := as.configService.GetConfigInt("bcrypt.cost", 12)
+	credential, err := models.NewUserCredentialWithConfig(user.UserID, username, password, bcryptCost)
 	if err != nil {
 		return nil, err
 	}

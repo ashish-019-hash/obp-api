@@ -46,6 +46,10 @@ func InitDB() error {
 		&models.ConsentAuthContext{},
 		&models.UserLock{},
 		&models.AuthenticationTypeValidation{},
+		&models.AuthenticationConfig{},
+		&models.ConsumerRateLimit{},
+		&models.SecuritySettings{},
+		&models.TokenConfiguration{},
 	)
 	if err != nil {
 		return err

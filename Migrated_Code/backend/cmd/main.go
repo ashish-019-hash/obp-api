@@ -46,10 +46,15 @@ func main() {
 	)
 
 	authRepo := repositories.NewAuthRepository(db.GetDB())
-	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret)
-	rateLimiter := services.NewRateLimiter()
+	configService := services.NewConfigService(db.GetDB())
+	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret, configService)
+	rateLimiter := services.NewRateLimiter(configService, db.GetDB())
 	authController := controllers.NewAuthController(authService)
 	authMiddleware := middleware.NewAuthMiddleware(authService, rateLimiter, cfg.JWT.Secret)
+
+	if err := configService.InitializeDefaultConfigs(); err != nil {
+		log.Printf("Warning: Failed to initialize default configurations: %v", err)
+	}
 
 	router := gin.Default()
 

@@ -3,14 +3,16 @@ package services
 import (
 	"sync"
 	"time"
+
+	"github.com/ashish-019-hash/obp-api-backend/internal/models"
+	"gorm.io/gorm"
 )
 
 type RateLimiter struct {
-	windows map[string]*SlidingWindow
-	mutex   sync.RWMutex
-	
-	requestsPerMinute int
-	requestsPerHour   int
+	windows       map[string]*SlidingWindow
+	mutex         sync.RWMutex
+	configService *ConfigService
+	db            *gorm.DB
 }
 
 type SlidingWindow struct {
@@ -18,11 +20,11 @@ type SlidingWindow struct {
 	mutex    sync.Mutex
 }
 
-func NewRateLimiter() *RateLimiter {
+func NewRateLimiter(configService *ConfigService, db *gorm.DB) *RateLimiter {
 	return &RateLimiter{
-		windows:           make(map[string]*SlidingWindow),
-		requestsPerMinute: 100,
-		requestsPerHour:   1000,
+		windows:       make(map[string]*SlidingWindow),
+		configService: configService,
+		db:            db,
 	}
 }
 
@@ -36,22 +38,30 @@ func (rl *RateLimiter) IsLimited(identifier string) bool {
 		rl.windows[identifier] = window
 	}
 	
-	return window.checkLimit(rl.requestsPerMinute, rl.requestsPerHour)
+	perMinute, perHour := rl.getRateLimits(identifier)
+	return window.checkLimit(perMinute, perHour)
 }
 
-func (rl *RateLimiter) SetLimits(perMinute, perHour int) {
-	rl.mutex.Lock()
-	defer rl.mutex.Unlock()
+func (rl *RateLimiter) getRateLimits(identifier string) (int, int) {
+	var consumer models.Consumer
+	if err := rl.db.Where("consumer_id = ?", identifier).First(&consumer).Error; err == nil {
+		if rateLimit, err := rl.configService.GetConsumerRateLimit(identifier); err == nil {
+			return rateLimit.RequestsPerMinute, rateLimit.RequestsPerHour
+		}
+	}
 	
-	rl.requestsPerMinute = perMinute
-	rl.requestsPerHour = perHour
+	perMinute := rl.configService.GetConfigInt("rate.limiting.anonymous.per.minute", 100)
+	perHour := rl.configService.GetConfigInt("rate.limiting.anonymous.per.hour", 1000)
+	
+	return perMinute, perHour
 }
 
-func (rl *RateLimiter) GetLimits() (int, int) {
-	rl.mutex.RLock()
-	defer rl.mutex.RUnlock()
-	
-	return rl.requestsPerMinute, rl.requestsPerHour
+func (rl *RateLimiter) SetConsumerLimits(consumerID string, perMinute, perHour, perDay int) error {
+	return rl.configService.SetConsumerRateLimit(consumerID, perMinute, perHour, perDay)
+}
+
+func (rl *RateLimiter) GetLimits(identifier string) (int, int) {
+	return rl.getRateLimits(identifier)
 }
 
 func (sw *SlidingWindow) checkLimit(perMinute, perHour int) bool {

@@ -108,15 +108,42 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 		log.Printf("Created test auth type validation for operation: %s", testAuthTypeValidation.OperationID)
 	}
 
+	testConsumerRateLimit := models.NewConsumerRateLimit(testConsumer.ConsumerID, 200, 2000, 20000)
+	if err := db.Create(testConsumerRateLimit).Error; err != nil {
+		log.Printf("Test consumer rate limit already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test consumer rate limit: %d req/min, %d req/hour", testConsumerRateLimit.RequestsPerMinute, testConsumerRateLimit.RequestsPerHour)
+	}
+
+	directLoginTokenConfig := models.NewTokenConfiguration("DirectLogin", 2419200, false, 0)
+	if err := db.Create(directLoginTokenConfig).Error; err != nil {
+		log.Printf("DirectLogin token config already exists or error creating: %v", err)
+	}
+
+	oauthTokenConfig := models.NewTokenConfiguration("OAuth", 3600, true, 86400)
+	if err := db.Create(oauthTokenConfig).Error; err != nil {
+		log.Printf("OAuth token config already exists or error creating: %v", err)
+	}
+
+	bcryptCostSetting := models.NewSecuritySettings("bcrypt.cost", "12", "int", "Bcrypt hashing cost for password security")
+	if err := db.Create(bcryptCostSetting).Error; err != nil {
+		log.Printf("Bcrypt cost setting already exists or error creating: %v", err)
+	}
+
 	log.Println("Authentication data seeding completed!")
 	log.Println("Test credentials:")
 	log.Println("  Username: testuser")
 	log.Println("  Password: password123")
 	log.Println("  Consumer Key: test_consumer_key_123")
 	log.Println("  Consumer Secret: test_consumer_secret_456")
+	log.Println("Configuration features enabled:")
+	log.Println("  - Database-backed authentication configuration")
+	log.Println("  - Consumer-specific rate limiting")
+	log.Println("  - Configurable token expiration times")
+	log.Println("  - Configurable security settings (bcrypt cost, lock duration)")
+	log.Println("  - Environment variable overrides with database fallbacks")
 	log.Println("Authentication features enabled:")
 	log.Println("  - Entitlement checking (role-based access control)")
-	log.Println("  - Rate limiting (100 req/min, 1000 req/hour)")
 	log.Println("  - Scope-based consumer permissions")
 	log.Println("  - View-based permission system")
 	log.Println("  - User authentication context tracking")

@@ -110,9 +110,9 @@ func NewToken(tokenType, tokenValue, consumerID string, duration int64) *Token {
 	}
 }
 
-func NewUserCredential(userID, username, password string) (*UserCredential, error) {
+func NewUserCredentialWithConfig(userID, username, password string, bcryptCost int) (*UserCredential, error) {
 	salt := generateSecureID()
-	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password+salt), bcrypt.DefaultCost)
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(password+salt), bcryptCost)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +126,10 @@ func NewUserCredential(userID, username, password string) (*UserCredential, erro
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}, nil
+}
+
+func NewUserCredential(userID, username, password string) (*UserCredential, error) {
+	return NewUserCredentialWithConfig(userID, username, password, 12)
 }
 
 func (uc *UserCredential) ValidatePassword(password string) bool {
