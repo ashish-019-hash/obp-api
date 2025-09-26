@@ -47,6 +47,8 @@ func main() {
 
 	authRepo := repositories.NewAuthRepository(db.GetDB())
 	configService := services.NewConfigService(db.GetDB())
+	randomService := services.NewSecureRandomService()
+	sessionService := services.NewSessionService(db.GetDB(), configService, randomService)
 	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret, configService)
 	rateLimiter := services.NewRateLimiter(configService, db.GetDB())
 	authController := controllers.NewAuthController(authService)
@@ -68,6 +70,8 @@ func main() {
 	if err := services.SeedAuthenticationData(db.GetDB(), authRepo); err != nil {
 		log.Printf("Warning: Failed to seed authentication data: %v", err)
 	}
+
+	sessionService.StartSessionCleanupRoutine()
 
 	port := ":" + cfg.Port
 	log.Printf("Starting OBP-API Backend Server on port %s", cfg.Port)

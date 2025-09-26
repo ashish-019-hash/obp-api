@@ -50,6 +50,12 @@ func InitDB() error {
 		&models.ConsumerRateLimit{},
 		&models.SecuritySettings{},
 		&models.TokenConfiguration{},
+		&models.UserAgreement{},
+		&models.UserInvitation{},
+		&models.UserAttribute{},
+		&models.UserRefresh{},
+		&models.APISession{},
+		&models.AccountWebhook{},
 	)
 	if err != nil {
 		return err

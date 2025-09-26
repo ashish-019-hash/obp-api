@@ -150,5 +150,41 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 	log.Println("  - User lock system")
 	log.Println("  - Authentication type validation")
 
+	termsAgreement := models.NewUserAgreement(testUser.UserID, "terms_and_conditions", "1.0")
+	if err := db.Create(termsAgreement).Error; err != nil {
+		log.Printf("Terms agreement already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created terms agreement for user: %s", testUser.UserID)
+	}
+
+	privacyAgreement := models.NewUserAgreement(testUser.UserID, "privacy_policy", "1.0")
+	if err := db.Create(privacyAgreement).Error; err != nil {
+		log.Printf("Privacy agreement already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created privacy agreement for user: %s", testUser.UserID)
+	}
+
+	testAttribute := models.NewUserAttribute(testUser.UserID, "department", "STRING", "Engineering", false)
+	if err := db.Create(testAttribute).Error; err != nil {
+		log.Printf("Test user attribute already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test user attribute: %s", testAttribute.Name)
+	}
+
+	testWebhook := models.NewAccountWebhook("bank_001", "account_001", testUser.UserID, "OnCreateTransaction", "https://example.com/webhook")
+	if err := db.Create(testWebhook).Error; err != nil {
+		log.Printf("Test webhook already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test webhook for trigger: %s", testWebhook.TriggerName)
+	}
+
+	log.Println("Extended authentication features:")
+	log.Println("  - User agreements and GDPR compliance")
+	log.Println("  - User invitations and attributes")
+	log.Println("  - API session management")
+	log.Println("  - Webhook/notification system")
+	log.Println("  - Secure random generation")
+	log.Println("  - User refresh token management")
+
 	return nil
 }
