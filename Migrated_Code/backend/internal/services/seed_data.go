@@ -186,5 +186,25 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 	log.Println("  - Secure random generation")
 	log.Println("  - User refresh token management")
 
+	dauthTokenConfig := models.NewTokenConfiguration("DAuth", 3600, false, 0) // 1 hour
+	if err := db.Create(dauthTokenConfig).Error; err != nil {
+		log.Printf("DAuth token config already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created DAuth token configuration")
+	}
+
+	gatewayTokenConfig := models.NewTokenConfiguration("GatewayLogin", 3600, false, 0) // 1 hour
+	if err := db.Create(gatewayTokenConfig).Error; err != nil {
+		log.Printf("Gateway token config already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created Gateway Login token configuration")
+	}
+
+	log.Println("Advanced authentication methods:")
+	log.Println("  - DAuth (Dynamic Authentication) with dynamic consumer registration")
+	log.Println("  - Gateway Login for Core Banking System integration")
+	log.Println("  - Certificate-based authentication support (configuration ready)")
+	log.Println("  - PSD2 compliance features (configuration ready)")
+
 	return nil
 }

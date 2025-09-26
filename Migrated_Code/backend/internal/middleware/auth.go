@@ -23,17 +23,31 @@ type AuthService interface {
 	ValidateAuthenticationTypeForOperation(operationID, authType string) (bool, error)
 }
 
-type AuthMiddleware struct {
-	authService AuthService
-	rateLimiter *services.RateLimiter
-	jwtSecret   string
+type DAuthService interface {
+	ValidateDAuthToken(tokenString string) (*models.User, *models.Consumer, error)
+	IsDAuthEnabled() bool
 }
 
-func NewAuthMiddleware(authService AuthService, rateLimiter *services.RateLimiter, jwtSecret string) *AuthMiddleware {
+type GatewayLoginService interface {
+	ValidateGatewayToken(tokenString string) (*models.User, *models.Consumer, error)
+	IsGatewayLoginEnabled() bool
+}
+
+type AuthMiddleware struct {
+	authService        AuthService
+	dauthService       DAuthService
+	gatewayService     GatewayLoginService
+	rateLimiter        *services.RateLimiter
+	jwtSecret          string
+}
+
+func NewAuthMiddleware(authService AuthService, rateLimiter *services.RateLimiter, dauthService DAuthService, gatewayService GatewayLoginService, jwtSecret string) *AuthMiddleware {
 	return &AuthMiddleware{
-		authService: authService,
-		rateLimiter: rateLimiter,
-		jwtSecret:   jwtSecret,
+		authService:    authService,
+		dauthService:   dauthService,
+		gatewayService: gatewayService,
+		rateLimiter:    rateLimiter,
+		jwtSecret:      jwtSecret,
 	}
 }
 
@@ -140,6 +154,94 @@ func (am *AuthMiddleware) DirectLoginAuth() gin.HandlerFunc {
 	})
 }
 
+func (am *AuthMiddleware) DAuthAuth() gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+		if !am.dauthService.IsDAuthEnabled() {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "DAuth authentication is disabled",
+				"code":  "OBP-20008",
+			})
+			c.Abort()
+			return
+		}
+
+		tokenString := extractDAuthToken(c)
+		if tokenString == "" {
+			am.recordFailedAttempt(c, "", "DAuth", "No token provided")
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "DAuth token required",
+				"code":  "OBP-20009",
+			})
+			c.Abort()
+			return
+		}
+
+		user, consumer, err := am.dauthService.ValidateDAuthToken(tokenString)
+		if err != nil {
+			am.recordFailedAttempt(c, "", "DAuth", err.Error())
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid DAuth token",
+				"code":  "OBP-20010",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Set("user", user)
+		c.Set("user_id", user.UserID)
+		c.Set("consumer", consumer)
+		c.Set("consumer_id", consumer.ConsumerID)
+		c.Set("auth_method", "DAuth")
+		
+		am.recordSuccessfulAttempt(c, user.UserID, "DAuth")
+		c.Next()
+	})
+}
+
+func (am *AuthMiddleware) GatewayLoginAuth() gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+		if !am.gatewayService.IsGatewayLoginEnabled() {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "Gateway Login authentication is disabled",
+				"code":  "OBP-20015",
+			})
+			c.Abort()
+			return
+		}
+
+		tokenString := extractGatewayToken(c)
+		if tokenString == "" {
+			am.recordFailedAttempt(c, "", "GatewayLogin", "No token provided")
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Gateway Login token required",
+				"code":  "OBP-20016",
+			})
+			c.Abort()
+			return
+		}
+
+		user, consumer, err := am.gatewayService.ValidateGatewayToken(tokenString)
+		if err != nil {
+			am.recordFailedAttempt(c, "", "GatewayLogin", err.Error())
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Invalid Gateway Login token",
+				"code":  "OBP-20017",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Set("user", user)
+		c.Set("user_id", user.UserID)
+		c.Set("consumer", consumer)
+		c.Set("consumer_id", consumer.ConsumerID)
+		c.Set("auth_method", "GatewayLogin")
+		
+		am.recordSuccessfulAttempt(c, user.UserID, "GatewayLogin")
+		c.Next()
+	})
+}
+
 func (am *AuthMiddleware) MultiAuth() gin.HandlerFunc {
 	return gin.HandlerFunc(func(c *gin.Context) {
 		if directLoginToken := extractDirectLoginToken(c); directLoginToken != "" {
@@ -151,6 +253,34 @@ func (am *AuthMiddleware) MultiAuth() gin.HandlerFunc {
 				c.Set("consumer_id", consumer.ConsumerID)
 				c.Set("auth_method", "DirectLogin")
 				am.recordSuccessfulAttempt(c, user.UserID, "DirectLogin")
+				c.Next()
+				return
+			}
+		}
+
+		if dauthToken := extractDAuthToken(c); dauthToken != "" && am.dauthService.IsDAuthEnabled() {
+			user, consumer, err := am.dauthService.ValidateDAuthToken(dauthToken)
+			if err == nil {
+				c.Set("user", user)
+				c.Set("user_id", user.UserID)
+				c.Set("consumer", consumer)
+				c.Set("consumer_id", consumer.ConsumerID)
+				c.Set("auth_method", "DAuth")
+				am.recordSuccessfulAttempt(c, user.UserID, "DAuth")
+				c.Next()
+				return
+			}
+		}
+
+		if gatewayToken := extractGatewayToken(c); gatewayToken != "" && am.gatewayService.IsGatewayLoginEnabled() {
+			user, consumer, err := am.gatewayService.ValidateGatewayToken(gatewayToken)
+			if err == nil {
+				c.Set("user", user)
+				c.Set("user_id", user.UserID)
+				c.Set("consumer", consumer)
+				c.Set("consumer_id", consumer.ConsumerID)
+				c.Set("auth_method", "GatewayLogin")
+				am.recordSuccessfulAttempt(c, user.UserID, "GatewayLogin")
 				c.Next()
 				return
 			}
@@ -182,7 +312,7 @@ func (am *AuthMiddleware) MultiAuth() gin.HandlerFunc {
 
 		am.recordFailedAttempt(c, "", "MultiAuth", "No valid authentication method")
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Authentication required. Supported methods: OAuth, DirectLogin, JWT",
+			"error": "Authentication required. Supported methods: OAuth, DirectLogin, JWT, DAuth, GatewayLogin",
 			"code":  "OBP-20007",
 		})
 		c.Abort()
@@ -350,6 +480,48 @@ func extractDirectLoginToken(c *gin.Context) string {
 			return strings.TrimSpace(parts[1])
 		}
 		return directLoginHeader
+	}
+	
+	return ""
+}
+
+func extractDAuthToken(c *gin.Context) string {
+	authHeader := c.GetHeader("Authorization")
+	
+	if strings.HasPrefix(authHeader, "DAuth ") {
+		return strings.TrimSpace(strings.TrimPrefix(authHeader, "DAuth "))
+	}
+	
+	dauthHeader := c.GetHeader("DAuth")
+	if dauthHeader != "" {
+		return strings.TrimSpace(dauthHeader)
+	}
+	
+	return ""
+}
+
+func extractGatewayToken(c *gin.Context) string {
+	authHeader := c.GetHeader("Authorization")
+	
+	if strings.HasPrefix(authHeader, "GatewayLogin") {
+		tokenPart := strings.TrimPrefix(authHeader, "GatewayLogin")
+		tokenPart = strings.TrimSpace(tokenPart)
+		
+		if strings.HasPrefix(tokenPart, "token=") {
+			token := strings.TrimPrefix(tokenPart, "token=")
+			return strings.Trim(token, "\"")
+		}
+		
+		return tokenPart
+	}
+	
+	gatewayHeader := c.GetHeader("GatewayLogin")
+	if gatewayHeader != "" {
+		if strings.HasPrefix(gatewayHeader, "token=") {
+			token := strings.TrimPrefix(gatewayHeader, "token=")
+			return strings.Trim(token, "\"")
+		}
+		return gatewayHeader
 	}
 	
 	return ""
