@@ -78,10 +78,16 @@ func (ac *AuthController) DirectLogin(c *gin.Context) {
 		return
 	}
 
+	tokenConfig, _ := ac.authService.GetTokenConfiguration("DirectLogin")
+	expiresIn := int(tokenConfig.ExpirationSeconds)
+	if expiresIn == 0 {
+		expiresIn = 2419200 // fallback to 4 weeks
+	}
+
 	response := DirectLoginResponse{
 		Token:     token,
 		TokenType: "DirectLogin",
-		ExpiresIn: 2419200, // 4 weeks in seconds
+		ExpiresIn: expiresIn,
 	}
 
 	utils.SendJSONResponse(c, http.StatusOK, response)

@@ -423,6 +423,10 @@ func (as *AuthenticationService) CheckConsumerScope(consumerID, roleName string)
 	return false, nil
 }
 
+func (as *AuthenticationService) GetTokenConfiguration(tokenType string) (*models.TokenConfiguration, error) {
+	return as.configService.GetTokenConfiguration(tokenType)
+}
+
 func (as *AuthenticationService) CreateUserAuthContext(userID, consumerID, key, value string) error {
 	context := models.NewUserAuthContext(userID, consumerID, key, value)
 	return as.authRepo.CreateUserAuthContext(context)
