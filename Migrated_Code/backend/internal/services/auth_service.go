@@ -382,3 +382,90 @@ func generateRandomString(length int) string {
 	}
 	return string(b)
 }
+
+func (as *AuthenticationService) GetEntitlementsByUserID(userID string) ([]*models.Entitlement, error) {
+	return as.authRepo.GetEntitlementsByUserID(userID)
+}
+
+func (as *AuthenticationService) CheckUserEntitlement(userID, roleName string) (bool, error) {
+	entitlements, err := as.GetEntitlementsByUserID(userID)
+	if err != nil {
+		return false, err
+	}
+	
+	for _, entitlement := range entitlements {
+		if entitlement.RoleName == roleName && entitlement.IsActive {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func (as *AuthenticationService) CheckConsumerScope(consumerID, roleName string) (bool, error) {
+	scopes, err := as.authRepo.GetScopesByConsumerID(consumerID)
+	if err != nil {
+		return false, err
+	}
+	
+	for _, scope := range scopes {
+		if scope.RoleName == roleName && scope.IsActive {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+func (as *AuthenticationService) CreateUserAuthContext(userID, consumerID, key, value string) error {
+	context := models.NewUserAuthContext(userID, consumerID, key, value)
+	return as.authRepo.CreateUserAuthContext(context)
+}
+
+func (as *AuthenticationService) GetUserAuthContexts(userID string) ([]*models.UserAuthContext, error) {
+	return as.authRepo.GetUserAuthContexts(userID)
+}
+
+func (as *AuthenticationService) IsUserLocked(userID string) (bool, error) {
+	return as.authRepo.IsUserLocked(userID)
+}
+
+func (as *AuthenticationService) LockUser(userID, lockType, reason string) error {
+	lock := models.NewUserLock(userID, lockType, reason)
+	return as.authRepo.CreateUserLock(lock)
+}
+
+func (as *AuthenticationService) UnlockUser(userID string) error {
+	return as.authRepo.UnlockUser(userID)
+}
+
+func (as *AuthenticationService) CreateScope(consumerID, roleName string, bankID *string) error {
+	scope := models.NewScope(consumerID, roleName, bankID)
+	return as.authRepo.CreateScope(scope)
+}
+
+func (as *AuthenticationService) GetScopesByConsumerID(consumerID string) ([]*models.Scope, error) {
+	return as.authRepo.GetScopesByConsumerID(consumerID)
+}
+
+func (as *AuthenticationService) CheckViewPermission(viewID, permissionName string) (bool, error) {
+	return as.authRepo.CheckViewPermission(viewID, permissionName)
+}
+
+func (as *AuthenticationService) CreateViewPermission(viewID, permissionName string, bankID, accountID *string) error {
+	permission := models.NewViewPermission(viewID, permissionName, bankID, accountID)
+	return as.authRepo.CreateViewPermission(permission)
+}
+
+func (as *AuthenticationService) ValidateAuthenticationTypeForOperation(operationID, authType string) (bool, error) {
+	validation, err := as.authRepo.GetAuthTypeValidationByOperation(operationID)
+	if err != nil {
+		return true, nil
+	}
+	
+	allowedTypes := validation.GetAuthTypes()
+	for _, allowedType := range allowedTypes {
+		if allowedType == authType {
+			return true, nil
+		}
+	}
+	return false, nil
+}

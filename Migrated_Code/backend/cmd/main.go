@@ -47,8 +47,9 @@ func main() {
 
 	authRepo := repositories.NewAuthRepository(db.GetDB())
 	authService := services.NewAuthenticationService(db.GetDB(), authRepo, cfg.JWT.Secret)
+	rateLimiter := services.NewRateLimiter()
 	authController := controllers.NewAuthController(authService)
-	authMiddleware := middleware.NewAuthMiddleware(authService, cfg.JWT.Secret)
+	authMiddleware := middleware.NewAuthMiddleware(authService, rateLimiter, cfg.JWT.Secret)
 
 	router := gin.Default()
 
@@ -58,6 +59,10 @@ func main() {
 	routes.SetupRoutes(router, orchestrationService)
 	routes.SetupAuthRoutes(router, authController, authMiddleware)
 	routes.SetupV510Routes(router, orchestrationService, authMiddleware)
+
+	if err := services.SeedAuthenticationData(db.GetDB(), authRepo); err != nil {
+		log.Printf("Warning: Failed to seed authentication data: %v", err)
+	}
 
 	port := ":" + cfg.Port
 	log.Printf("Starting OBP-API Backend Server on port %s", cfg.Port)

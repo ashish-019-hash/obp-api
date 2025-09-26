@@ -16,16 +16,23 @@ type AuthService interface {
 	ValidateOAuthToken(tokenString string) (*models.User, *models.Consumer, error)
 	ValidateDirectLoginToken(tokenString string) (*models.User, *models.Consumer, error)
 	RecordLoginAttempt(userID, username, ipAddress, userAgent, authMethod string, success bool, failureReason string) error
+	CheckUserEntitlement(userID, roleName string) (bool, error)
+	CheckConsumerScope(consumerID, roleName string) (bool, error)
+	IsUserLocked(userID string) (bool, error)
+	CheckViewPermission(viewID, permissionName string) (bool, error)
+	ValidateAuthenticationTypeForOperation(operationID, authType string) (bool, error)
 }
 
 type AuthMiddleware struct {
 	authService AuthService
+	rateLimiter *services.RateLimiter
 	jwtSecret   string
 }
 
-func NewAuthMiddleware(authService AuthService, jwtSecret string) *AuthMiddleware {
+func NewAuthMiddleware(authService AuthService, rateLimiter *services.RateLimiter, jwtSecret string) *AuthMiddleware {
 	return &AuthMiddleware{
 		authService: authService,
+		rateLimiter: rateLimiter,
 		jwtSecret:   jwtSecret,
 	}
 }
@@ -184,31 +191,109 @@ func (am *AuthMiddleware) MultiAuth() gin.HandlerFunc {
 
 func (am *AuthMiddleware) RequireEntitlement(requiredRole string) gin.HandlerFunc {
 	return gin.HandlerFunc(func(c *gin.Context) {
-		user, exists := c.Get("user")
+		userID, exists := c.Get("user_id")
 		if !exists {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "User context not found",
-				"code":  "OBP-20008",
+				"code":  "OBP-20001",
 			})
 			c.Abort()
 			return
 		}
 
-		userObj, ok := user.(*models.User)
-		if !ok {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Invalid user context",
-				"code":  "OBP-50001",
-			})
-			c.Abort()
-			return
-		}
-
-		hasEntitlement := am.checkUserEntitlement(userObj.UserID, requiredRole)
-		if !hasEntitlement {
+		if !am.checkUserEntitlement(userID.(string), requiredRole) {
 			c.JSON(http.StatusForbidden, gin.H{
-				"error": "Insufficient permissions. Required role: " + requiredRole,
-				"code":  "OBP-20009",
+				"error": "Insufficient entitlements. Required role: " + requiredRole,
+				"code":  "OBP-20006",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	})
+}
+
+func (am *AuthMiddleware) RequireScope(requiredScope string) gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+		consumerID, exists := c.Get("consumer_id")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Consumer context not found",
+				"code":  "OBP-20010",
+			})
+			c.Abort()
+			return
+		}
+
+		hasScope, err := am.authService.CheckConsumerScope(consumerID.(string), requiredScope)
+		if err != nil || !hasScope {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "Insufficient scope. Required scope: " + requiredScope,
+				"code":  "OBP-20011",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	})
+}
+
+func (am *AuthMiddleware) RequireViewPermission(viewID, permissionName string) gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+		hasPermission, err := am.authService.CheckViewPermission(viewID, permissionName)
+		if err != nil || !hasPermission {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "Insufficient view permissions. Required permission: " + permissionName,
+				"code":  "OBP-20012",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	})
+}
+
+func (am *AuthMiddleware) ValidateAuthType(operationID, authType string) gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+		isValid, err := am.authService.ValidateAuthenticationTypeForOperation(operationID, authType)
+		if err != nil || !isValid {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "Authentication type not allowed for this operation",
+				"code":  "OBP-20013",
+			})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	})
+}
+
+func (am *AuthMiddleware) CheckUserLock() gin.HandlerFunc {
+	return gin.HandlerFunc(func(c *gin.Context) {
+		userID, exists := c.Get("user_id")
+		if !exists {
+			c.Next()
+			return
+		}
+
+		isLocked, err := am.authService.IsUserLocked(userID.(string))
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Failed to check user lock status",
+				"code":  "OBP-50000",
+			})
+			c.Abort()
+			return
+		}
+
+		if isLocked {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": "User account is locked",
+				"code":  "OBP-20014",
 			})
 			c.Abort()
 			return
@@ -299,11 +384,15 @@ func (am *AuthMiddleware) recordFailedAttempt(c *gin.Context, userID, authMethod
 }
 
 func (am *AuthMiddleware) checkUserEntitlement(userID, requiredRole string) bool {
-	return true
+	hasEntitlement, err := am.authService.CheckUserEntitlement(userID, requiredRole)
+	if err != nil {
+		return false
+	}
+	return hasEntitlement
 }
 
 func (am *AuthMiddleware) isRateLimited(identifier string) bool {
-	return false
+	return am.rateLimiter.IsLimited(identifier)
 }
 
 type JWTClaims struct {

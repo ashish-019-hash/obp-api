@@ -73,12 +73,55 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 		log.Printf("Created admin entitlement: %s", adminEntitlement.RoleName)
 	}
 
+	testScope := models.NewScope(testConsumer.ConsumerID, "CanGetBanks", nil)
+	if err := authRepo.CreateScope(testScope); err != nil {
+		log.Printf("Test scope already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test scope: %s", testScope.RoleName)
+	}
+
+	adminScope := models.NewScope(testConsumer.ConsumerID, "CanGetApiCollections", nil)
+	if err := authRepo.CreateScope(adminScope); err != nil {
+		log.Printf("Admin scope already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created admin scope: %s", adminScope.RoleName)
+	}
+
+	testViewPermission := models.NewViewPermission("owner", "can_see_transaction_amount", nil, nil)
+	if err := authRepo.CreateViewPermission(testViewPermission); err != nil {
+		log.Printf("Test view permission already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test view permission: %s", testViewPermission.PermissionName)
+	}
+
+	testAuthContext := models.NewUserAuthContext(testUser.UserID, testConsumer.ConsumerID, "auth_method", "DirectLogin")
+	if err := authRepo.CreateUserAuthContext(testAuthContext); err != nil {
+		log.Printf("Test auth context already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test auth context: %s=%s", testAuthContext.Key, testAuthContext.Value)
+	}
+
+	testAuthTypeValidation := models.NewAuthenticationTypeValidation("GetBanks", []string{"JWT", "DirectLogin", "OAuth2"})
+	if err := authRepo.CreateAuthTypeValidation(testAuthTypeValidation); err != nil {
+		log.Printf("Test auth type validation already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created test auth type validation for operation: %s", testAuthTypeValidation.OperationID)
+	}
+
 	log.Println("Authentication data seeding completed!")
 	log.Println("Test credentials:")
 	log.Println("  Username: testuser")
 	log.Println("  Password: password123")
 	log.Println("  Consumer Key: test_consumer_key_123")
 	log.Println("  Consumer Secret: test_consumer_secret_456")
+	log.Println("Authentication features enabled:")
+	log.Println("  - Entitlement checking (role-based access control)")
+	log.Println("  - Rate limiting (100 req/min, 1000 req/hour)")
+	log.Println("  - Scope-based consumer permissions")
+	log.Println("  - View-based permission system")
+	log.Println("  - User authentication context tracking")
+	log.Println("  - User lock system")
+	log.Println("  - Authentication type validation")
 
 	return nil
 }

@@ -42,6 +42,122 @@ func NewAuthRepository(db *gorm.DB) AuthRepository {
 	return &authRepository{db: db}
 }
 
+func (r *authRepository) CreateScope(scope *models.Scope) error {
+	return r.db.Create(scope).Error
+}
+
+func (r *authRepository) GetScopesByConsumerID(consumerID string) ([]*models.Scope, error) {
+	var scopes []*models.Scope
+	err := r.db.Where("consumer_id = ? AND is_active = ?", consumerID, true).Find(&scopes).Error
+	return scopes, err
+}
+
+func (r *authRepository) GetScopeByID(scopeID string) (*models.Scope, error) {
+	var scope models.Scope
+	err := r.db.Where("scope_id = ?", scopeID).First(&scope).Error
+	if err != nil {
+		return nil, err
+	}
+	return &scope, nil
+}
+
+func (r *authRepository) DeleteScope(scopeID string) error {
+	return r.db.Where("scope_id = ?", scopeID).Delete(&models.Scope{}).Error
+}
+
+func (r *authRepository) CreateViewPermission(permission *models.ViewPermission) error {
+	return r.db.Create(permission).Error
+}
+
+func (r *authRepository) GetViewPermissionsByViewID(viewID string) ([]*models.ViewPermission, error) {
+	var permissions []*models.ViewPermission
+	err := r.db.Where("view_id = ? AND is_active = ?", viewID, true).Find(&permissions).Error
+	return permissions, err
+}
+
+func (r *authRepository) CheckViewPermission(viewID, permissionName string) (bool, error) {
+	var count int64
+	err := r.db.Model(&models.ViewPermission{}).Where("view_id = ? AND permission_name = ? AND is_active = ?", viewID, permissionName, true).Count(&count).Error
+	return count > 0, err
+}
+
+func (r *authRepository) DeleteViewPermission(permissionID string) error {
+	return r.db.Where("permission_id = ?", permissionID).Delete(&models.ViewPermission{}).Error
+}
+
+func (r *authRepository) CreateUserAuthContext(context *models.UserAuthContext) error {
+	return r.db.Create(context).Error
+}
+
+func (r *authRepository) GetUserAuthContexts(userID string) ([]*models.UserAuthContext, error) {
+	var contexts []*models.UserAuthContext
+	err := r.db.Where("user_id = ?", userID).Find(&contexts).Error
+	return contexts, err
+}
+
+func (r *authRepository) DeleteUserAuthContexts(userID string) error {
+	return r.db.Where("user_id = ?", userID).Delete(&models.UserAuthContext{}).Error
+}
+
+func (r *authRepository) DeleteUserAuthContextByID(contextID string) error {
+	return r.db.Where("context_id = ?", contextID).Delete(&models.UserAuthContext{}).Error
+}
+
+func (r *authRepository) CreateConsentAuthContext(context *models.ConsentAuthContext) error {
+	return r.db.Create(context).Error
+}
+
+func (r *authRepository) GetConsentAuthContexts(consentID string) ([]*models.ConsentAuthContext, error) {
+	var contexts []*models.ConsentAuthContext
+	err := r.db.Where("consent_id = ?", consentID).Find(&contexts).Error
+	return contexts, err
+}
+
+func (r *authRepository) DeleteConsentAuthContexts(consentID string) error {
+	return r.db.Where("consent_id = ?", consentID).Delete(&models.ConsentAuthContext{}).Error
+}
+
+func (r *authRepository) CreateUserLock(lock *models.UserLock) error {
+	return r.db.Create(lock).Error
+}
+
+func (r *authRepository) GetUserLocksByUserID(userID string) ([]*models.UserLock, error) {
+	var locks []*models.UserLock
+	err := r.db.Where("user_id = ? AND is_active = ?", userID, true).Find(&locks).Error
+	return locks, err
+}
+
+func (r *authRepository) IsUserLocked(userID string) (bool, error) {
+	var count int64
+	err := r.db.Model(&models.UserLock{}).Where("user_id = ? AND is_active = ?", userID, true).Count(&count).Error
+	return count > 0, err
+}
+
+func (r *authRepository) UnlockUser(userID string) error {
+	return r.db.Model(&models.UserLock{}).Where("user_id = ?", userID).Update("is_active", false).Error
+}
+
+func (r *authRepository) CreateAuthTypeValidation(validation *models.AuthenticationTypeValidation) error {
+	return r.db.Create(validation).Error
+}
+
+func (r *authRepository) GetAuthTypeValidationByOperation(operationID string) (*models.AuthenticationTypeValidation, error) {
+	var validation models.AuthenticationTypeValidation
+	err := r.db.Where("operation_id = ? AND is_active = ?", operationID, true).First(&validation).Error
+	if err != nil {
+		return nil, err
+	}
+	return &validation, nil
+}
+
+func (r *authRepository) UpdateAuthTypeValidation(validation *models.AuthenticationTypeValidation) error {
+	return r.db.Save(validation).Error
+}
+
+func (r *authRepository) DeleteAuthTypeValidation(operationID string) error {
+	return r.db.Where("operation_id = ?", operationID).Delete(&models.AuthenticationTypeValidation{}).Error
+}
+
 func (r *authRepository) CreateConsumer(consumer *models.Consumer) error {
 	return r.db.Create(consumer).Error
 }

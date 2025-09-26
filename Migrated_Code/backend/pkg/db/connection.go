@@ -40,6 +40,12 @@ func InitDB() error {
 		&models.UserCredential{},
 		&models.Entitlement{},
 		&models.LoginAttempt{},
+		&models.Scope{},
+		&models.ViewPermission{},
+		&models.UserAuthContext{},
+		&models.ConsentAuthContext{},
+		&models.UserLock{},
+		&models.AuthenticationTypeValidation{},
 	)
 	if err != nil {
 		return err
