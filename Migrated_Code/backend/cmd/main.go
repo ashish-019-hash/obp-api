@@ -60,6 +60,15 @@ func main() {
 		log.Printf("Warning: Failed to initialize default configurations: %v", err)
 	}
 
+	log.Println("Advanced authentication features enabled:")
+	log.Println("  - X.509 Certificate Processing with PSD2 role extraction")
+	log.Println("  - JWKS-based OAuth 2.0/OIDC token validation")
+	log.Println("  - Berlin Group PSD2 consent management")
+	log.Println("  - Multi-factor authentication (TOTP, SMS, Backup codes)")
+	log.Println("  - Certificate-based client authentication")
+	log.Println("  - Hydra ORY integration support")
+	log.Println("  - Advanced security features and compliance")
+
 	router := gin.Default()
 
 	router.Use(middleware.CORSMiddleware())

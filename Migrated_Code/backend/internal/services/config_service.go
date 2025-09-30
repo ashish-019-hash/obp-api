@@ -140,6 +140,18 @@ func (cs *ConfigService) InitializeDefaultConfigs() error {
 		{"rate.limiting.enabled", "true", "bool", "Enable rate limiting"},
 		{"rate.limiting.anonymous.per.minute", "100", "int", "Anonymous requests per minute"},
 		{"rate.limiting.authenticated.per.minute", "1000", "int", "Authenticated requests per minute"},
+		
+		{"oauth2.enabled", "true", "bool", "Enable OAuth 2.0/OIDC authentication"},
+		{"oauth2.jwk_set.url", "", "string", "JWKS URL for OAuth 2.0 token validation"},
+		{"berlin.group.consent.enabled", "true", "bool", "Enable Berlin Group PSD2 consent"},
+		{"mfa.enabled", "false", "bool", "Enable multi-factor authentication"},
+		{"certificate.validation.enabled", "true", "bool", "Enable X.509 certificate validation"},
+		{"psd2.role.validation", "true", "bool", "Enable PSD2 role validation from certificates"},
+		{"jwks.cache.duration.seconds", "3600", "int", "JWKS cache duration in seconds"},
+		{"gateway.token.expiration.seconds", "3600", "int", "Gateway Login token expiration"},
+		{"dauth.token.expiration.seconds", "3600", "int", "DAuth token expiration"},
+		{"hydra.admin.url", "", "string", "Hydra ORY admin URL"},
+		{"hydra.public.url", "", "string", "Hydra ORY public URL"},
 	}
 
 	for _, config := range defaults {

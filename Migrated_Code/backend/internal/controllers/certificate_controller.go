@@ -30,14 +30,31 @@ type CertificateInfoResponse struct {
 }
 
 func (c *CertificateController) GetMtlsClientCertificateInfo(ctx *gin.Context) {
+	if ctx.Request.TLS == nil || len(ctx.Request.TLS.PeerCertificates) == 0 {
+		utils.SendErrorResponse(ctx, http.StatusBadRequest, "No client certificate provided", "")
+		return
+	}
+
+	cert := ctx.Request.TLS.PeerCertificates[0]
+	
+	var email string
+	if len(cert.EmailAddresses) > 0 {
+		email = cert.EmailAddresses[0]
+	}
+
+	var organization string
+	if len(cert.Subject.Organization) > 0 {
+		organization = cert.Subject.Organization[0]
+	}
+
 	response := CertificateInfoResponse{
-		CommonName:   "client.example.com",
-		Organization: "Example Corp",
-		Email:        "admin@example.com",
-		ValidFrom:    time.Now().Add(-30 * 24 * time.Hour),
-		ValidTo:      time.Now().Add(365 * 24 * time.Hour),
-		SerialNumber: "123456789",
-		Issuer:       "Example CA",
+		CommonName:   cert.Subject.CommonName,
+		Organization: organization,
+		Email:        email,
+		ValidFrom:    cert.NotBefore,
+		ValidTo:      cert.NotAfter,
+		SerialNumber: cert.SerialNumber.String(),
+		Issuer:       cert.Issuer.CommonName,
 	}
 
 	utils.SendJSONResponse(ctx, http.StatusOK, response)

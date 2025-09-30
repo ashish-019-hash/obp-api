@@ -11,18 +11,31 @@ import (
 )
 
 type AuthenticationService struct {
-	db            *gorm.DB
-	authRepo      repositories.AuthRepository
-	jwtSecret     string
-	configService *ConfigService
+	db                  *gorm.DB
+	authRepo            repositories.AuthRepository
+	jwtSecret           string
+	configService       *ConfigService
+	x509Service         *X509Service
+	jwksService         *JWKSService
+	berlinGroupService  *BerlinGroupService
+	mfaService          *MFAService
 }
 
 func NewAuthenticationService(db *gorm.DB, authRepo repositories.AuthRepository, jwtSecret string, configService *ConfigService) *AuthenticationService {
+	x509Service := NewX509Service(configService)
+	jwksService := NewJWKSService(configService)
+	berlinGroupService := NewBerlinGroupService(db, configService)
+	mfaService := NewMFAService(db, configService)
+	
 	return &AuthenticationService{
-		db:            db,
-		authRepo:      authRepo,
-		jwtSecret:     jwtSecret,
-		configService: configService,
+		db:                 db,
+		authRepo:           authRepo,
+		jwtSecret:          jwtSecret,
+		configService:      configService,
+		x509Service:        x509Service,
+		jwksService:        jwksService,
+		berlinGroupService: berlinGroupService,
+		mfaService:         mfaService,
 	}
 }
 
@@ -481,4 +494,152 @@ func (as *AuthenticationService) ValidateAuthenticationTypeForOperation(operatio
 		}
 	}
 	return false, nil
+}
+
+
+func (as *AuthenticationService) ValidateOIDCToken(tokenString string) (*models.User, *models.Consumer, error) {
+	token, claims, err := as.jwksService.ValidateOIDCToken(tokenString)
+	if err != nil {
+		return nil, nil, fmt.Errorf("OIDC token validation failed: %w", err)
+	}
+
+	sub, ok := claims["sub"].(string)
+	if !ok {
+		return nil, nil, errors.New("missing subject in OIDC token")
+	}
+
+	email, _ := claims["email"].(string)
+	name, _ := claims["name"].(string)
+
+	var user models.User
+	err = as.db.Where("provider_id = ? AND provider = ?", sub, "oidc").First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		user = models.User{
+			UserID:     fmt.Sprintf("oidc_%s", sub),
+			Email:      email,
+			FirstName:  name,
+			Provider:   "oidc",
+			ProviderID: sub,
+			IsActive:   true,
+			CreatedAt:  time.Now(),
+			UpdatedAt:  time.Now(),
+		}
+		if err := as.db.Create(&user).Error; err != nil {
+			return nil, nil, fmt.Errorf("failed to create OIDC user: %w", err)
+		}
+	} else if err != nil {
+		return nil, nil, fmt.Errorf("database error: %w", err)
+	}
+
+	clientID, _ := claims["aud"].(string)
+	var consumer models.Consumer
+	err = as.db.Where("consumer_key = ?", clientID).First(&consumer).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		consumer = models.Consumer{
+			ConsumerID:  fmt.Sprintf("oidc_%s", clientID),
+			ConsumerKey: clientID,
+			Name:        "OIDC Client",
+			AppType:     "Web",
+			IsActive:    true,
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+		}
+		if err := as.db.Create(&consumer).Error; err != nil {
+			return nil, nil, fmt.Errorf("failed to create OIDC consumer: %w", err)
+		}
+	}
+
+	return &user, &consumer, nil
+}
+
+func (as *AuthenticationService) ValidateCertificateAuth(certPEM string) (*models.User, *models.Consumer, error) {
+	certInfo, err := as.x509Service.ValidateCertificate(certPEM)
+	if err != nil {
+		return nil, nil, fmt.Errorf("certificate validation failed: %w", err)
+	}
+
+	if !certInfo.IsValid {
+		return nil, nil, fmt.Errorf("invalid certificate: %s", certInfo.ValidationError)
+	}
+
+	var consumer models.Consumer
+	err = as.db.Where("client_certificate = ?", certPEM).First(&consumer).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, nil, errors.New("no consumer found for certificate")
+	} else if err != nil {
+		return nil, nil, fmt.Errorf("database error: %w", err)
+	}
+
+	var user models.User
+	err = as.db.Where("email = ?", certInfo.Email).First(&user).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		user = models.User{
+			UserID:    fmt.Sprintf("cert_%s", certInfo.SerialNumber),
+			Email:     certInfo.Email,
+			FirstName: certInfo.CommonName,
+			Provider:  "certificate",
+			ProviderID: certInfo.SerialNumber,
+			IsActive:  true,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		if err := as.db.Create(&user).Error; err != nil {
+			return nil, nil, fmt.Errorf("failed to create certificate user: %w", err)
+		}
+	}
+
+	return &user, &consumer, nil
+}
+
+func (as *AuthenticationService) CreateBerlinGroupConsent(userID, consumerID string, access interface{}) (string, error) {
+	consent := &models.Consent{
+		ConsentID:   fmt.Sprintf("bg_%d", time.Now().Unix()),
+		UserID:      userID,
+		ConsumerID:  consumerID,
+		Status:      "INITIATED",
+		ConsentType: "BERLIN_GROUP",
+		ValidFrom:   time.Now(),
+		ValidUntil:  time.Now().Add(24 * time.Hour),
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	if err := as.db.Create(consent).Error; err != nil {
+		return "", fmt.Errorf("failed to create Berlin Group consent: %w", err)
+	}
+
+	return consent.ConsentID, nil
+}
+
+func (as *AuthenticationService) RequiresMFA(userID string) bool {
+	return as.mfaService.RequiresMFA(userID)
+}
+
+func (as *AuthenticationService) SetupMFA(userID, method string) (interface{}, error) {
+	switch method {
+	case "TOTP":
+		secret, qrURL, err := as.mfaService.SetupTOTP(userID)
+		if err != nil {
+			return nil, err
+		}
+		return map[string]string{
+			"secret": secret,
+			"qr_url": qrURL,
+		}, nil
+	case "SMS":
+		return nil, errors.New("SMS MFA setup requires phone number")
+	default:
+		return nil, errors.New("unsupported MFA method")
+	}
+}
+
+func (as *AuthenticationService) VerifyMFA(userID, method, code string) error {
+	switch method {
+	case "TOTP":
+		return as.mfaService.VerifyTOTP(userID, code)
+	case "SMS":
+		return errors.New("SMS MFA verification requires challenge ID")
+	default:
+		return errors.New("unsupported MFA method")
+	}
 }
