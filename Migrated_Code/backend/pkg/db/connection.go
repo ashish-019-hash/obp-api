@@ -50,8 +50,6 @@ func InitDB() error {
 		&models.ConsumerRateLimit{},
 		&models.SecuritySettings{},
 		&models.TokenConfiguration{},
-		&services.MFAMethod{},
-		&services.MFAChallenge{},
 		&models.UserAgreement{},
 		&models.UserInvitation{},
 		&models.UserAttribute{},

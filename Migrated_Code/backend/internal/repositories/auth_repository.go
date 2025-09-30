@@ -32,6 +32,35 @@ type AuthRepository interface {
 	GetLoginAttemptsByUserID(userID string, limit, offset int) ([]*models.LoginAttempt, error)
 	GetLoginAttempts(limit, offset int) ([]*models.LoginAttempt, error)
 	GetFailedLoginAttempts(userID string, since int64) (int, error)
+
+	CreateScope(scope *models.Scope) error
+	GetScopesByConsumerID(consumerID string) ([]*models.Scope, error)
+	GetScopeByID(scopeID string) (*models.Scope, error)
+	DeleteScope(scopeID string) error
+
+	CreateViewPermission(permission *models.ViewPermission) error
+	GetViewPermissionsByViewID(viewID string) ([]*models.ViewPermission, error)
+	CheckViewPermission(viewID, permissionName string) (bool, error)
+	DeleteViewPermission(permissionID string) error
+
+	CreateUserAuthContext(context *models.UserAuthContext) error
+	GetUserAuthContexts(userID string) ([]*models.UserAuthContext, error)
+	DeleteUserAuthContexts(userID string) error
+	DeleteUserAuthContextByID(contextID string) error
+
+	CreateConsentAuthContext(context *models.ConsentAuthContext) error
+	GetConsentAuthContexts(consentID string) ([]*models.ConsentAuthContext, error)
+	DeleteConsentAuthContexts(consentID string) error
+
+	CreateUserLock(lock *models.UserLock) error
+	GetUserLocksByUserID(userID string) ([]*models.UserLock, error)
+	IsUserLocked(userID string) (bool, error)
+	UnlockUser(userID string) error
+
+	CreateAuthTypeValidation(validation *models.AuthenticationTypeValidation) error
+	GetAuthTypeValidationByOperation(operationID string) (*models.AuthenticationTypeValidation, error)
+	UpdateAuthTypeValidation(validation *models.AuthenticationTypeValidation) error
+	DeleteAuthTypeValidation(operationID string) error
 }
 
 type authRepository struct {

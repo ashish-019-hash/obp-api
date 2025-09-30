@@ -21,6 +21,13 @@ type User struct {
 	CreatedAt                         time.Time  `json:"created_at"`
 	UpdatedAt                         time.Time  `json:"updated_at"`
 	
+	Email                             string     `json:"email" gorm:"size:255"`
+	FirstName                         string     `json:"first_name" gorm:"size:255"`
+	LastName                          string     `json:"last_name" gorm:"size:255"`
+	ProviderID                        string     `json:"provider_id" gorm:"size:255"`
+	IsActive                          bool       `json:"is_active" gorm:"default:true"`
+	ConsentGiven                      bool       `json:"consent_given" gorm:"default:false"`
+	
 	UserCustomerLinks                 []UserCustomerLink `json:"user_customer_links,omitempty" gorm:"foreignKey:UserID;references:UserID"`
 	Consents                          []Consent          `json:"consents,omitempty" gorm:"foreignKey:UserID;references:UserID"`
 }

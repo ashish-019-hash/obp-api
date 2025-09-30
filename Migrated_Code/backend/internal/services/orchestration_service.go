@@ -7,6 +7,7 @@ import (
 
 	"github.com/ashish-019-hash/obp-api-backend/internal/models"
 	"github.com/ashish-019-hash/obp-api-backend/internal/repositories"
+	"gorm.io/gorm"
 )
 
 type OrchestrationService struct {
@@ -35,6 +36,33 @@ func NewOrchestrationService(
 	transactionRequestRepo repositories.TransactionRequestRepository,
 	consentRepo repositories.ConsentRepository,
 ) *OrchestrationService {
+	return &OrchestrationService{
+		currencyService:         currencyService,
+		transactionService:      transactionService,
+		counterpartyService:     counterpartyService,
+		securityService:         securityService,
+		bankRepo:               bankRepo,
+		accountRepo:            accountRepo,
+		customerRepo:           customerRepo,
+		transactionRepo:        transactionRepo,
+		transactionRequestRepo: transactionRequestRepo,
+		consentRepo:            consentRepo,
+	}
+}
+
+func NewOrchestrationServiceWithDB(db *gorm.DB) *OrchestrationService {
+	bankRepo := repositories.NewBankRepository(db)
+	accountRepo := repositories.NewBankAccountRepository(db)
+	customerRepo := repositories.NewCustomerRepository(db)
+	transactionRepo := repositories.NewTransactionRepository(db)
+	transactionRequestRepo := repositories.NewTransactionRequestRepository(db)
+	consentRepo := repositories.NewConsentRepository(db)
+
+	currencyService := NewCurrencyService()
+	transactionService := NewTransactionService(transactionRepo, accountRepo, currencyService)
+	counterpartyService := NewCounterpartyLimitService(currencyService)
+	securityService := NewSecurityService(consentRepo, currencyService)
+
 	return &OrchestrationService{
 		currencyService:         currencyService,
 		transactionService:      transactionService,
@@ -221,4 +249,44 @@ type TransactionSummary struct {
 
 func generateTransactionID() string {
 	return "txn_" + time.Now().Format("20060102150405")
+}
+
+func (s *OrchestrationService) GetCurrencyService() *CurrencyService {
+	return s.currencyService
+}
+
+func (s *OrchestrationService) GetTransactionService() *TransactionService {
+	return s.transactionService
+}
+
+func (s *OrchestrationService) GetCounterpartyService() *CounterpartyLimitService {
+	return s.counterpartyService
+}
+
+func (s *OrchestrationService) GetSecurityService() *SecurityService {
+	return s.securityService
+}
+
+func (s *OrchestrationService) GetBankRepo() repositories.BankRepository {
+	return s.bankRepo
+}
+
+func (s *OrchestrationService) GetAccountRepo() repositories.BankAccountRepository {
+	return s.accountRepo
+}
+
+func (s *OrchestrationService) GetCustomerRepo() repositories.CustomerRepository {
+	return s.customerRepo
+}
+
+func (s *OrchestrationService) GetTransactionRepo() repositories.TransactionRepository {
+	return s.transactionRepo
+}
+
+func (s *OrchestrationService) GetTransactionRequestRepo() repositories.TransactionRequestRepository {
+	return s.transactionRequestRepo
+}
+
+func (s *OrchestrationService) GetConsentRepo() repositories.ConsentRepository {
+	return s.consentRepo
 }
