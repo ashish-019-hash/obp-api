@@ -98,7 +98,7 @@ type AccountWebhook struct {
 	
 	User              *User     `json:"user,omitempty" gorm:"foreignKey:UserID;references:UserID"`
 	Bank              *Bank     `json:"bank,omitempty" gorm:"foreignKey:BankID;references:BankID"`
-	Account           *Account  `json:"account,omitempty" gorm:"foreignKey:AccountID;references:AccountID"`
+	Account           *BankAccount  `json:"account,omitempty" gorm:"foreignKey:AccountID;references:AccountID"`
 }
 
 func NewUserAgreement(userID, agreementType, version string) *UserAgreement {
