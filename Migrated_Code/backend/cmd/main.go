@@ -65,9 +65,8 @@ func main() {
 	router.Use(middleware.CORSMiddleware())
 	router.Use(middleware.LoggerMiddleware())
 
-	routes.SetupRoutes(router, orchestrationService)
+	routes.SetupRoutes(router, orchestrationService, authMiddleware)
 	routes.SetupAuthRoutes(router, authController, authMiddleware)
-	routes.SetupV510Routes(router, orchestrationService, authMiddleware)
 
 	if err := services.SeedAuthenticationData(db.GetDB(), authRepo); err != nil {
 		log.Printf("Warning: Failed to seed authentication data: %v", err)

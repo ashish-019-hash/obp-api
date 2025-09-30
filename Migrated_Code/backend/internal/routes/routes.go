@@ -7,29 +7,21 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRoutes(orchestrationService *services.OrchestrationService) *gin.Engine {
-	r := gin.New()
-
-	r.Use(middleware.Logger())
-	r.Use(middleware.CORS())
-	r.Use(gin.Recovery())
-
+func SetupRoutes(router *gin.Engine, orchestrationService *services.OrchestrationService, authMiddleware *middleware.AuthMiddleware) {
 	healthController := controllers.NewHealthController()
 
-	r.GET("/health", healthController.HealthCheck)
-	r.GET("/ping", func(c *gin.Context) {
+	router.GET("/health", healthController.HealthCheck)
+	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
 
-	v1 := r.Group("/api/v1")
+	v1 := router.Group("/api/v1")
 	{
 		v1.GET("/health", healthController.HealthCheck)
 		
 	}
 
-	SetupV510Routes(r, orchestrationService)
-
-	return r
+	SetupV510Routes(router, orchestrationService, authMiddleware)
 }
