@@ -166,7 +166,8 @@ func (c *ConsentController) CreateConsentImplicit(ctx *gin.Context) {
 		return
 	}
 
-	ttl := 3600 // default time to live
+	defaultTTL := 3600 // Default from configuration service would be better
+	ttl := defaultTTL
 	if req.TimeToLive != nil {
 		ttl = *req.TimeToLive
 	}

@@ -76,7 +76,8 @@ func (c *VRPController) CreateVRPConsentRequest(ctx *gin.Context) {
 		validFrom = *req.ValidFrom
 	}
 
-	timeToLive := 3600
+	defaultTTL := 3600 // Default from configuration service would be better
+	timeToLive := defaultTTL
 	if req.TimeToLive != nil {
 		timeToLive = *req.TimeToLive
 	}
