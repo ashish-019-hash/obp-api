@@ -469,7 +469,8 @@ func extractDirectLoginToken(c *gin.Context) string {
 	if strings.HasPrefix(authHeader, "DirectLogin") {
 		parts := strings.Split(authHeader, "token=")
 		if len(parts) == 2 {
-			return strings.TrimSpace(parts[1])
+			token := strings.TrimSpace(parts[1])
+			return token
 		}
 	}
 	

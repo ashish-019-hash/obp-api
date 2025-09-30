@@ -125,11 +125,15 @@ func (as *AuthenticationService) ValidateDirectLoginToken(tokenString string) (*
 	}
 
 	var user models.User
-	if err := as.db.Where("user_id = ? AND is_deleted != ?", userID, true).First(&user).Error; err != nil {
+	if err := as.db.Where("user_id = ?", userID).First(&user).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return nil, nil, errors.New("user not found")
 		}
 		return nil, nil, fmt.Errorf("database error: %w", err)
+	}
+
+	if user.IsDeleted != nil && *user.IsDeleted {
+		return nil, nil, errors.New("user account is deleted")
 	}
 
 	var consumer models.Consumer
@@ -498,7 +502,7 @@ func (as *AuthenticationService) ValidateAuthenticationTypeForOperation(operatio
 
 
 func (as *AuthenticationService) ValidateOIDCToken(tokenString string) (*models.User, *models.Consumer, error) {
-	token, claims, err := as.jwksService.ValidateOIDCToken(tokenString)
+	_, claims, err := as.jwksService.ValidateOIDCToken(tokenString)
 	if err != nil {
 		return nil, nil, fmt.Errorf("OIDC token validation failed: %w", err)
 	}

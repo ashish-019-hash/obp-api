@@ -71,8 +71,8 @@ func main() {
 
 	router := gin.Default()
 
-	router.Use(middleware.CORSMiddleware())
-	router.Use(middleware.LoggerMiddleware())
+	router.Use(middleware.CORS())
+	router.Use(middleware.Logger())
 
 	routes.SetupRoutes(router, orchestrationService, authMiddleware)
 	routes.SetupAuthRoutes(router, authController, authMiddleware)

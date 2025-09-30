@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 )
 
 type X509Service struct {
@@ -92,10 +93,13 @@ func (x *X509Service) parseCertificate(encodedCert string) (*x509.Certificate, e
 }
 
 func (x *X509Service) checkCertificateValidity(cert *x509.Certificate) error {
-	if err := cert.CheckTimeValidity(); err != nil {
-		return err
+	now := time.Now()
+	if now.Before(cert.NotBefore) {
+		return errors.New("certificate not yet valid")
 	}
-
+	if now.After(cert.NotAfter) {
+		return errors.New("certificate has expired")
+	}
 	
 	return nil
 }

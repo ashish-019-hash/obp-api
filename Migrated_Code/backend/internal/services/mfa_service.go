@@ -10,7 +10,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ashish-019-hash/obp-api-backend/internal/models"
 	"gorm.io/gorm"
 )
 

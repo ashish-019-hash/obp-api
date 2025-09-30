@@ -79,7 +79,7 @@ func (ac *AuthController) DirectLogin(c *gin.Context) {
 	}
 
 	tokenConfig, _ := ac.authService.GetTokenConfiguration("DirectLogin")
-	expiresIn := int(tokenConfig.ExpirationSeconds)
+	expiresIn := int64(tokenConfig.ExpirationSeconds)
 
 	response := DirectLoginResponse{
 		Token:     token,

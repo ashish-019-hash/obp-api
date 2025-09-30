@@ -15,7 +15,7 @@ var DB *gorm.DB
 func InitDB() error {
 	var err error
 	
-	DB, err = gorm.Open(sqlite.Open(":memory:"), &gorm.Config{
+	DB, err = gorm.Open(sqlite.Open("obp_test.db"), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 	if err != nil {
@@ -61,7 +61,7 @@ func InitDB() error {
 		return err
 	}
 
-	log.Println("SQLite in-memory database initialized with GORM")
+	log.Println("SQLite database initialized with GORM (obp_test.db)")
 	log.Println("All models auto-migrated successfully")
 	return nil
 }
