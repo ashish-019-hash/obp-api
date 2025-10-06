@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ashish-019-hash/obp-api-backend/internal/models"
@@ -65,14 +67,48 @@ type UserInfoResponse struct {
 	ConsentGiven bool   `json:"consent_given"`
 }
 
+func parseDirectLoginHeader(authHeader string) (username, password, consumerKey string) {
+	headerContent := strings.TrimSpace(authHeader[11:])
+	
+	usernameRegex := regexp.MustCompile(`username="([^"]*)"`)
+	passwordRegex := regexp.MustCompile(`password="([^"]*)"`)
+	consumerKeyRegex := regexp.MustCompile(`consumer_key="([^"]*)"`)
+	
+	if matches := usernameRegex.FindStringSubmatch(headerContent); len(matches) > 1 {
+		username = matches[1]
+	}
+	if matches := passwordRegex.FindStringSubmatch(headerContent); len(matches) > 1 {
+		password = matches[1]
+	}
+	if matches := consumerKeyRegex.FindStringSubmatch(headerContent); len(matches) > 1 {
+		consumerKey = matches[1]
+	}
+	
+	return username, password, consumerKey
+}
+
 func (ac *AuthController) DirectLogin(c *gin.Context) {
-	var req DirectLoginRequest
-	if err := c.ShouldBindJSON(&req); err != nil {
-		utils.SendErrorResponse(c, http.StatusBadRequest, "Invalid request format", err.Error())
-		return
+	var username, password, consumerKey string
+
+	authHeader := c.GetHeader("Authorization")
+	if authHeader != "" && len(authHeader) > 11 && authHeader[:11] == "DirectLogin" {
+		username, password, consumerKey = parseDirectLoginHeader(authHeader)
+		if username == "" || password == "" || consumerKey == "" {
+			utils.SendErrorResponse(c, http.StatusBadRequest, "Invalid DirectLogin authorization header format", "Expected format: DirectLogin username=\"...\", password=\"...\", consumer_key=\"...\"")
+			return
+		}
+	} else {
+		var req DirectLoginRequest
+		if err := c.ShouldBindJSON(&req); err != nil {
+			utils.SendErrorResponse(c, http.StatusBadRequest, "Invalid request format", "Provide either Authorization header (DirectLogin username=\"...\", password=\"...\", consumer_key=\"...\") or JSON body")
+			return
+		}
+		username = req.Username
+		password = req.Password
+		consumerKey = req.ConsumerKey
 	}
 
-	token, err := ac.authService.CreateDirectLoginToken(req.Username, req.Password, req.ConsumerKey)
+	token, err := ac.authService.CreateDirectLoginToken(username, password, consumerKey)
 	if err != nil {
 		utils.SendErrorResponse(c, http.StatusUnauthorized, "Authentication failed", err.Error())
 		return

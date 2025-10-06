@@ -11,7 +11,12 @@ func SetupAuthRoutes(router *gin.Engine, authController *controllers.AuthControl
 	{
 		auth.POST("/direct-login", authController.DirectLogin)
 		auth.POST("/consumers", authController.RegisterConsumer)
-		auth.POST("/users", authController.CreateUser)
+	}
+
+	authProtected := router.Group("/auth")
+	authProtected.Use(authMiddleware.MultiAuth())
+	{
+		authProtected.POST("/users", authController.CreateUser)
 	}
 
 	oauth := router.Group("/oauth")
