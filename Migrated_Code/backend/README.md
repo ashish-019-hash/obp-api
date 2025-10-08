@@ -64,6 +64,40 @@ go test ./test/...
 
 Configuration is loaded from environment variables. See `.env` file for available options.
 
+## Python E2E Test Suite
+
+A comprehensive Python-based E2E test suite is available that tests the API against OBP API standards.
+
+### Prerequisites
+- Python 3.9+
+- Backend server running on localhost:8080
+- Python E2E test suite extracted
+
+### Running Python E2E Tests
+
+1. **Start the backend server:**
+   ```bash
+   go run cmd/main.go
+   ```
+
+2. **In a separate terminal, run the test script:**
+   ```bash
+   ./run_python_e2e_tests.sh
+   ```
+
+3. **Or run tests manually:**
+   ```bash
+   cd ~/attachments/352dd94a-b827-4233-b58e-7c034da14e83/python-e2e-tests
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   python3 -m pytest tests/ -v
+   ```
+
+### Test Credentials
+
+Test credentials for both standard tests and Python E2E tests are automatically seeded when the server starts. Check the server logs on startup or see `internal/services/seed_data.go` for the complete list of seeded test data.
+
 ## Based on OBP-API Analysis
 
 This backend service is built based on comprehensive analysis of the Open Bank Project API:

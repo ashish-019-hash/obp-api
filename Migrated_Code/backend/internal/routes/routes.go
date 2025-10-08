@@ -23,5 +23,6 @@ func SetupRoutes(router *gin.Engine, orchestrationService *services.Orchestratio
 		
 	}
 
+	SetupV400Routes(router, orchestrationService, authMiddleware)
 	SetupV510Routes(router, orchestrationService, authMiddleware)
 }

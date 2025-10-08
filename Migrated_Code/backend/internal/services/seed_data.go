@@ -28,6 +28,22 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 		log.Printf("Created test consumer with key: %s", testConsumer.ConsumerKey)
 	}
 
+	e2eConsumer := models.NewConsumer(
+		"zhpstlps4qylsjxcerfsemzfbsz5lo05puo0qjqv",
+		"rbkxi5oyg5eqaos5dkuzwncjpapfukpzykv5htku",
+		"Python E2E Test App",
+		"demo@gmail.com",
+	)
+	e2eConsumer.Description = "Consumer for Python E2E test suite"
+	e2eConsumer.RedirectURL = "http://localhost:3000/callback"
+	e2eConsumer.AppType = "Web"
+
+	if err := authRepo.CreateConsumer(e2eConsumer); err != nil {
+		log.Printf("E2E consumer already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E test consumer with key: %s", e2eConsumer.ConsumerKey)
+	}
+
 	testUser := &models.User{
 		UserID:       "test_user_001",
 		Email:        "testuser@example.com",
@@ -59,6 +75,37 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 		log.Printf("Created test credentials for user: %s", testCredential.Username)
 	}
 
+	e2eUser := &models.User{
+		UserID:       "e2e_test_user_001",
+		Email:        "demo@gmail.com",
+		FirstName:    "Demo",
+		LastName:     "User",
+		Provider:     "local",
+		ProviderID:   "demouser",
+		IsActive:     true,
+		ConsentGiven: true,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	if err := db.Create(e2eUser).Error; err != nil {
+		log.Printf("E2E test user already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E test user: %s", e2eUser.Email)
+	}
+
+	e2eCredential, err := models.NewUserCredential(e2eUser.UserID, "demouser", "Hello@1234")
+	if err != nil {
+		log.Printf("Error creating E2E test credentials: %v", err)
+		return err
+	}
+
+	if err := authRepo.CreateUserCredential(e2eCredential); err != nil {
+		log.Printf("E2E test credentials already exist or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E test credentials for user: %s", e2eCredential.Username)
+	}
+
 	testEntitlement := models.NewEntitlement(testUser.UserID, "CanGetBanks", nil)
 	if err := authRepo.CreateEntitlement(testEntitlement); err != nil {
 		log.Printf("Test entitlement already exists or error creating: %v", err)
@@ -73,6 +120,20 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 		log.Printf("Created admin entitlement: %s", adminEntitlement.RoleName)
 	}
 
+	e2eEntitlement := models.NewEntitlement(e2eUser.UserID, "CanGetBanks", nil)
+	if err := authRepo.CreateEntitlement(e2eEntitlement); err != nil {
+		log.Printf("E2E test entitlement already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E test entitlement: %s", e2eEntitlement.RoleName)
+	}
+
+	e2eAdminEntitlement := models.NewEntitlement(e2eUser.UserID, "CanGetApiCollections", nil)
+	if err := authRepo.CreateEntitlement(e2eAdminEntitlement); err != nil {
+		log.Printf("E2E admin entitlement already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E admin entitlement: %s", e2eAdminEntitlement.RoleName)
+	}
+
 	testScope := models.NewScope(testConsumer.ConsumerID, "CanGetBanks", nil)
 	if err := authRepo.CreateScope(testScope); err != nil {
 		log.Printf("Test scope already exists or error creating: %v", err)
@@ -85,6 +146,20 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 		log.Printf("Admin scope already exists or error creating: %v", err)
 	} else {
 		log.Printf("Created admin scope: %s", adminScope.RoleName)
+	}
+
+	e2eScope := models.NewScope(e2eConsumer.ConsumerID, "CanGetBanks", nil)
+	if err := authRepo.CreateScope(e2eScope); err != nil {
+		log.Printf("E2E test scope already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E test scope: %s", e2eScope.RoleName)
+	}
+
+	e2eAdminScope := models.NewScope(e2eConsumer.ConsumerID, "CanGetApiCollections", nil)
+	if err := authRepo.CreateScope(e2eAdminScope); err != nil {
+		log.Printf("E2E admin scope already exists or error creating: %v", err)
+	} else {
+		log.Printf("Created E2E admin scope: %s", e2eAdminScope.RoleName)
 	}
 
 	testViewPermission := models.NewViewPermission("owner", "can_see_transaction_amount", nil, nil)
@@ -136,6 +211,11 @@ func SeedAuthenticationData(db *gorm.DB, authRepo repositories.AuthRepository) e
 	log.Println("  Password: password123")
 	log.Println("  Consumer Key: test_consumer_key_123")
 	log.Println("  Consumer Secret: test_consumer_secret_456")
+	log.Println("Python E2E Test credentials:")
+	log.Println("  Username: demouser")
+	log.Println("  Password: Hello@1234")
+	log.Println("  Consumer Key: zhpstlps4qylsjxcerfsemzfbsz5lo05puo0qjqv")
+	log.Println("  Consumer Secret: rbkxi5oyg5eqaos5dkuzwncjpapfukpzykv5htku")
 	log.Println("Configuration features enabled:")
 	log.Println("  - Database-backed authentication configuration")
 	log.Println("  - Consumer-specific rate limiting")
