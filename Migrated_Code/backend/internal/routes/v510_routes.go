@@ -138,17 +138,17 @@ func SetupV510Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	my.POST("/consents/:SCA_METHOD", consentController.CreateConsentImplicit)
 	protected.PUT("/consents/:CONSENT_ID/status", consentController.UpdateConsentStatus)
 
-	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties", counterpartyController.GetCounterparties)
-	protected.POST("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties", counterpartyController.CreateCounterparty)
-	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID", counterpartyController.GetCounterpartyById)
-	protected.PUT("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID", counterpartyController.UpdateCounterparty)
-	protected.DELETE("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID", counterpartyController.DeleteCounterparty)
+	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties", counterpartyController.GetCounterparties)
+	protected.POST("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties", counterpartyController.CreateCounterparty)
+	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID", counterpartyController.GetCounterpartyById)
+	protected.PUT("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID", counterpartyController.UpdateCounterparty)
+	protected.DELETE("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID", counterpartyController.DeleteCounterparty)
 
-	protected.POST("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.CreateCounterpartyLimit)
-	protected.PUT("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.UpdateCounterpartyLimit)
-	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.GetCounterpartyLimit)
-	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limit-status", counterpartyLimitController.GetCounterpartyLimitStatus)
-	protected.DELETE("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.DeleteCounterpartyLimit)
+	protected.POST("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.CreateCounterpartyLimit)
+	protected.PUT("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.UpdateCounterpartyLimit)
+	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.GetCounterpartyLimit)
+	protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limit-status", counterpartyLimitController.GetCounterpartyLimitStatus)
+	protected.DELETE("/banks/:BANK_ID/accounts/:ACCOUNT_ID/:VIEW_ID/counterparties/:COUNTERPARTY_ID/limits", counterpartyLimitController.DeleteCounterpartyLimit)
 
 
 	management.GET("/aggregate-metrics", metricsController.GetAggregateMetrics)
