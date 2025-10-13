@@ -85,7 +85,7 @@ func (c *RegulatedEntityAttributeController) DeleteRegulatedEntityAttribute(ctx 
 
 func (c *RegulatedEntityAttributeController) GetRegulatedEntityAttributeById(ctx *gin.Context) {
 	entityId := ctx.Param("REGULATED_ENTITY_ID")
-	attributeId := ctx.Param("ATTRIBUTE_ID")
+	attributeId := ctx.Param("REGULATED_ENTITY_ATTRIBUTE_ID")
 
 	response := RegulatedEntityAttributeResponse{
 		AttributeID:   attributeId,
@@ -134,7 +134,7 @@ func (c *RegulatedEntityAttributeController) GetAllRegulatedEntityAttributes(ctx
 
 func (c *RegulatedEntityAttributeController) UpdateRegulatedEntityAttribute(ctx *gin.Context) {
 	entityId := ctx.Param("REGULATED_ENTITY_ID")
-	attributeId := ctx.Param("ATTRIBUTE_ID")
+	attributeId := ctx.Param("REGULATED_ENTITY_ATTRIBUTE_ID")
 
 	var req RegulatedEntityAttributeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

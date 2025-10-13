@@ -204,10 +204,10 @@ func SetupV510Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	consumer.POST("/vrp-consent-requests", vrpController.CreateVRPConsentRequest)
 
 	protected.POST("/regulated-entities/:REGULATED_ENTITY_ID/attributes", regulatedEntityAttributeController.CreateRegulatedEntityAttribute)
-	protected.DELETE("/regulated-entities/:REGULATED_ENTITY_ID/attributes/:ATTRIBUTE_ID", regulatedEntityAttributeController.DeleteRegulatedEntityAttribute)
-	protected.GET("/regulated-entities/:REGULATED_ENTITY_ID/attributes/:ATTRIBUTE_ID", regulatedEntityAttributeController.GetRegulatedEntityAttributeById)
+	protected.DELETE("/regulated-entities/:REGULATED_ENTITY_ID/attributes/:REGULATED_ENTITY_ATTRIBUTE_ID", regulatedEntityAttributeController.DeleteRegulatedEntityAttribute)
+	protected.GET("/regulated-entities/:REGULATED_ENTITY_ID/attributes/:REGULATED_ENTITY_ATTRIBUTE_ID", regulatedEntityAttributeController.GetRegulatedEntityAttributeById)
 	protected.GET("/regulated-entities/:REGULATED_ENTITY_ID/attributes", regulatedEntityAttributeController.GetAllRegulatedEntityAttributes)
-	protected.PUT("/regulated-entities/:REGULATED_ENTITY_ID/attributes/:ATTRIBUTE_ID", regulatedEntityAttributeController.UpdateRegulatedEntityAttribute)
+	protected.PUT("/regulated-entities/:REGULATED_ENTITY_ID/attributes/:REGULATED_ENTITY_ATTRIBUTE_ID", regulatedEntityAttributeController.UpdateRegulatedEntityAttribute)
 
 	protected.GET("/webui-props", webuiController.GetWebUIProps)
 
