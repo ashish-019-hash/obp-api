@@ -76,7 +76,7 @@ func (c *AtmController) GetAtmAttributes(ctx *gin.Context) {
 }
 
 func (c *AtmController) GetAtmAttribute(ctx *gin.Context) {
-	atmAttributeId := ctx.Param("atmAttributeId")
+	atmAttributeId := ctx.Param("ATM_ATTRIBUTE_ID")
 
 	response := AtmAttributeResponse{
 		AtmAttributeID: atmAttributeId,
@@ -90,7 +90,7 @@ func (c *AtmController) GetAtmAttribute(ctx *gin.Context) {
 }
 
 func (c *AtmController) UpdateAtmAttribute(ctx *gin.Context) {
-	atmAttributeId := ctx.Param("atmAttributeId")
+	atmAttributeId := ctx.Param("ATM_ATTRIBUTE_ID")
 
 	var req AtmAttributeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

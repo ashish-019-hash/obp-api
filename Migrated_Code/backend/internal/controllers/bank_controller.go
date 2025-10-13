@@ -124,7 +124,7 @@ func (c *BankController) GetBanks(ctx *gin.Context) {
 }
 
 func (c *BankController) GetBankById(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
+	bankId := ctx.Param("BANK_ID")
 
 	var bank models.Bank
 	if err := db.GetDB().Where("bank_id = ?", bankId).First(&bank).Error; err != nil {

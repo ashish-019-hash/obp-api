@@ -75,10 +75,10 @@ type CounterpartyLimitStatus struct {
 }
 
 func (c *CounterpartyController) CreateCounterpartyLimit(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
-	viewId := ctx.Param("viewId")
-	counterpartyId := ctx.Param("counterpartyId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
+	viewId := ctx.Param("VIEW_ID")
+	counterpartyId := ctx.Param("COUNTERPARTY_ID")
 
 	var req CounterpartyLimitRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -106,10 +106,10 @@ func (c *CounterpartyController) CreateCounterpartyLimit(ctx *gin.Context) {
 }
 
 func (c *CounterpartyController) UpdateCounterpartyLimit(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
-	viewId := ctx.Param("viewId")
-	counterpartyId := ctx.Param("counterpartyId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
+	viewId := ctx.Param("VIEW_ID")
+	counterpartyId := ctx.Param("COUNTERPARTY_ID")
 
 	var req CounterpartyLimitRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -137,10 +137,10 @@ func (c *CounterpartyController) UpdateCounterpartyLimit(ctx *gin.Context) {
 }
 
 func (c *CounterpartyController) GetCounterpartyLimit(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
-	viewId := ctx.Param("viewId")
-	counterpartyId := ctx.Param("counterpartyId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
+	viewId := ctx.Param("VIEW_ID")
+	counterpartyId := ctx.Param("COUNTERPARTY_ID")
 
 	response := CounterpartyLimitResponse{
 		CounterpartyLimitID:              "limit_existing",
@@ -162,10 +162,10 @@ func (c *CounterpartyController) GetCounterpartyLimit(ctx *gin.Context) {
 }
 
 func (c *CounterpartyController) GetCounterpartyLimitStatus(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
-	viewId := ctx.Param("viewId")
-	counterpartyId := ctx.Param("counterpartyId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
+	viewId := ctx.Param("VIEW_ID")
+	counterpartyId := ctx.Param("COUNTERPARTY_ID")
 
 	response := CounterpartyLimitStatusResponse{
 		CounterpartyLimitID:              "limit_existing",
@@ -254,7 +254,7 @@ func (c *CounterpartyController) CreateCounterparty(ctx *gin.Context) {
 }
 
 func (c *CounterpartyController) GetCounterpartyById(ctx *gin.Context) {
-	counterpartyId := ctx.Param("counterpartyId")
+	counterpartyId := ctx.Param("COUNTERPARTY_ID")
 
 	response := CounterpartyResponse{
 		CounterpartyID: counterpartyId,
@@ -269,7 +269,7 @@ func (c *CounterpartyController) GetCounterpartyById(ctx *gin.Context) {
 }
 
 func (c *CounterpartyController) UpdateCounterparty(ctx *gin.Context) {
-	counterpartyId := ctx.Param("counterpartyId")
+	counterpartyId := ctx.Param("COUNTERPARTY_ID")
 	
 	var req UpdateCounterpartyRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

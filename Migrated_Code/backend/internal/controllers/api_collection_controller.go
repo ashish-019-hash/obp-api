@@ -101,7 +101,7 @@ func (c *ApiCollectionController) GetMyApiCollections(ctx *gin.Context) {
 }
 
 func (c *ApiCollectionController) UpdateMyApiCollection(ctx *gin.Context) {
-	collectionId := ctx.Param("collectionId")
+	collectionId := ctx.Param("API_COLLECTION_ID")
 
 	var req CreateApiCollectionRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

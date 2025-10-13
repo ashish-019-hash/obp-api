@@ -69,7 +69,7 @@ type AtmsResponse struct {
 }
 
 func (c *AtmManagementController) CreateAtm(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
+	bankId := ctx.Param("BANK_ID")
 
 	var req AtmRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -96,8 +96,8 @@ func (c *AtmManagementController) CreateAtm(ctx *gin.Context) {
 }
 
 func (c *AtmManagementController) UpdateAtm(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	atmId := ctx.Param("atmId")
+	bankId := ctx.Param("BANK_ID")
+	atmId := ctx.Param("ATM_ID")
 
 	var req AtmRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -124,7 +124,7 @@ func (c *AtmManagementController) UpdateAtm(ctx *gin.Context) {
 }
 
 func (c *AtmManagementController) GetAtms(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
+	bankId := ctx.Param("BANK_ID")
 
 	response := AtmsResponse{
 		Atms: []AtmResponse{
@@ -158,8 +158,8 @@ func (c *AtmManagementController) GetAtms(ctx *gin.Context) {
 }
 
 func (c *AtmManagementController) GetAtm(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	atmId := ctx.Param("atmId")
+	bankId := ctx.Param("BANK_ID")
+	atmId := ctx.Param("ATM_ID")
 
 	response := AtmResponse{
 		ID:     atmId,

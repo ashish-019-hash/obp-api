@@ -107,7 +107,7 @@ func (c *V510Controller) GetRegulatedEntities(ctx *gin.Context) {
 }
 
 func (c *V510Controller) GetRegulatedEntityById(ctx *gin.Context) {
-	regulatedEntityId := ctx.Param("regulatedEntityId")
+	regulatedEntityId := ctx.Param("REGULATED_ENTITY_ID")
 
 	response := RegulatedEntityResponse{
 		RegulatedEntityID: regulatedEntityId,
@@ -293,9 +293,9 @@ func (c *V510Controller) GetApiTags(ctx *gin.Context) {
 }
 
 func (c *V510Controller) GetCoreAccountByIdThroughView(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
-	viewId := ctx.Param("viewId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
+	viewId := ctx.Param("VIEW_ID")
 
 	response := gin.H{
 		"id":       accountId,
@@ -335,7 +335,7 @@ func (c *V510Controller) GetCoreAccountByIdThroughView(ctx *gin.Context) {
 }
 
 func (c *V510Controller) UpdateMyApiCollection(ctx *gin.Context) {
-	apiCollectionId := ctx.Param("apiCollectionId")
+	apiCollectionId := ctx.Param("API_COLLECTION_ID")
 
 	var req gin.H
 	if err := ctx.ShouldBindJSON(&req); err != nil {

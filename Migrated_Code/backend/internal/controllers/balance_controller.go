@@ -146,7 +146,7 @@ func (c *BalanceController) CreateBankAccountBalance(ctx *gin.Context) {
 }
 
 func (c *BalanceController) GetBankAccountBalanceById(ctx *gin.Context) {
-	balanceId := ctx.Param("balanceId")
+	balanceId := ctx.Param("BALANCE_ID")
 
 	response := BalanceResponse{
 		ID:       balanceId,
@@ -184,7 +184,7 @@ func (c *BalanceController) GetAllBankAccountBalances(ctx *gin.Context) {
 }
 
 func (c *BalanceController) UpdateBankAccountBalance(ctx *gin.Context) {
-	balanceId := ctx.Param("balanceId")
+	balanceId := ctx.Param("BALANCE_ID")
 
 	var req CreateBalanceRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

@@ -62,7 +62,7 @@ func (c *ScopeController) CreateScope(ctx *gin.Context) {
 }
 
 func (c *ScopeController) GetConsumerScopes(ctx *gin.Context) {
-	consumerID := ctx.Param("consumerId")
+	consumerID := ctx.Param("CONSUMER_ID")
 
 	scopes, err := c.authService.GetScopesByConsumerID(consumerID)
 	if err != nil {

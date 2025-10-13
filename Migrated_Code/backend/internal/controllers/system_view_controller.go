@@ -34,7 +34,7 @@ type ViewPermissionResponse struct {
 }
 
 func (c *SystemViewController) AddSystemViewPermission(ctx *gin.Context) {
-	viewId := ctx.Param("viewId")
+	viewId := ctx.Param("VIEW_ID")
 
 	var req CreateViewPermissionRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

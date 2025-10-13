@@ -20,21 +20,21 @@ func SetupV400Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	protected.Use(authMiddleware.MultiAuth())
 	{
 		protected.GET("/banks", bankController.GetBanks)
-		protected.GET("/banks/:bankId", bankController.GetBankById)
+		protected.GET("/banks/:BANK_ID", bankController.GetBankById)
 		protected.POST("/banks", bankController.CreateBank)
 		
-		protected.GET("/banks/:bankId/accounts/:accountId/views/:viewId", accountController.GetCoreAccountByIdThroughView)
+		protected.GET("/banks/:BANK_ID/accounts/:ACCOUNT_ID/views/:VIEW_ID", accountController.GetCoreAccountByIdThroughView)
 		
-		protected.POST("/banks/:bankId/atms", atmManagementController.CreateAtm)
-		protected.PUT("/banks/:bankId/atms/:atmId", atmManagementController.UpdateAtm)
-		protected.GET("/banks/:bankId/atms", atmManagementController.GetAtms)
-		protected.GET("/banks/:bankId/atms/:atmId", atmManagementController.GetAtm)
-		protected.DELETE("/banks/:bankId/atms/:atmId", atmManagementController.DeleteAtm)
+		protected.POST("/banks/:BANK_ID/atms", atmManagementController.CreateAtm)
+		protected.PUT("/banks/:BANK_ID/atms/:ATM_ID", atmManagementController.UpdateAtm)
+		protected.GET("/banks/:BANK_ID/atms", atmManagementController.GetAtms)
+		protected.GET("/banks/:BANK_ID/atms/:ATM_ID", atmManagementController.GetAtm)
+		protected.DELETE("/banks/:BANK_ID/atms/:ATM_ID", atmManagementController.DeleteAtm)
 		
-		protected.POST("/banks/:bankId/atms/:atmId/attributes", atmController.CreateAtmAttribute)
-		protected.GET("/banks/:bankId/atms/:atmId/attributes", atmController.GetAtmAttributes)
-		protected.PUT("/banks/:bankId/atms/:atmId/attributes/:atmAttributeId", atmController.UpdateAtmAttribute)
-		protected.DELETE("/banks/:bankId/atms/:atmId/attributes/:atmAttributeId", atmController.DeleteAtmAttribute)
+		protected.POST("/banks/:BANK_ID/atms/:ATM_ID/attributes", atmController.CreateAtmAttribute)
+		protected.GET("/banks/:BANK_ID/atms/:ATM_ID/attributes", atmController.GetAtmAttributes)
+		protected.PUT("/banks/:BANK_ID/atms/:ATM_ID/attributes/:ATM_ATTRIBUTE_ID", atmController.UpdateAtmAttribute)
+		protected.DELETE("/banks/:BANK_ID/atms/:ATM_ID/attributes/:ATM_ATTRIBUTE_ID", atmController.DeleteAtmAttribute)
 		
 		protected.POST("/users", userController.CreateUser)
 		protected.GET("/users", userController.GetUsers)

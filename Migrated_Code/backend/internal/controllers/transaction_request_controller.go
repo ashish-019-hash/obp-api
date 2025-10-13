@@ -95,7 +95,7 @@ type TransactionRequestStatusResponse struct {
 }
 
 func (c *TransactionRequestController) GetTransactionRequestById(ctx *gin.Context) {
-	transactionRequestId := ctx.Param("transactionRequestId")
+	transactionRequestId := ctx.Param("TRANSACTION_REQUEST_ID")
 
 	response := TransactionRequestResponse{
 		ID:   transactionRequestId,
@@ -147,8 +147,8 @@ func (c *TransactionRequestController) GetTransactionRequestById(ctx *gin.Contex
 }
 
 func (c *TransactionRequestController) GetTransactionRequests(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
 
 	response := TransactionRequestsResponse{
 		TransactionRequests: []TransactionRequestResponse{
@@ -203,7 +203,7 @@ func (c *TransactionRequestController) GetTransactionRequests(ctx *gin.Context) 
 }
 
 func (c *TransactionRequestController) UpdateTransactionRequestStatus(ctx *gin.Context) {
-	transactionRequestId := ctx.Param("transactionRequestId")
+	transactionRequestId := ctx.Param("TRANSACTION_REQUEST_ID")
 
 	var req UpdateTransactionRequestStatusRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {

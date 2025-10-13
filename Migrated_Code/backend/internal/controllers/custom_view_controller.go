@@ -82,7 +82,7 @@ func (c *CustomViewController) CreateCustomView(ctx *gin.Context) {
 }
 
 func (c *CustomViewController) UpdateCustomView(ctx *gin.Context) {
-	targetViewId := ctx.Param("targetViewId")
+	targetViewId := ctx.Param("TARGET_VIEW_ID")
 
 	var req UpdateCustomViewRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -113,7 +113,7 @@ func (c *CustomViewController) UpdateCustomView(ctx *gin.Context) {
 }
 
 func (c *CustomViewController) GetCustomView(ctx *gin.Context) {
-	targetViewId := ctx.Param("targetViewId")
+	targetViewId := ctx.Param("TARGET_VIEW_ID")
 
 	if len(targetViewId) == 0 || targetViewId[0:1] != "_" {
 		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Custom view ID must start with underscore", "")
@@ -143,7 +143,7 @@ func (c *CustomViewController) GetCustomView(ctx *gin.Context) {
 }
 
 func (c *CustomViewController) DeleteCustomView(ctx *gin.Context) {
-	targetViewId := ctx.Param("targetViewId")
+	targetViewId := ctx.Param("TARGET_VIEW_ID")
 
 	if len(targetViewId) == 0 || targetViewId[0:1] != "_" {
 		utils.SendErrorResponse(ctx, http.StatusBadRequest, "Custom view ID must start with underscore", "")

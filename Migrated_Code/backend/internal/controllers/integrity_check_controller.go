@@ -71,7 +71,7 @@ func (c *IntegrityCheckController) AccountCurrencyCheck(ctx *gin.Context) {
 }
 
 func (c *IntegrityCheckController) OrphanedAccountCheck(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
+	bankId := ctx.Param("BANK_ID")
 	
 	response := gin.H{
 		"bank_id": bankId,

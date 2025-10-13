@@ -63,7 +63,7 @@ func (c *AgentController) CreateAgent(ctx *gin.Context) {
 }
 
 func (c *AgentController) UpdateAgentStatus(ctx *gin.Context) {
-	agentId := ctx.Param("agentId")
+	agentId := ctx.Param("AGENT_ID")
 
 	var req UpdateAgentStatusRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -81,7 +81,7 @@ func (c *AgentController) UpdateAgentStatus(ctx *gin.Context) {
 }
 
 func (c *AgentController) GetAgent(ctx *gin.Context) {
-	agentId := ctx.Param("agentId")
+	agentId := ctx.Param("AGENT_ID")
 
 	response := AgentResponse{
 		AgentID:           agentId,

@@ -44,8 +44,8 @@ type UserValidatedResponse struct {
 }
 
 func (c *UserController) GetUserByProviderAndUsername(ctx *gin.Context) {
-	provider := ctx.Param("provider")
-	username := ctx.Param("username")
+	provider := ctx.Param("PROVIDER")
+	username := ctx.Param("USERNAME")
 
 	response := UserResponse{
 		UserID:      "user_" + strconv.FormatInt(time.Now().Unix(), 10),
@@ -106,8 +106,8 @@ func (c *UserController) ValidateUserByUserId(ctx *gin.Context) {
 }
 
 func (c *UserController) SyncExternalUser(ctx *gin.Context) {
-	provider := ctx.Param("provider")
-	providerId := ctx.Param("providerId")
+	provider := ctx.Param("PROVIDER")
+	providerId := ctx.Param("PROVIDER_ID")
 
 	response := UserResponse{
 		UserID:      "user_" + strconv.FormatInt(time.Now().Unix(), 10),

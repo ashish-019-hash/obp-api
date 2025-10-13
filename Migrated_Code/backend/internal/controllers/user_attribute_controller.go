@@ -41,7 +41,7 @@ type UserAttributesResponse struct {
 }
 
 func (c *UserAttributeController) CreateNonPersonalUserAttribute(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	userId := ctx.Param("USER_ID")
 
 	var req CreateUserAttributeRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -81,7 +81,7 @@ func (c *UserAttributeController) DeleteNonPersonalUserAttribute(ctx *gin.Contex
 }
 
 func (c *UserAttributeController) GetNonPersonalUserAttributes(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	userId := ctx.Param("USER_ID")
 
 	response := UserAttributesResponse{
 		UserAttributes: []UserAttributeResponse{
@@ -110,8 +110,8 @@ func (c *UserAttributeController) GetNonPersonalUserAttributes(ctx *gin.Context)
 }
 
 func (c *UserAttributeController) GetAccountsHeldByUserAtBank(ctx *gin.Context) {
-	userId := ctx.Param("userId")
-	bankId := ctx.Param("bankId")
+	userId := ctx.Param("USER_ID")
+	bankId := ctx.Param("BANK_ID")
 
 	response := gin.H{
 		"user_id": userId,
@@ -141,7 +141,7 @@ func (c *UserAttributeController) GetAccountsHeldByUserAtBank(ctx *gin.Context) 
 }
 
 func (c *UserAttributeController) GetAccountsHeldByUser(ctx *gin.Context) {
-	userId := ctx.Param("userId")
+	userId := ctx.Param("USER_ID")
 
 	response := gin.H{
 		"user_id": userId,

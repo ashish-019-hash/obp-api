@@ -53,7 +53,7 @@ type ConsentEntitlementRequest struct {
 }
 
 func (c *ConsentController) UpdateConsentStatus(ctx *gin.Context) {
-	consentId := ctx.Param("consentId")
+	consentId := ctx.Param("CONSENT_ID")
 
 	var req UpdateConsentStatusRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -121,7 +121,7 @@ func (c *ConsentController) GetConsents(ctx *gin.Context) {
 }
 
 func (c *ConsentController) GetConsentByConsentId(ctx *gin.Context) {
-	consentId := ctx.Param("consentId")
+	consentId := ctx.Param("CONSENT_ID")
 
 	response := ConsentResponse{
 		ConsentID: consentId,
@@ -135,7 +135,7 @@ func (c *ConsentController) GetConsentByConsentId(ctx *gin.Context) {
 }
 
 func (c *ConsentController) GetConsentByConsentIdViaConsumer(ctx *gin.Context) {
-	consentId := ctx.Param("consentId")
+	consentId := ctx.Param("CONSENT_ID")
 
 	response := ConsentResponse{
 		ConsentID: consentId,
@@ -158,7 +158,7 @@ func (c *ConsentController) SelfRevokeConsent(ctx *gin.Context) {
 }
 
 func (c *ConsentController) CreateConsentImplicit(ctx *gin.Context) {
-	_ = ctx.Param("scaMethod") // SCA method for consent creation
+	_ = ctx.Param("SCA_METHOD") // SCA method for consent creation
 
 	var req CreateConsentRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -219,7 +219,7 @@ func (c *ConsentController) GetMtlsClientCertificateInfo(ctx *gin.Context) {
 }
 
 func (c *ConsentController) UpdateConsentStatusByConsent(ctx *gin.Context) {
-	consentId := ctx.Param("consentId")
+	consentId := ctx.Param("CONSENT_ID")
 	
 	var req gin.H
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -237,7 +237,7 @@ func (c *ConsentController) UpdateConsentStatusByConsent(ctx *gin.Context) {
 }
 
 func (c *ConsentController) UpdateConsentAccountAccessByConsentId(ctx *gin.Context) {
-	consentId := ctx.Param("consentId")
+	consentId := ctx.Param("CONSENT_ID")
 	
 	var req gin.H
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -255,7 +255,7 @@ func (c *ConsentController) UpdateConsentAccountAccessByConsentId(ctx *gin.Conte
 }
 
 func (c *ConsentController) UpdateConsentUserIdByConsentId(ctx *gin.Context) {
-	consentId := ctx.Param("consentId")
+	consentId := ctx.Param("CONSENT_ID")
 	
 	var req gin.H
 	if err := ctx.ShouldBindJSON(&req); err != nil {

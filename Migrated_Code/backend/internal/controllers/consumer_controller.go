@@ -149,7 +149,7 @@ func (c *ConsumerController) CreateMyConsumer(ctx *gin.Context) {
 }
 
 func (c *ConsumerController) UpdateConsumerRedirectURL(ctx *gin.Context) {
-	consumerId := ctx.Param("consumerId")
+	consumerId := ctx.Param("CONSUMER_ID")
 
 	var req ConsumerRedirectURLRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -168,7 +168,7 @@ func (c *ConsumerController) UpdateConsumerRedirectURL(ctx *gin.Context) {
 }
 
 func (c *ConsumerController) UpdateConsumerLogoURL(ctx *gin.Context) {
-	consumerId := ctx.Param("consumerId")
+	consumerId := ctx.Param("CONSUMER_ID")
 
 	var req ConsumerLogoURLRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -187,7 +187,7 @@ func (c *ConsumerController) UpdateConsumerLogoURL(ctx *gin.Context) {
 }
 
 func (c *ConsumerController) UpdateConsumerCertificate(ctx *gin.Context) {
-	consumerId := ctx.Param("consumerId")
+	consumerId := ctx.Param("CONSUMER_ID")
 
 	var req ConsumerCertificateRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -206,7 +206,7 @@ func (c *ConsumerController) UpdateConsumerCertificate(ctx *gin.Context) {
 }
 
 func (c *ConsumerController) UpdateConsumerName(ctx *gin.Context) {
-	consumerId := ctx.Param("consumerId")
+	consumerId := ctx.Param("CONSUMER_ID")
 
 	var req ConsumerNameRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -224,7 +224,7 @@ func (c *ConsumerController) UpdateConsumerName(ctx *gin.Context) {
 }
 
 func (c *ConsumerController) GetConsumer(ctx *gin.Context) {
-	consumerId := ctx.Param("consumerId")
+	consumerId := ctx.Param("CONSUMER_ID")
 
 	response := ConsumerResponse{
 		ConsumerID:      consumerId,

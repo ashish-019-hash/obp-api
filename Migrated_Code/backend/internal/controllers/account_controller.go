@@ -70,9 +70,9 @@ type AccountView struct {
 }
 
 func (c *AccountController) GetCoreAccountByIdThroughView(ctx *gin.Context) {
-	bankId := ctx.Param("bankId")
-	accountId := ctx.Param("accountId")
-	viewId := ctx.Param("viewId")
+	bankId := ctx.Param("BANK_ID")
+	accountId := ctx.Param("ACCOUNT_ID")
+	viewId := ctx.Param("VIEW_ID")
 
 	response := CoreAccountResponse{
 		ID:     accountId,
