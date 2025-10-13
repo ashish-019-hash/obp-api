@@ -1,0 +1,199 @@
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1200" height="800" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="600" y="30" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2c3e50">
+    Business Rules Dependencies - OBP-API
+  </text>
+  
+  <!-- Legend -->
+  <g id="legend">
+    <rect x="20" y="50" width="300" height="180" fill="white" stroke="#ddd" stroke-width="1" rx="5"/>
+    <text x="30" y="70" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Legend</text>
+    
+    <!-- Rule Categories -->
+    <rect x="30" y="80" width="15" height="15" fill="#3498db"/>
+    <text x="50" y="92" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Currency Exchange</text>
+    
+    <rect x="30" y="100" width="15" height="15" fill="#e74c3c"/>
+    <text x="50" y="112" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Transaction Limits</text>
+    
+    <rect x="30" y="120" width="15" height="15" fill="#2ecc71"/>
+    <text x="50" y="132" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Transaction Processing</text>
+    
+    <rect x="30" y="140" width="15" height="15" fill="#f39c12"/>
+    <text x="50" y="152" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Product Fees</text>
+    
+    <rect x="30" y="160" width="15" height="15" fill="#9b59b6"/>
+    <text x="50" y="172" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">Security & Access</text>
+    
+    <!-- Dependency Types -->
+    <text x="170" y="92" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">→ Direct Dependency</text>
+    <text x="170" y="112" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">⤷ Conditional Flow</text>
+    <text x="170" y="132" font-family="Arial, sans-serif" font-size="12" fill="#2c3e50">⟲ Feedback Loop</text>
+  </g>
+  
+  <!-- Currency Exchange Rules (Blue) -->
+  <g id="currency-exchange">
+    <rect x="50" y="280" width="180" height="120" fill="#3498db" stroke="#2980b9" stroke-width="2" rx="8"/>
+    <text x="140" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Currency Exchange</text>
+    
+    <text x="60" y="320" font-family="Arial, sans-serif" font-size="11" fill="white">• Fallback Rate Lookup</text>
+    <text x="60" y="335" font-family="Arial, sans-serif" font-size="11" fill="white">• HALF_UP Rounding</text>
+    <text x="60" y="350" font-family="Arial, sans-serif" font-size="11" fill="white">• 3-Tier Resolution</text>
+    <text x="60" y="365" font-family="Arial, sans-serif" font-size="11" fill="white">• 14 Currencies</text>
+    <text x="60" y="385" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">fx.scala:40-162</text>
+  </g>
+  
+  <!-- Transaction Processing Rules (Green) -->
+  <g id="transaction-processing">
+    <rect x="300" y="280" width="180" height="120" fill="#2ecc71" stroke="#27ae60" stroke-width="2" rx="8"/>
+    <text x="390" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Transaction Processing</text>
+    
+    <text x="310" y="320" font-family="Arial, sans-serif" font-size="11" fill="white">• Credit/Debit Classification</text>
+    <text x="310" y="335" font-family="Arial, sans-serif" font-size="11" fill="white">• Amount Sign Logic</text>
+    <text x="310" y="350" font-family="Arial, sans-serif" font-size="11" fill="white">• Currency Unit Conversion</text>
+    <text x="310" y="365" font-family="Arial, sans-serif" font-size="11" fill="white">• Balance Events</text>
+    <text x="310" y="385" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">MappedTransaction.scala</text>
+  </g>
+  
+  <!-- Counterparty Limits (Red) -->
+  <g id="counterparty-limits">
+    <rect x="550" y="280" width="180" height="120" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="8"/>
+    <text x="640" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Transaction Limits</text>
+    
+    <text x="560" y="320" font-family="Arial, sans-serif" font-size="11" fill="white">• 6-Dimensional Limits</text>
+    <text x="560" y="335" font-family="Arial, sans-serif" font-size="11" fill="white">• Amount + Count Limits</text>
+    <text x="560" y="350" font-family="Arial, sans-serif" font-size="11" fill="white">• Single/Monthly/Yearly</text>
+    <text x="560" y="365" font-family="Arial, sans-serif" font-size="11" fill="white">• Validation Logic</text>
+    <text x="560" y="385" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">CounterpartyLimit.scala</text>
+  </g>
+  
+  <!-- Security & Access Rules (Purple) -->
+  <g id="security-access">
+    <rect x="800" y="280" width="180" height="120" fill="#9b59b6" stroke="#8e44ad" stroke-width="2" rx="8"/>
+    <text x="890" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Security &amp; Access</text>
+    
+    <text x="810" y="320" font-family="Arial, sans-serif" font-size="11" fill="white">• Challenge Thresholds</text>
+    <text x="810" y="335" font-family="Arial, sans-serif" font-size="11" fill="white">• View-Based Access</text>
+    <text x="810" y="350" font-family="Arial, sans-serif" font-size="11" fill="white">• Amount Visibility</text>
+    <text x="810" y="365" font-family="Arial, sans-serif" font-size="11" fill="white">• Balance Permissions</text>
+    <text x="810" y="385" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">LocalMappedConnector.scala</text>
+  </g>
+  
+  <!-- Product Fees (Orange) -->
+  <g id="product-fees">
+    <rect x="300" y="480" width="180" height="100" fill="#f39c12" stroke="#e67e22" stroke-width="2" rx="8"/>
+    <text x="390" y="500" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white">Product Fees</text>
+    
+    <text x="310" y="520" font-family="Arial, sans-serif" font-size="11" fill="white">• Fee Structure</text>
+    <text x="310" y="535" font-family="Arial, sans-serif" font-size="11" fill="white">• Amount + Currency</text>
+    <text x="310" y="550" font-family="Arial, sans-serif" font-size="11" fill="white">• Frequency Rules</text>
+    <text x="310" y="570" font-family="Arial, sans-serif" font-size="10" fill="#ecf0f1">ProductFeeProvider.scala</text>
+  </g>
+  
+  <!-- Primary Dependencies (Thick arrows) -->
+  <!-- Currency Exchange → Transaction Processing -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#34495e"/>
+    </marker>
+  </defs>
+  
+  <line x1="230" y1="340" x2="300" y2="340" stroke="#34495e" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="265" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#34495e">FX Conversion</text>
+  
+  <!-- Transaction Processing → Counterparty Limits -->
+  <line x1="480" y1="340" x2="550" y2="340" stroke="#34495e" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="515" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#34495e">Validation</text>
+  
+  <!-- Counterparty Limits → Security & Access -->
+  <line x1="730" y1="340" x2="800" y2="340" stroke="#34495e" stroke-width="3" marker-end="url(#arrowhead)"/>
+  <text x="765" y="335" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#34495e">Challenge</text>
+  
+  <!-- Secondary Dependencies (Thinner arrows) -->
+  <!-- Currency Exchange → Product Fees -->
+  <line x1="140" y1="400" x2="140" y2="450" x3="300" y3="530" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)" fill="none" d="M140,400 L140,450 L300,530"/>
+  <text x="220" y="470" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#7f8c8d">Multi-currency Fees</text>
+  
+  <!-- Transaction Processing → Product Fees -->
+  <line x1="390" y1="400" x2="390" y2="480" stroke="#7f8c8d" stroke-width="2" marker-end="url(#arrowhead)"/>
+  <text x="395" y="440" font-family="Arial, sans-serif" font-size="9" fill="#7f8c8d">Fee Calculation</text>
+  
+  <!-- Feedback Loops (Curved arrows) -->
+  <!-- Security Challenge → Transaction Processing (feedback) -->
+  <path d="M 890,400 Q 950,450 890,500 Q 830,450 500,420" stroke="#95a5a6" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+  <text x="700" y="460" text-anchor="middle" font-family="Arial, sans-serif" font-size="9" fill="#95a5a6">Challenge Response</text>
+  
+  <!-- Business Impact Indicators -->
+  <g id="impact-indicators">
+    <circle cx="140" cy="250" r="8" fill="#e74c3c"/>
+    <text x="140" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">H</text>
+    <text x="140" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#e74c3c">High Impact</text>
+    
+    <circle cx="390" cy="250" r="8" fill="#f39c12"/>
+    <text x="390" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">M</text>
+    <text x="390" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#f39c12">Medium Impact</text>
+    
+    <circle cx="640" cy="250" r="8" fill="#e74c3c"/>
+    <text x="640" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">H</text>
+    <text x="640" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#e74c3c">High Impact</text>
+    
+    <circle cx="890" cy="250" r="8" fill="#e74c3c"/>
+    <text x="890" y="255" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">H</text>
+    <text x="890" y="240" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#e74c3c">High Impact</text>
+    
+    <circle cx="390" cy="450" r="8" fill="#2ecc71"/>
+    <text x="390" y="455" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="white">L</text>
+    <text x="390" y="440" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="#2ecc71">Low Impact</text>
+  </g>
+  
+  <!-- Rule Execution Flow -->
+  <g id="execution-flow">
+    <rect x="50" y="650" width="1100" height="120" fill="white" stroke="#bdc3c7" stroke-width="1" rx="5"/>
+    <text x="60" y="670" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#2c3e50">Rule Execution Flow</text>
+    
+    <!-- Flow Steps -->
+    <rect x="80" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="140" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">1. FX Rate Lookup</text>
+    
+    <rect x="220" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="280" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">2. Amount Conversion</text>
+    
+    <rect x="360" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="420" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">3. Limit Validation</text>
+    
+    <rect x="500" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="560" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">4. Security Check</text>
+    
+    <rect x="640" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="700" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">5. Fee Calculation</text>
+    
+    <rect x="780" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="840" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">6. Transaction</text>
+    
+    <rect x="920" y="680" width="120" height="40" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="1" rx="3"/>
+    <text x="980" y="705" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" fill="#2c3e50">7. Balance Update</text>
+    
+    <!-- Flow Arrows -->
+    <line x1="200" y1="700" x2="220" y2="700" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="340" y1="700" x2="360" y2="700" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="480" y1="700" x2="500" y2="700" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="620" y1="700" x2="640" y2="700" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="760" y1="700" x2="780" y2="700" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    <line x1="900" y1="700" x2="920" y2="700" stroke="#34495e" stroke-width="2" marker-end="url(#arrowhead)"/>
+    
+    <!-- Decision Points -->
+    <polygon points="420,730 440,750 420,770 400,750" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+    <text x="420" y="755" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">FAIL</text>
+    
+    <polygon points="560,730 580,750 560,770 540,750" fill="#e74c3c" stroke="#c0392b" stroke-width="1"/>
+    <text x="560" y="755" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" fill="white">CHAL</text>
+  </g>
+  
+  <!-- Footer -->
+  <text x="600" y="790" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" fill="#7f8c8d">
+    OBP-API Business Rules Dependencies | 12 Core Rules | 6 Categories | Generated: September 2025
+  </text>
+</svg>
