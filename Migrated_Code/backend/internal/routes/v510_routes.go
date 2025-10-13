@@ -89,12 +89,12 @@ func SetupV510Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	protected.GET("/users/:USER_ID/accounts/:BANK_ID", userAttributeController.GetAccountsHeldByUserAtBank)
 	protected.GET("/users/:USER_ID/accounts", userAttributeController.GetAccountsHeldByUser)
 
-	protected.GET("/users/:PROVIDER/:USERNAME", userController.GetUserByProviderAndUsername)
-	protected.GET("/users/:PROVIDER/:USERNAME/lock-status", userController.GetUserLockStatus)
-	protected.PUT("/users/:PROVIDER/:USERNAME/lock-status", userController.UnlockUserByProviderAndUsername)
-	protected.PUT("/users/:PROVIDER/:USERNAME/lock", userController.LockUserByProviderAndUsername)
+	protected.GET("/users/provider/:PROVIDER/username/:USERNAME", userController.GetUserByProviderAndUsername)
+	protected.GET("/users/provider/:PROVIDER/username/:USERNAME/lock-status", userController.GetUserLockStatus)
+	protected.PUT("/users/provider/:PROVIDER/username/:USERNAME/lock-status", userController.UnlockUserByProviderAndUsername)
+	protected.PUT("/users/provider/:PROVIDER/username/:USERNAME/lock", userController.LockUserByProviderAndUsername)
 	management.PUT("/users/:USER_ID/validate", userController.ValidateUserByUserId)
-	protected.POST("/users/:PROVIDER/:PROVIDER_ID/sync", userController.SyncExternalUser)
+	protected.POST("/users/provider/:PROVIDER/provider-id/:PROVIDER_ID/sync", userController.SyncExternalUser)
 
 	management.GET("/system-integrity/custom-view-names-check", integrityCheckController.CustomViewNamesCheck)
 	management.GET("/system-integrity/system-view-names-check", integrityCheckController.SystemViewNamesCheck)
