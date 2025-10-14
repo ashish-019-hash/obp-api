@@ -31,11 +31,11 @@ func SetupAuthRoutes(router *gin.Engine, authController *controllers.AuthControl
 		obpAuth.POST("/logins/direct", authController.DirectLogin)
 	}
 
-	protected := router.Group("/my")
-	protected.Use(authMiddleware.MultiAuth())
-	{
-		protected.GET("/user", authController.GetCurrentUser)
-	}
+	v510 := router.Group("/obp/v5.1.0")
+	v510Protected := v510.Group("")
+	v510Protected.Use(authMiddleware.MultiAuth())
+	
+	v510Protected.GET("/users/current", authController.GetCurrentUser)
 
 	admin := router.Group("/management")
 	admin.Use(authMiddleware.MultiAuth())
