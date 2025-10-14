@@ -13,10 +13,11 @@ func SetupAuthRoutes(router *gin.Engine, authController *controllers.AuthControl
 		auth.POST("/consumers", authController.RegisterConsumer)
 	}
 
-	authProtected := router.Group("/auth")
-	authProtected.Use(authMiddleware.MultiAuth())
+	v310 := router.Group("/obp/v3.1.0")
+	v310Protected := v310.Group("")
+	v310Protected.Use(authMiddleware.MultiAuth())
 	{
-		authProtected.POST("/users", authController.CreateUser)
+		v310Protected.POST("/users", authController.CreateUser)
 	}
 
 	oauth := router.Group("/oauth")
@@ -31,11 +32,7 @@ func SetupAuthRoutes(router *gin.Engine, authController *controllers.AuthControl
 		obpAuth.POST("/logins/direct", authController.DirectLogin)
 	}
 
-	protected := router.Group("/my")
-	protected.Use(authMiddleware.MultiAuth())
-	{
-		protected.GET("/user", authController.GetCurrentUser)
-	}
+	v310Protected.GET("/users/current", authController.GetCurrentUser)
 
 	admin := router.Group("/management")
 	admin.Use(authMiddleware.MultiAuth())

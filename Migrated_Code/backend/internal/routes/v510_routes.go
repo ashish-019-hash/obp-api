@@ -93,7 +93,7 @@ func SetupV510Routes(router *gin.Engine, orchestrationService *services.Orchestr
 	protected.GET("/users/provider/:PROVIDER/username/:USERNAME/lock-status", userController.GetUserLockStatus)
 	protected.PUT("/users/provider/:PROVIDER/username/:USERNAME/lock-status", userController.UnlockUserByProviderAndUsername)
 	protected.PUT("/users/provider/:PROVIDER/username/:USERNAME/lock", userController.LockUserByProviderAndUsername)
-	management.PUT("/users/:USER_ID/validate", userController.ValidateUserByUserId)
+	management.PUT("/users/:USER_ID", userController.ValidateUserByUserId)
 	protected.POST("/users/provider/:PROVIDER/provider-id/:PROVIDER_ID/sync", userController.SyncExternalUser)
 
 	management.GET("/system-integrity/custom-view-names-check", integrityCheckController.CustomViewNamesCheck)
