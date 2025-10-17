@@ -47,18 +47,18 @@ func (s *rateLimitingService) CheckRateLimit(ctx context.Context, consumerKey st
 		RemainingCalls: make(map[string]int),
 		ResetTimes:     make(map[string]time.Time),
 	}
-	
+
 	periods := []string{"second", "minute", "hour", "day", "week", "month", "year"}
-	
+
 	for _, period := range periods {
 		periodKey := s.generatePeriodKey(consumerKey, period, currentTime)
 		limit := s.limits[period]
-		
+
 		currentCount, err := s.rateLimitRepo.GetCounter(ctx, consumerKey, period, periodKey)
 		if err != nil {
 			currentCount = 0
 		}
-		
+
 		if currentCount >= limit {
 			result.IsAllowed = false
 			result.ExceededPeriod = period
@@ -66,43 +66,43 @@ func (s *rateLimitingService) CheckRateLimit(ctx context.Context, consumerKey st
 		} else {
 			result.RemainingCalls[period] = limit - currentCount
 		}
-		
+
 		result.ResetTimes[period] = s.getResetTime(period, currentTime)
 	}
-	
+
 	return result, nil
 }
 
 func (s *rateLimitingService) IncrementCounter(ctx context.Context, consumerKey string, currentTime time.Time) error {
 	periods := []string{"second", "minute", "hour", "day", "week", "month", "year"}
-	
+
 	for _, period := range periods {
 		periodKey := s.generatePeriodKey(consumerKey, period, currentTime)
 		limit := s.limits[period]
-		
+
 		_, err := s.rateLimitRepo.IncrementCounter(ctx, consumerKey, period, periodKey, limit)
 		if err != nil {
 			return err
 		}
 	}
-	
+
 	return nil
 }
 
 func (s *rateLimitingService) GetRemainingCalls(ctx context.Context, consumerKey string, period string, currentTime time.Time) (int, error) {
 	periodKey := s.generatePeriodKey(consumerKey, period, currentTime)
 	limit := s.limits[period]
-	
+
 	currentCount, err := s.rateLimitRepo.GetCounter(ctx, consumerKey, period, periodKey)
 	if err != nil {
 		return limit, nil
 	}
-	
+
 	remaining := limit - currentCount
 	if remaining < 0 {
 		remaining = 0
 	}
-	
+
 	return remaining, nil
 }
 

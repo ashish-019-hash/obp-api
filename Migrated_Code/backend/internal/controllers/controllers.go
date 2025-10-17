@@ -14,7 +14,7 @@ func NewBankController() *BankController {
 
 func (bc *BankController) GetBanks(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"banks": []interface{}{},
+		"banks":   []interface{}{},
 		"message": "Banks endpoint - implementation pending",
 	})
 }
@@ -36,9 +36,9 @@ func NewAccountController() *AccountController {
 func (ac *AccountController) GetAccounts(c *gin.Context) {
 	bankID := c.Param("bankId")
 	c.JSON(http.StatusOK, gin.H{
-		"bank_id": bankID,
+		"bank_id":  bankID,
 		"accounts": []interface{}{},
-		"message": "Accounts endpoint - implementation pending",
+		"message":  "Accounts endpoint - implementation pending",
 	})
 }
 
@@ -46,8 +46,8 @@ func (ac *AccountController) GetAccount(c *gin.Context) {
 	bankID := c.Param("bankId")
 	accountID := c.Param("accountId")
 	c.JSON(http.StatusOK, gin.H{
-		"bank_id": bankID,
+		"bank_id":    bankID,
 		"account_id": accountID,
-		"message": "Get account endpoint - implementation pending",
+		"message":    "Get account endpoint - implementation pending",
 	})
 }

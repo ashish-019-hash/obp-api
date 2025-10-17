@@ -5,12 +5,12 @@ import (
 )
 
 type Services struct {
-	Currency     CurrencyService
-	Balance      BalanceService
-	Limit        LimitService
-	RateLimit    RateLimitingService
-	Analytics    AnalyticsService
-	Validation   ValidationService
+	Currency   CurrencyService
+	Balance    BalanceService
+	Limit      LimitService
+	RateLimit  RateLimitingService
+	Analytics  AnalyticsService
+	Validation ValidationService
 }
 
 func NewServices(repos *Repositories) *Services {
@@ -20,7 +20,7 @@ func NewServices(repos *Repositories) *Services {
 	rateLimitService := NewRateLimitingService(repos.RateLimit)
 	analyticsService := NewAnalyticsService(repos.Customer, repos.Metrics, currencyService)
 	validationService := NewValidationService(currencyService)
-	
+
 	return &Services{
 		Currency:   currencyService,
 		Balance:    balanceService,

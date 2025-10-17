@@ -33,13 +33,13 @@ func (s *currencyService) GetFallbackExchangeRate(fromCurrency, toCurrency strin
 	if fromCurrency == toCurrency {
 		return big.NewFloat(1.0), nil
 	}
-	
+
 	if rates, exists := s.fallbackRates[fromCurrency]; exists {
 		if rate, exists := rates[toCurrency]; exists {
 			return new(big.Float).Copy(rate), nil
 		}
 	}
-	
+
 	return nil, errors.New("exchange rate not found")
 }
 
@@ -53,29 +53,29 @@ func (s *currencyService) GetExchangeRate(ctx context.Context, bankID, fromCurre
 	if fromCurrency == toCurrency {
 		return big.NewFloat(1.0), nil
 	}
-	
+
 	rate, err := s.fxRateRepo.GetRate(ctx, bankID, fromCurrency, toCurrency)
 	if err == nil {
 		return rate, nil
 	}
-	
+
 	rate, err = s.fxRateRepo.GetLatestRate(ctx, fromCurrency, toCurrency)
 	if err == nil {
 		return rate, nil
 	}
-	
+
 	return s.GetFallbackExchangeRate(fromCurrency, toCurrency)
 }
 
 func (s *currencyService) ClassifyTransaction(amount *big.Float) (string, string) {
 	zero := big.NewFloat(0)
-	
+
 	if amount.Cmp(zero) > 0 {
 		return "CREDIT", "INCOMING"
 	} else if amount.Cmp(zero) < 0 {
 		return "DEBIT", "OUTGOING"
 	}
-	
+
 	return "NEUTRAL", "ZERO"
 }
 
@@ -88,14 +88,14 @@ func (s *currencyService) ConvertFromSmallestUnits(smallestUnits int64, currency
 func (s *currencyService) ConvertToSmallestUnits(amount *big.Float, currency string) int64 {
 	multiplier := getSmallestUnitDivisor(currency)
 	result := new(big.Float).Mul(amount, big.NewFloat(float64(multiplier)))
-	
+
 	intResult, _ := result.Int64()
 	return intResult
 }
 
 func initializeFallbackRates() map[string]map[string]*big.Float {
 	rates := make(map[string]map[string]*big.Float)
-	
+
 	rates["USD"] = map[string]*big.Float{
 		"EUR": big.NewFloat(0.85),
 		"GBP": big.NewFloat(0.73),
@@ -104,7 +104,7 @@ func initializeFallbackRates() map[string]map[string]*big.Float {
 		"CAD": big.NewFloat(1.25),
 		"AUD": big.NewFloat(1.35),
 	}
-	
+
 	rates["EUR"] = map[string]*big.Float{
 		"USD": big.NewFloat(1.18),
 		"GBP": big.NewFloat(0.86),
@@ -113,7 +113,7 @@ func initializeFallbackRates() map[string]map[string]*big.Float {
 		"CAD": big.NewFloat(1.47),
 		"AUD": big.NewFloat(1.59),
 	}
-	
+
 	rates["GBP"] = map[string]*big.Float{
 		"USD": big.NewFloat(1.37),
 		"EUR": big.NewFloat(1.16),
@@ -122,7 +122,7 @@ func initializeFallbackRates() map[string]map[string]*big.Float {
 		"CAD": big.NewFloat(1.71),
 		"AUD": big.NewFloat(1.85),
 	}
-	
+
 	return rates
 }
 

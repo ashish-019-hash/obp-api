@@ -1,12 +1,14 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
 	"obp-api-backend/internal/controllers"
 	"obp-api-backend/internal/middleware"
-	"github.com/gin-gonic/gin"
 )
 
 func SetupRoutes(
+	authController *controllers.AuthController,
+	authMiddleware gin.HandlerFunc,
 	obpController *controllers.OBPCoreController,
 	obpV3Controller *controllers.OBPv3Controller,
 	obpV4Controller *controllers.OBPv4Controller,
@@ -27,20 +29,23 @@ func SetupRoutes(
 
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status": "OK",
+			"status":  "OK",
 			"message": "OBP API Backend is running",
 		})
 	})
 
 	router.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"name": "Open Bank Project API",
-			"version": "5.1.0",
+			"name":        "Open Bank Project API",
+			"version":     "5.1.0",
 			"description": "Complete REST API for Open Bank Project",
 		})
 	})
 
+	router.POST("/my/logins/direct", authController.DirectLogin)
+
 	v5 := router.Group("/obp/v5.1.0")
+	v5.Use(authMiddleware)
 	{
 		v5.GET("/root", obpController.GetAPIInfo)
 		v5.GET("/config", obpController.GetConfig)
@@ -72,21 +77,21 @@ func SetupRoutes(
 		v5.DELETE("/banks/:bankId/customers/:customerId", obpController.DeleteCustomer)
 
 		v5.GET("/users", obpController.GetUsers)
-		v5.GET("/users/current", obpController.GetCurrentUser)
+		v5.GET("/users/current", authController.GetCurrentUser)
 		v5.GET("/users/:userId", obpController.GetUser)
-		v5.POST("/users", obpController.CreateUser)
+		v5.POST("/users", authController.CreateUser)
 		v5.PUT("/users/:userId", obpController.UpdateUser)
 		v5.DELETE("/users/:userId", obpController.DeleteUser)
-		
+
 		v5.POST("/users/:userId/non-personal/attributes", obpController.CreateUserAttributeNew)
 		v5.GET("/users/:userId/non-personal/attributes", obpController.GetUserAttributesNew)
 		v5.DELETE("/users/:userId/non-personal/attributes/:userAttributeId", obpController.DeleteUserAttributeNew)
-		
+
 		v5.GET("/users/:userId/attributes", obpController.GetUserAttributesByUser)
 		v5.POST("/users/:userId/attributes", obpController.CreateUserAttributeForUser)
 		v5.PUT("/users/:userId/attributes/:userAttributeId", obpController.UpdateUserAttribute)
 		v5.DELETE("/users/:userId/attributes/:userAttributeId", obpController.DeleteUserAttributeForUser)
-		
+
 		v5.POST("/users/:userId/user-attributes-new", obpController.CreateUserAttributeNew)
 		v5.GET("/users/:userId/user-attributes-new", obpController.GetUserAttributesNew)
 		v5.DELETE("/users/:userId/user-attributes-new/:userAttributeId", obpController.DeleteUserAttributeNew)
@@ -95,7 +100,7 @@ func SetupRoutes(
 		v5.GET("/users/:userId/accounts-at-bank/:bankId", obpController.GetUserAccountsAtBank)
 		v5.GET("/users/:userId/accounts", obpController.GetUserAccounts)
 		v5.GET("/users/:userId/entitlements-and-permissions", obpController.GetUserEntitlementsAndPermissions)
-		
+
 		v5.GET("/users/:userId/accounts-at-bank-new/:bankId", obpController.GetUserAccountsAtBankNew)
 		v5.GET("/users/:userId/accounts-new", obpController.GetUserAccountsNew)
 		v5.GET("/users/:userId/entitlements-and-permissions-new", obpController.GetUserEntitlementsAndPermissionsNew)
@@ -126,22 +131,18 @@ func SetupRoutes(
 		v5.GET("/management/consumers/:consumerId/redirect-url", obpController.GetConsumerRedirectURL)
 		v5.PUT("/management/consumers/:consumerId/redirect-url", obpController.UpdateConsumerRedirectURL)
 		v5.DELETE("/management/consumers/:consumerId/redirect-url", obpController.DeleteConsumerRedirectURL)
-		
+
 		v5.GET("/management/system-integrity/custom-view-names-check", obpController.CustomViewNamesCheck)
 		v5.GET("/management/system-integrity/system-view-names-check", obpController.SystemViewNamesCheck)
 		v5.GET("/management/system-integrity/account-access-unique-index-1-check", obpController.AccountAccessUniqueIndexCheck)
 		v5.GET("/management/system-integrity/account-currency-check", obpController.AccountCurrencyCheck)
 		v5.GET("/management/system-integrity/orphaned-accounts-check", obpController.OrphanedAccountCheck)
-		
+
 		v5.POST("/banks/:bankId/atms/:atmId/attributes", obpController.CreateATMAttribute)
 		v5.GET("/banks/:bankId/atms/:atmId/attributes", obpController.GetATMAttributes)
 		v5.GET("/banks/:bankId/atms/:atmId/attributes/:atmAttributeId", obpController.GetATMAttribute)
 		v5.PUT("/banks/:bankId/atms/:atmId/attributes/:atmAttributeId", obpController.UpdateATMAttribute)
 		v5.DELETE("/banks/:bankId/atms/:atmId/attributes/:atmAttributeId", obpController.DeleteATMAttribute)
-		
-		
-		
-		
 
 		v5.POST("/banks/:bankId/atms", obpController.CreateATM)
 		v5.GET("/banks/:bankId/atms", obpController.GetATMs)
@@ -149,7 +150,7 @@ func SetupRoutes(
 		v5.PUT("/banks/:bankId/atms/:atmId", obpController.UpdateATM)
 		v5.DELETE("/banks/:bankId/atms/:atmId", obpController.DeleteATM)
 
-		v5.POST("/management/consumers", obpController.CreateConsumer)
+		v5.POST("/management/consumers", authController.CreateConsumer)
 		v5.POST("/management/consumers/my", obpController.CreateMyConsumer)
 		v5.GET("/management/consumers/:consumerId", obpController.GetConsumer)
 		v5.GET("/management/consumers", obpController.GetConsumers)
@@ -190,42 +191,38 @@ func SetupRoutes(
 		v5.GET("/my/consents", obpController.GetMyConsents)
 		v5.GET("/banks/:bankId/my/consents", obpController.GetMyConsentsAtBank)
 		v5.GET("/banks/:bankId/consents", obpController.GetConsentsAtBank)
-		
-		
+
 		v5.GET("/management/consumers/:consumerId/logo-url", obpController.GetConsumerLogoURL)
-		
+
 		v5.GET("/banks/:bankId/settlement-accounts", obpController.GetSettlementAccounts)
 		v5.POST("/banks/:bankId/settlement-accounts", obpController.CreateSettlementAccount)
 		v5.GET("/banks/:bankId/settlement-accounts/:accountId", obpController.GetSettlementAccount)
 		v5.PUT("/banks/:bankId/settlement-accounts/:accountId", obpController.UpdateSettlementAccount)
-		
-		
-		
-		
+
 		v5.DELETE("/banks/:bankId/settlement-accounts/:accountId", obpController.DeleteSettlementAccount)
-		
+
 		v5.GET("/banks/:bankId/settlement-accounts-at-bank", obpController.GetSettlementAccountsAtBank)
 		v5.POST("/banks/:bankId/settlement-accounts-at-bank", obpController.CreateSettlementAccountAtBank)
-		
+
 		v5.GET("/webhooks", obpController.GetWebhooks)
 		v5.POST("/webhooks", obpController.CreateWebhook)
 		v5.GET("/webhooks/:webhookId", obpController.GetWebhook)
 		v5.PUT("/webhooks/:webhookId", obpController.UpdateWebhook)
 		v5.DELETE("/webhooks/:webhookId", obpController.DeleteWebhook)
-		
+
 		v5.GET("/banks/:bankId/webhooks", obpController.GetWebhooksAtBank)
 		v5.POST("/banks/:bankId/webhooks", obpController.CreateWebhookAtBank)
 		v5.GET("/banks/:bankId/webhooks/:webhookId", obpController.GetWebhookAtBank)
 		v5.PUT("/banks/:bankId/webhooks/:webhookId", obpController.UpdateWebhookAtBank)
 		v5.DELETE("/banks/:bankId/webhooks/:webhookId", obpController.DeleteWebhookAtBank)
-		
+
 		v5.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-request-types", obpController.GetTransactionRequestTypes)
 		v5.GET("/banks/:bankId/transaction-request-types", obpController.GetTransactionRequestTypesSupportedByBank)
-		
+
 		v5.GET("/users/:userId/lock-status", obpController.GetUserLockStatus)
 		v5.POST("/users/:userId/lock", obpController.LockUser)
 		v5.DELETE("/users/:userId/lock", obpController.UnlockUser)
-		
+
 		v5.GET("/management/database/custom-view-names-check", obpController.CustomViewNamesCheck)
 		v5.GET("/management/database/system-view-names-check", obpController.SystemViewNamesCheck)
 		v5.GET("/management/database/account-access-unique-index-check", obpController.AccountAccessUniqueIndexCheck)
@@ -279,10 +276,10 @@ func SetupRoutes(
 
 		v4.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-request-types", obpV4Controller.GetTransactionRequestTypes)
 		v4.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests", obpV4Controller.GetTransactionRequests)
-		
+
 		v4.PUT("/banks/:bankId/transaction-request-types/:transactionRequestType", obpV4Controller.UpdateTransactionRequestType)
 		v4.DELETE("/banks/:bankId/transaction-request-types/:transactionRequestType", obpV4Controller.DeleteTransactionRequestType)
-		
+
 		v4.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests/:transactionRequestId/refund", obpV4Controller.GetRefundTransactionRequestNew)
 		v4.POST("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests/:transactionRequestId/refund/challenge", obpV4Controller.AnswerRefundTransactionRequestChallengeNew)
 
@@ -290,15 +287,14 @@ func SetupRoutes(
 		v4.GET("/banks/:bankId/transaction-request-attribute-definitions", obpV4Controller.GetTransactionRequestAttributeDefinitions)
 		v4.PUT("/banks/:bankId/transaction-request-attribute-definitions/:attributeDefinitionId", obpV4Controller.UpdateTransactionRequestAttributeDefinition)
 		v4.DELETE("/banks/:bankId/transaction-request-attribute-definitions/:attributeDefinitionId", obpV4Controller.DeleteTransactionRequestAttributeDefinition)
-		
+
 		v4.POST("/banks/:bankId/settlement-accounts", obpV4Controller.CreateSettlementAccountNew)
 		v4.GET("/banks/:bankId/settlement-accounts", obpV4Controller.GetSettlementAccountsNew)
 		v4.GET("/banks/:bankId/settlement-accounts/:accountId", obpV4Controller.GetSettlementAccountNew)
 		v4.PUT("/banks/:bankId/settlement-accounts/:accountId", obpV4Controller.UpdateSettlementAccountNew)
 		v4.DELETE("/banks/:bankId/settlement-accounts/:accountId", obpV4Controller.DeleteSettlementAccountNew)
-		
+
 		v4.GET("/banks/:bankId/transaction-request-types", obpV4Controller.GetTransactionRequestTypesNew)
-		
 
 		v4.POST("/users", obpV4Controller.CreateUserWithRoles)
 		v4.GET("/users/:userId/entitlements", obpV4Controller.GetEntitlements)
@@ -330,7 +326,7 @@ func SetupRoutes(
 		v4.GET("/call-context", obpV4Controller.GetCallContext)
 
 		v5.DELETE("/management/consumers/:consumerId/logo-url", obpController.DeleteConsumerLogoURL)
-		
+
 		v5.GET("/banks/:bankId/user-attribute-definitions", obpController.GetUserAttributeDefinitions)
 		v5.POST("/banks/:bankId/user-attribute-definitions", obpController.CreateUserAttributeDefinition)
 		v5.PUT("/banks/:bankId/user-attribute-definitions/:userAttributeDefinitionId", obpController.UpdateUserAttributeDefinition)
@@ -341,14 +337,12 @@ func SetupRoutes(
 		v5.GET("/management/system/integrity/account-access-unique-index", obpController.CheckAccountAccessUniqueIndex)
 		v5.GET("/management/system/integrity/account-currency", obpController.CheckAccountCurrency)
 		v5.GET("/management/system/integrity/orphaned-accounts", obpController.CheckOrphanedAccounts)
-		
 
 		v5.GET("/banks/:bankId/settlement-accounts-new", obpController.GetSettlementAccountsAtBankNew)
 		v5.POST("/banks/:bankId/settlement-accounts-new", obpController.CreateSettlementAccountAtBankNew)
-		
 
 		v4.POST("/verify-request-sign-response", obpV4Controller.VerifyRequestSignResponse)
-		
+
 		v4.GET("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests-new/:transactionRequestId/refund", obpV4Controller.GetRefundTransactionRequestNew)
 		v4.POST("/banks/:bankId/accounts/:accountId/:viewId/transaction-requests-new/:transactionRequestId/refund/challenge", obpV4Controller.AnswerRefundTransactionRequestChallengeNew)
 	}
@@ -358,22 +352,20 @@ func SetupRoutes(
 		v3.GET("/root", obpV3Controller.GetAPIInfo)
 		v3.GET("/config", obpV3Controller.GetConfig)
 
-
 		v3.GET("/adapter", obpV3Controller.GetAdapterInfo)
 		v3.GET("/rate-limiting", obpV3Controller.GetRateLimitingInfo)
-		
+
 		v3.POST("/banks/:bankId/products/:productCode/attributes", obpV3Controller.CreateProductAttribute)
 		v3.GET("/banks/:bankId/products/:productCode/attributes", obpV3Controller.GetProductAttributes)
 		v3.PUT("/banks/:bankId/products/:productCode/attributes/:attributeId", obpV3Controller.UpdateProductAttribute)
 		v3.DELETE("/banks/:bankId/products/:productCode/attributes/:attributeId", obpV3Controller.DeleteProductAttribute)
-		
-		
+
 		v3.GET("/banks/:bankId/webhooks", obpV3Controller.GetWebhooksNew)
 		v3.POST("/banks/:bankId/webhooks", obpV3Controller.CreateWebhookNew)
 		v3.GET("/banks/:bankId/webhooks/:webhookId", obpV3Controller.GetWebhookNew)
 		v3.PUT("/banks/:bankId/webhooks/:webhookId", obpV3Controller.UpdateWebhookNew)
 		v3.DELETE("/banks/:bankId/webhooks/:webhookId", obpV3Controller.DeleteWebhookNew)
-		
+
 		v3.POST("/banks/:bankId/products/:productCode/attributes-v3", obpV3Controller.CreateProductAttributeV3)
 		v3.GET("/banks/:bankId/products/:productCode/attributes-v3", obpV3Controller.GetProductAttributesV3)
 		v3.PUT("/banks/:bankId/products/:productCode/attributes-v3/:attributeId", obpV3Controller.UpdateProductAttributeV3)
@@ -381,40 +373,40 @@ func SetupRoutes(
 
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url", obpV3Controller.CreateOtherAccountURL)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url", obpV3Controller.GetOtherAccountURL)
-		
+
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url", obpV3Controller.UpdateOtherAccountURL)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url", obpV3Controller.DeleteOtherAccountURL)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/image_url", obpV3Controller.CreateOtherAccountImageURL)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/image_url", obpV3Controller.GetOtherAccountImageURL)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/image_url", obpV3Controller.UpdateOtherAccountImageURL)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/image_url", obpV3Controller.DeleteOtherAccountImageURL)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/open_corporates_url", obpV3Controller.CreateOtherAccountOpenCorporatesURL)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/open_corporates_url", obpV3Controller.GetOtherAccountOpenCorporatesURL)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/open_corporates_url", obpV3Controller.UpdateOtherAccountOpenCorporatesURL)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/open_corporates_url", obpV3Controller.DeleteOtherAccountOpenCorporatesURL)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/corporate_location", obpV3Controller.CreateOtherAccountCorporateLocation)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/corporate_location", obpV3Controller.GetOtherAccountCorporateLocation)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/corporate_location", obpV3Controller.UpdateOtherAccountCorporateLocation)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/corporate_location", obpV3Controller.DeleteOtherAccountCorporateLocation)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/physical_location", obpV3Controller.CreateOtherAccountPhysicalLocation)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/physical_location", obpV3Controller.GetOtherAccountPhysicalLocation)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/physical_location", obpV3Controller.UpdateOtherAccountPhysicalLocation)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/physical_location", obpV3Controller.DeleteOtherAccountPhysicalLocation)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/private_alias", obpV3Controller.CreateOtherAccountPrivateAlias)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/private_alias", obpV3Controller.GetOtherAccountPrivateAlias)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/private_alias", obpV3Controller.UpdateOtherAccountPrivateAlias)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/private_alias", obpV3Controller.DeleteOtherAccountPrivateAlias)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url-v3", obpV3Controller.CreateOtherAccountURLV3)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url-v3", obpV3Controller.GetOtherAccountURLV3)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url-v3", obpV3Controller.UpdateOtherAccountURLV3)
 		v3.DELETE("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/url-v3", obpV3Controller.DeleteOtherAccountURLV3)
-		
+
 		v3.POST("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/public_alias", obpV3Controller.CreateOtherAccountPublicAlias)
 		v3.GET("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/public_alias", obpV3Controller.GetOtherAccountPublicAlias)
 		v3.PUT("/banks/:bankId/accounts/:accountId/:viewId/other_accounts/:otherAccountId/metadata/public_alias", obpV3Controller.UpdateOtherAccountPublicAlias)
@@ -436,14 +428,13 @@ func SetupRoutes(
 		v3.GET("/banks/:bankId/customers/:customerId/attributes", obpV3Controller.GetCustomerAttributes)
 		v3.PUT("/banks/:bankId/customers/:customerId/attributes/:attributeId", obpV3Controller.UpdateCustomerAttribute)
 		v3.DELETE("/banks/:bankId/customers/:customerId/attributes/:attributeId", obpV3Controller.DeleteCustomerAttribute)
-		
-		
+
 		v3.GET("/webhooks", obpV3Controller.GetWebhooksV3)
 		v3.POST("/webhooks", obpV3Controller.CreateWebhookV3)
 		v3.GET("/webhooks/:webhookId", obpV3Controller.GetWebhookV3)
 		v3.PUT("/webhooks/:webhookId", obpV3Controller.UpdateWebhookV3)
 		v3.DELETE("/webhooks/:webhookId", obpV3Controller.DeleteWebhookV3)
-		
+
 		v3.GET("/banks/:bankId/attribute-definitions/product", obpV3Controller.GetProductAttributeDefinitionsV3)
 		v3.POST("/banks/:bankId/attribute-definitions/product", obpV3Controller.CreateProductAttributeDefinitionV3)
 		v3.GET("/banks/:bankId/attribute-definitions/product/:attributeDefinitionId", obpV3Controller.GetProductAttributeDefinitionV3)

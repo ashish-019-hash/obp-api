@@ -16,7 +16,6 @@ type BankRepository interface {
 	List(ctx context.Context, limit, offset int) ([]*models.Bank, error)
 }
 
-
 type TransactionRepository interface {
 	Create(ctx context.Context, transaction *models.Transaction) error
 	GetByID(ctx context.Context, transactionID string) (*models.Transaction, error)
@@ -51,12 +50,63 @@ type CustomerRepository interface {
 	Delete(ctx context.Context, customerID string) error
 }
 
+type AuthUserRepository interface {
+	Create(ctx context.Context, user *models.AuthUser) error
+	GetByUsername(ctx context.Context, username string) (*models.AuthUser, error)
+	GetByEmail(ctx context.Context, email string) (*models.AuthUser, error)
+	GetByID(ctx context.Context, userID string) (*models.AuthUser, error)
+	Update(ctx context.Context, user *models.AuthUser) error
+}
+
+type ResourceUserRepository interface {
+	Create(ctx context.Context, user *models.ResourceUser) error
+	GetByID(ctx context.Context, userID string) (*models.ResourceUser, error)
+	GetByProviderID(ctx context.Context, provider, providerID string) (*models.ResourceUser, error)
+	Update(ctx context.Context, user *models.ResourceUser) error
+	Delete(ctx context.Context, userID string) error
+}
+
 type UserRepository interface {
 	Create(ctx context.Context, user *models.User) error
 	GetByID(ctx context.Context, userID string) (*models.User, error)
 	GetByProvider(ctx context.Context, provider, providerID string) (*models.User, error)
 	Update(ctx context.Context, user *models.User) error
 	Delete(ctx context.Context, userID string) error
+}
+
+type ConsumerRepository interface {
+	Create(ctx context.Context, consumer *models.Consumer) error
+	GetByConsumerKey(ctx context.Context, consumerKey string) (*models.Consumer, error)
+	GetByID(ctx context.Context, consumerID string) (*models.Consumer, error)
+	Update(ctx context.Context, consumer *models.Consumer) error
+	Delete(ctx context.Context, consumerID string) error
+}
+
+type EntitlementRepository interface {
+	Create(ctx context.Context, entitlement *models.Entitlement) error
+	GetByUserID(ctx context.Context, userID string) ([]*models.Entitlement, error)
+	HasRole(ctx context.Context, userID, roleName, bankID string) (bool, error)
+	Delete(ctx context.Context, entitlementID string) error
+}
+
+type ScopeRepository interface {
+	Create(ctx context.Context, scope *models.Scope) error
+	GetByConsumerID(ctx context.Context, consumerID string) ([]*models.Scope, error)
+	HasRole(ctx context.Context, consumerID, roleName, bankID string) (bool, error)
+	Delete(ctx context.Context, scopeID string) error
+}
+
+type BadLoginAttemptRepository interface {
+	GetByUsernameProvider(ctx context.Context, username, provider string) (*models.BadLoginAttempt, error)
+	IncrementAttempts(ctx context.Context, username, provider string) error
+	ResetAttempts(ctx context.Context, username, provider string) error
+}
+
+type UserLockRepository interface {
+	Create(ctx context.Context, lock *models.UserLock) error
+	GetByUserID(ctx context.Context, userID string) ([]*models.UserLock, error)
+	IsLocked(ctx context.Context, userID string) (bool, error)
+	Delete(ctx context.Context, lockID int) error
 }
 
 type FXRateRepository interface {

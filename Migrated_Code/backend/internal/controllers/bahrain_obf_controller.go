@@ -31,7 +31,7 @@ func (c *BahrainOBFController) GetAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Account": accounts,
@@ -48,13 +48,13 @@ func (c *BahrainOBFController) GetAccounts(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccount(ctx *gin.Context) {
 	accountID := ctx.Param("AccountId")
-	
+
 	account, err := c.accountService.GetAccountByID(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Account not found"})
 		return
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Account": account,
@@ -65,13 +65,13 @@ func (c *BahrainOBFController) GetAccount(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccountBalances(ctx *gin.Context) {
 	accountID := ctx.Param("AccountId")
-	
+
 	currentBalance, err := c.balanceService.CalculateCurrentBalance(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	balances := []map[string]interface{}{
 		{
 			"AccountId": accountID,
@@ -80,10 +80,10 @@ func (c *BahrainOBFController) GetAccountBalances(ctx *gin.Context) {
 				"Currency": "BHD",
 			},
 			"CreditDebitIndicator": "Credit",
-			"Type":                "ClosingAvailable",
+			"Type":                 "ClosingAvailable",
 		},
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Balance": balances,
@@ -98,9 +98,9 @@ func (c *BahrainOBFController) CreateDomesticPaymentConsent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	consentID := "consent-123"
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
@@ -116,17 +116,17 @@ func (c *BahrainOBFController) CreateDomesticPayment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	paymentID, err := c.paymentService.InitiatePayment(ctx.Request.Context(), paymentRequest)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticPaymentId": paymentID,
-			"Status":           "AcceptedSettlementInProcess",
+			"Status":            "AcceptedSettlementInProcess",
 		},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -134,10 +134,10 @@ func (c *BahrainOBFController) CreateDomesticPayment(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetBalances(ctx *gin.Context) {
 	balances := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": balances,
-		"Meta": map[string]interface{}{},
+		"Data":  balances,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -149,10 +149,10 @@ func (c *BahrainOBFController) CreateDomesticPaymentConsents(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -164,10 +164,10 @@ func (c *BahrainOBFController) CreateDomesticPayments(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": paymentData,
-		"Meta": map[string]interface{}{},
+		"Data":  paymentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -179,10 +179,10 @@ func (c *BahrainOBFController) CreateFilePaymentConsents(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -194,10 +194,10 @@ func (c *BahrainOBFController) CreateFilePayments(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": paymentData,
-		"Meta": map[string]interface{}{},
+		"Data":  paymentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -209,10 +209,10 @@ func (c *BahrainOBFController) CreateInternationalPaymentConsents(ctx *gin.Conte
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -224,10 +224,10 @@ func (c *BahrainOBFController) CreateInternationalPayments(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": paymentData,
-		"Meta": map[string]interface{}{},
+		"Data":  paymentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -239,10 +239,10 @@ func (c *BahrainOBFController) CreateDomesticFutureDatedPaymentConsents(ctx *gin
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -254,10 +254,10 @@ func (c *BahrainOBFController) CreateDomesticFutureDatedPayments(ctx *gin.Contex
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": paymentData,
-		"Meta": map[string]interface{}{},
+		"Data":  paymentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -266,10 +266,10 @@ func (c *BahrainOBFController) CreateDomesticFutureDatedPayments(ctx *gin.Contex
 func (c *BahrainOBFController) GetAccountStatements(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	statements := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": statements,
-		"Meta": map[string]interface{}{},
+		"Data":  statements,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -278,17 +278,17 @@ func (c *BahrainOBFController) GetAccountStatements(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountStatement(ctx *gin.Context) {
 	accountID := ctx.Param("AccountId")
 	statementID := ctx.Param("StatementId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Statement": []map[string]interface{}{
 				{
-					"AccountId": accountID,
+					"AccountId":   accountID,
 					"StatementId": statementID,
 				},
 			},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -297,10 +297,10 @@ func (c *BahrainOBFController) GetAccountStatement(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountStandingOrders(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	standingOrders := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": standingOrders,
-		"Meta": map[string]interface{}{},
+		"Data":  standingOrders,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -309,10 +309,10 @@ func (c *BahrainOBFController) GetAccountStandingOrders(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountOffers(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	offers := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": offers,
-		"Meta": map[string]interface{}{},
+		"Data":  offers,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -321,10 +321,10 @@ func (c *BahrainOBFController) GetAccountOffers(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountDirectDebits(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	directDebits := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": directDebits,
-		"Meta": map[string]interface{}{},
+		"Data":  directDebits,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -333,10 +333,10 @@ func (c *BahrainOBFController) GetAccountDirectDebits(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountBeneficiaries(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	beneficiaries := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": beneficiaries,
-		"Meta": map[string]interface{}{},
+		"Data":  beneficiaries,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -344,15 +344,15 @@ func (c *BahrainOBFController) GetAccountBeneficiaries(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccountParty(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Party": map[string]interface{}{
-				"PartyId": "PARTY1",
+				"PartyId":   "PARTY1",
 				"PartyType": "Individual",
 			},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -360,14 +360,14 @@ func (c *BahrainOBFController) GetAccountParty(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccountSupplementaryAccountInfo(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"SupplementaryAccountInfo": map[string]interface{}{
 				"AccountId": ctx.Param("AccountId"),
 			},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -375,19 +375,19 @@ func (c *BahrainOBFController) GetAccountSupplementaryAccountInfo(ctx *gin.Conte
 
 func (c *BahrainOBFController) GetFilePaymentConsentFile(ctx *gin.Context) {
 	_ = ctx.Param("consentId")
-	
+
 	ctx.Header("Content-Type", "application/xml")
 	ctx.Data(http.StatusOK, "application/xml", []byte("<xml>File content</xml>"))
 }
 
 func (c *BahrainOBFController) CreateFilePaymentConsentFile(ctx *gin.Context) {
 	_ = ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"FileType": "BH.OBF.pain.001.001.08",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -395,12 +395,12 @@ func (c *BahrainOBFController) CreateFilePaymentConsentFile(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetFilePaymentConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -408,12 +408,12 @@ func (c *BahrainOBFController) GetFilePaymentConsent(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetInternationalPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("internationalPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"InternationalPaymentId": paymentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -421,13 +421,13 @@ func (c *BahrainOBFController) GetInternationalPayment(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetInternationalPaymentDetails(ctx *gin.Context) {
 	paymentID := ctx.Param("internationalPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"InternationalPaymentId": paymentID,
-			"PaymentDetails": map[string]interface{}{},
+			"PaymentDetails":         map[string]interface{}{},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -436,7 +436,7 @@ func (c *BahrainOBFController) GetInternationalPaymentDetails(ctx *gin.Context) 
 func (c *BahrainOBFController) GetAccountStatementFile(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	_ = ctx.Param("StatementId")
-	
+
 	ctx.Header("Content-Type", "application/pdf")
 	ctx.Data(http.StatusOK, "application/pdf", []byte("PDF content"))
 }
@@ -445,12 +445,12 @@ func (c *BahrainOBFController) GetAccountStatementTransactions(ctx *gin.Context)
 	_ = ctx.Param("AccountId")
 	_ = ctx.Param("StatementId")
 	transactions := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Transaction": transactions,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -458,10 +458,10 @@ func (c *BahrainOBFController) GetAccountStatementTransactions(ctx *gin.Context)
 
 func (c *BahrainOBFController) GetStatements(ctx *gin.Context) {
 	statements := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": statements,
-		"Meta": map[string]interface{}{},
+		"Data":  statements,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -469,12 +469,12 @@ func (c *BahrainOBFController) GetStatements(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetDomesticFutureDatedPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("domesticFutureDatedPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticFutureDatedPaymentId": paymentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -487,12 +487,12 @@ func (c *BahrainOBFController) UpdateDomesticFutureDatedPayment(ctx *gin.Context
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticFutureDatedPaymentId": paymentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -500,13 +500,13 @@ func (c *BahrainOBFController) UpdateDomesticFutureDatedPayment(ctx *gin.Context
 
 func (c *BahrainOBFController) GetDomesticFutureDatedPaymentDetails(ctx *gin.Context) {
 	paymentID := ctx.Param("domesticFutureDatedPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticFutureDatedPaymentId": paymentID,
-			"PaymentDetails": map[string]interface{}{},
+			"PaymentDetails":               map[string]interface{}{},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -514,10 +514,10 @@ func (c *BahrainOBFController) GetDomesticFutureDatedPaymentDetails(ctx *gin.Con
 
 func (c *BahrainOBFController) GetStandingOrders(ctx *gin.Context) {
 	standingOrders := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": standingOrders,
-		"Meta": map[string]interface{}{},
+		"Data":  standingOrders,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -525,10 +525,10 @@ func (c *BahrainOBFController) GetStandingOrders(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetOffers(ctx *gin.Context) {
 	offers := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": offers,
-		"Meta": map[string]interface{}{},
+		"Data":  offers,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -536,12 +536,12 @@ func (c *BahrainOBFController) GetOffers(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetDomesticPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("domesticPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticPaymentId": paymentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -549,13 +549,13 @@ func (c *BahrainOBFController) GetDomesticPayment(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetDomesticPaymentDetails(ctx *gin.Context) {
 	paymentID := ctx.Param("domesticPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticPaymentId": paymentID,
-			"PaymentDetails": map[string]interface{}{},
+			"PaymentDetails":    map[string]interface{}{},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -563,10 +563,10 @@ func (c *BahrainOBFController) GetDomesticPaymentDetails(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetDirectDebits(ctx *gin.Context) {
 	directDebits := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": directDebits,
-		"Meta": map[string]interface{}{},
+		"Data":  directDebits,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -574,13 +574,13 @@ func (c *BahrainOBFController) GetDirectDebits(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetDomesticPaymentConsentFundsConfirmation(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
-			"ConsentId": consentID,
+			"ConsentId":      consentID,
 			"FundsAvailable": true,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -588,12 +588,12 @@ func (c *BahrainOBFController) GetDomesticPaymentConsentFundsConfirmation(ctx *g
 
 func (c *BahrainOBFController) GetDomesticPaymentConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -602,10 +602,10 @@ func (c *BahrainOBFController) GetDomesticPaymentConsent(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountFutureDatedPayments(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	payments := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": payments,
-		"Meta": map[string]interface{}{},
+		"Data":  payments,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -613,10 +613,10 @@ func (c *BahrainOBFController) GetAccountFutureDatedPayments(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetFutureDatedPayments(ctx *gin.Context) {
 	payments := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": payments,
-		"Meta": map[string]interface{}{},
+		"Data":  payments,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -624,10 +624,10 @@ func (c *BahrainOBFController) GetFutureDatedPayments(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetBeneficiaries(ctx *gin.Context) {
 	beneficiaries := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": beneficiaries,
-		"Meta": map[string]interface{}{},
+		"Data":  beneficiaries,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -635,12 +635,12 @@ func (c *BahrainOBFController) GetBeneficiaries(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetFilePayment(ctx *gin.Context) {
 	paymentID := ctx.Param("filePaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"FilePaymentId": paymentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -648,13 +648,13 @@ func (c *BahrainOBFController) GetFilePayment(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetFilePaymentDetails(ctx *gin.Context) {
 	paymentID := ctx.Param("filePaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
-			"FilePaymentId": paymentID,
+			"FilePaymentId":  paymentID,
 			"PaymentDetails": map[string]interface{}{},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -662,7 +662,7 @@ func (c *BahrainOBFController) GetFilePaymentDetails(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetFilePaymentReportFile(ctx *gin.Context) {
 	_ = ctx.Param("filePaymentId")
-	
+
 	ctx.Header("Content-Type", "application/xml")
 	ctx.Data(http.StatusOK, "application/xml", []byte("<xml>Report content</xml>"))
 }
@@ -670,10 +670,10 @@ func (c *BahrainOBFController) GetFilePaymentReportFile(ctx *gin.Context) {
 func (c *BahrainOBFController) GetAccountTransactions(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
 	transactions := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": transactions,
-		"Meta": map[string]interface{}{},
+		"Data":  transactions,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -681,10 +681,10 @@ func (c *BahrainOBFController) GetAccountTransactions(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetTransactions(ctx *gin.Context) {
 	transactions := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
-		"Data": transactions,
-		"Meta": map[string]interface{}{},
+		"Data":  transactions,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -697,12 +697,12 @@ func (c *BahrainOBFController) UpdateAccountAccessConsent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -714,10 +714,10 @@ func (c *BahrainOBFController) CreateAccountAccessConsent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -729,10 +729,10 @@ func (c *BahrainOBFController) CreateEventNotification(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": eventData,
-		"Meta": map[string]interface{}{},
+		"Data":  eventData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -740,17 +740,17 @@ func (c *BahrainOBFController) CreateEventNotification(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccountParties(ctx *gin.Context) {
 	_ = ctx.Param("AccountId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Party": []map[string]interface{}{
 				{
-					"PartyId": "PARTY1",
+					"PartyId":   "PARTY1",
 					"PartyType": "Individual",
 				},
 			},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -760,11 +760,11 @@ func (c *BahrainOBFController) GetParty(ctx *gin.Context) {
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Party": map[string]interface{}{
-				"PartyId": "PARTY1",
+				"PartyId":   "PARTY1",
 				"PartyType": "Individual",
 			},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -776,10 +776,10 @@ func (c *BahrainOBFController) CreateInternationalScheduledPaymentConsents(ctx *
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -791,10 +791,10 @@ func (c *BahrainOBFController) CreateInternationalScheduledPayments(ctx *gin.Con
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": paymentData,
-		"Meta": map[string]interface{}{},
+		"Data":  paymentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -802,13 +802,13 @@ func (c *BahrainOBFController) CreateInternationalScheduledPayments(ctx *gin.Con
 
 func (c *BahrainOBFController) GetInternationalScheduledPaymentConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
-			"Status": "Authorised",
+			"Status":    "Authorised",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -816,13 +816,13 @@ func (c *BahrainOBFController) GetInternationalScheduledPaymentConsent(ctx *gin.
 
 func (c *BahrainOBFController) GetInternationalScheduledPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("internationalScheduledPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"InternationalScheduledPaymentId": paymentID,
-			"Status": "Pending",
+			"Status":                          "Pending",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -834,10 +834,10 @@ func (c *BahrainOBFController) CreateInternationalStandingOrderConsents(ctx *gin
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -849,10 +849,10 @@ func (c *BahrainOBFController) CreateInternationalStandingOrders(ctx *gin.Contex
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": orderData,
-		"Meta": map[string]interface{}{},
+		"Data":  orderData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -860,13 +860,13 @@ func (c *BahrainOBFController) CreateInternationalStandingOrders(ctx *gin.Contex
 
 func (c *BahrainOBFController) GetInternationalStandingOrderConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
-			"Status": "Authorised",
+			"Status":    "Authorised",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -874,13 +874,13 @@ func (c *BahrainOBFController) GetInternationalStandingOrderConsent(ctx *gin.Con
 
 func (c *BahrainOBFController) GetInternationalStandingOrder(ctx *gin.Context) {
 	orderID := ctx.Param("internationalStandingOrderPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"InternationalStandingOrderId": orderID,
-			"Status": "Active",
+			"Status":                       "Active",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -892,10 +892,10 @@ func (c *BahrainOBFController) CreateDomesticStandingOrderConsents(ctx *gin.Cont
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -907,10 +907,10 @@ func (c *BahrainOBFController) CreateDomesticStandingOrders(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": orderData,
-		"Meta": map[string]interface{}{},
+		"Data":  orderData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -918,13 +918,13 @@ func (c *BahrainOBFController) CreateDomesticStandingOrders(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetDomesticStandingOrderConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
-			"Status": "Authorised",
+			"Status":    "Authorised",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -932,13 +932,13 @@ func (c *BahrainOBFController) GetDomesticStandingOrderConsent(ctx *gin.Context)
 
 func (c *BahrainOBFController) GetDomesticStandingOrder(ctx *gin.Context) {
 	orderID := ctx.Param("domesticStandingOrderId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticStandingOrderId": orderID,
-			"Status": "Active",
+			"Status":                  "Active",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -950,10 +950,10 @@ func (c *BahrainOBFController) CreateDomesticScheduledPaymentConsents(ctx *gin.C
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -965,10 +965,10 @@ func (c *BahrainOBFController) CreateDomesticScheduledPayments(ctx *gin.Context)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": paymentData,
-		"Meta": map[string]interface{}{},
+		"Data":  paymentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -976,13 +976,13 @@ func (c *BahrainOBFController) CreateDomesticScheduledPayments(ctx *gin.Context)
 
 func (c *BahrainOBFController) GetDomesticScheduledPaymentConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
-			"Status": "Authorised",
+			"Status":    "Authorised",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -990,13 +990,13 @@ func (c *BahrainOBFController) GetDomesticScheduledPaymentConsent(ctx *gin.Conte
 
 func (c *BahrainOBFController) GetDomesticScheduledPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("domesticScheduledPaymentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticScheduledPaymentId": paymentID,
-			"Status": "Pending",
+			"Status":                     "Pending",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1008,10 +1008,10 @@ func (c *BahrainOBFController) CreateAccountAccessConsents(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -1019,13 +1019,13 @@ func (c *BahrainOBFController) CreateAccountAccessConsents(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccountAccessConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
-			"Status": "Authorised",
+			"Status":    "Authorised",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1042,10 +1042,10 @@ func (c *BahrainOBFController) CreateFundsConfirmationConsents(ctx *gin.Context)
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -1057,10 +1057,10 @@ func (c *BahrainOBFController) CreateFundsConfirmations(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": confirmationData,
-		"Meta": map[string]interface{}{},
+		"Data":  confirmationData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -1068,13 +1068,13 @@ func (c *BahrainOBFController) CreateFundsConfirmations(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetFundsConfirmationConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
-			"Status": "Authorised",
+			"Status":    "Authorised",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1087,12 +1087,12 @@ func (c *BahrainOBFController) DeleteFundsConfirmationConsent(ctx *gin.Context) 
 
 func (c *BahrainOBFController) GetProducts(ctx *gin.Context) {
 	products := []map[string]interface{}{}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"Product": products,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1100,13 +1100,13 @@ func (c *BahrainOBFController) GetProducts(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetAccountProduct(ctx *gin.Context) {
 	accountID := ctx.Param("AccountId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"AccountId": accountID,
-			"Product": map[string]interface{}{},
+			"Product":   map[string]interface{}{},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1114,13 +1114,13 @@ func (c *BahrainOBFController) GetAccountProduct(ctx *gin.Context) {
 
 func (c *BahrainOBFController) GetInternationalPaymentConsentFundsConfirmation(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
-			"ConsentId": consentID,
+			"ConsentId":      consentID,
 			"FundsAvailable": true,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1128,12 +1128,12 @@ func (c *BahrainOBFController) GetInternationalPaymentConsentFundsConfirmation(c
 
 func (c *BahrainOBFController) GetInternationalPaymentConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1141,12 +1141,12 @@ func (c *BahrainOBFController) GetInternationalPaymentConsent(ctx *gin.Context) 
 
 func (c *BahrainOBFController) GetDomesticFutureDatedPaymentCancellationConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1158,10 +1158,10 @@ func (c *BahrainOBFController) CreateDomesticFutureDatedPaymentCancellationConse
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
-		"Data": consentData,
-		"Meta": map[string]interface{}{},
+		"Data":  consentData,
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusCreated, response)
@@ -1169,12 +1169,12 @@ func (c *BahrainOBFController) CreateDomesticFutureDatedPaymentCancellationConse
 
 func (c *BahrainOBFController) GetDomesticFutureDatedPaymentConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"ConsentId": consentID,
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1182,19 +1182,19 @@ func (c *BahrainOBFController) GetDomesticFutureDatedPaymentConsent(ctx *gin.Con
 
 func (c *BahrainOBFController) PatchDomesticFutureDatedPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("DomesticFutureDatedPaymentId")
-	
+
 	var patchData map[string]interface{}
 	if err := ctx.ShouldBindJSON(&patchData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	response := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticFutureDatedPaymentId": paymentID,
-			"Status": "Updated",
+			"Status":                       "Updated",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, response)
@@ -1207,12 +1207,12 @@ func (c *BahrainOBFController) GetAccountSupplementaryAccountInfoNew(ctx *gin.Co
 			"Account": map[string]interface{}{
 				"AccountId": accountID,
 				"SupplementaryData": map[string]interface{}{
-					"AccountType": "Personal",
+					"AccountType":    "Personal",
 					"AccountSubType": "CurrentAccount",
 				},
 			},
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, info)
@@ -1223,16 +1223,15 @@ func (c *BahrainOBFController) GetDomesticFutureDatedPaymentDetailsNew(ctx *gin.
 	details := map[string]interface{}{
 		"Data": map[string]interface{}{
 			"DomesticFutureDatedPaymentId": paymentID,
-			"Status": "Pending",
-			"CreationDateTime": "2023-01-01T00:00:00Z",
-			"StatusUpdateDateTime": "2023-01-01T00:00:00Z",
+			"Status":                       "Pending",
+			"CreationDateTime":             "2023-01-01T00:00:00Z",
+			"StatusUpdateDateTime":         "2023-01-01T00:00:00Z",
 		},
-		"Meta": map[string]interface{}{},
+		"Meta":  map[string]interface{}{},
 		"Links": map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, details)
 }
-
 
 func (c *BahrainOBFController) PatchDomesticFutureDatedPaymentNew(ctx *gin.Context) {
 	paymentID := ctx.Param("DomesticFutureDatedPaymentId")

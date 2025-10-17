@@ -15,9 +15,9 @@ type SecurityService interface {
 }
 
 type securityService struct {
-	currencyService   CurrencyService
+	currencyService     CurrencyService
 	challengeThresholds map[string]*big.Float
-	accessRules       map[string][]string
+	accessRules         map[string][]string
 }
 
 func NewSecurityService(currencyService CurrencyService) SecurityService {
@@ -32,7 +32,7 @@ func (s *securityService) CheckViewBasedAccess(ctx context.Context, userID, acco
 	if userID == "" || accountID == "" || viewID == "" {
 		return false, errors.New("missing required parameters for access check")
 	}
-	
+
 	switch viewID {
 	case "owner":
 		return s.isAccountOwner(ctx, userID, accountID), nil
@@ -52,20 +52,20 @@ func (s *securityService) ValidateAmountVisibility(ctx context.Context, userID, 
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if !hasAccess {
 		hasPublicAccess, err := s.CheckViewBasedAccess(ctx, userID, accountID, "public")
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if hasPublicAccess {
 			return big.NewFloat(0), nil
 		}
-		
+
 		return nil, errors.New("insufficient permissions to view amount")
 	}
-	
+
 	return amount, nil
 }
 
@@ -74,20 +74,20 @@ func (s *securityService) ValidateBalanceVisibility(ctx context.Context, userID,
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if !hasAccess {
 		hasAccountantAccess, err := s.CheckViewBasedAccess(ctx, userID, accountID, "accountant")
 		if err != nil {
 			return nil, err
 		}
-		
+
 		if hasAccountantAccess {
 			return balance, nil
 		}
-		
+
 		return big.NewFloat(0), nil
 	}
-	
+
 	return balance, nil
 }
 
@@ -95,16 +95,16 @@ func (s *securityService) CheckChallengeThreshold(ctx context.Context, amount *b
 	threshold, exists := s.challengeThresholds[currency]
 	if !exists {
 		threshold = s.challengeThresholds["USD"]
-		
+
 		exchangeRate, err := s.currencyService.GetExchangeRate(ctx, "", currency, "USD")
 		if err != nil {
 			return false, err
 		}
-		
+
 		convertedAmount := s.currencyService.ConvertCurrency(amount, exchangeRate)
 		return convertedAmount.Cmp(threshold) > 0, nil
 	}
-	
+
 	return amount.Cmp(threshold) > 0, nil
 }
 
@@ -116,7 +116,7 @@ func (s *securityService) ApplyAccessControl(ctx context.Context, userID string,
 			}
 		}
 	}
-	
+
 	return false, nil
 }
 
@@ -134,7 +134,7 @@ func (s *securityService) hasAuditorAccess(ctx context.Context, userID, accountI
 
 func initializeChallengeThresholds() map[string]*big.Float {
 	thresholds := make(map[string]*big.Float)
-	
+
 	thresholds["USD"] = big.NewFloat(1000.00)
 	thresholds["EUR"] = big.NewFloat(850.00)
 	thresholds["GBP"] = big.NewFloat(730.00)
@@ -142,18 +142,18 @@ func initializeChallengeThresholds() map[string]*big.Float {
 	thresholds["CHF"] = big.NewFloat(920.00)
 	thresholds["CAD"] = big.NewFloat(1250.00)
 	thresholds["AUD"] = big.NewFloat(1350.00)
-	
+
 	return thresholds
 }
 
 func initializeAccessRules() map[string][]string {
 	rules := make(map[string][]string)
-	
+
 	rules["account"] = []string{"read", "write", "delete"}
 	rules["transaction"] = []string{"read", "create"}
 	rules["balance"] = []string{"read"}
 	rules["customer"] = []string{"read", "update"}
 	rules["admin"] = []string{"*"}
-	
+
 	return rules
 }

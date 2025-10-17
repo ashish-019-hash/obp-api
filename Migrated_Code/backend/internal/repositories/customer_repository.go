@@ -24,12 +24,12 @@ func (r *customerRepository) Create(ctx context.Context, customer *models.Custom
 			  face_image_url, date_of_birth, relationship_status, dependents, dob_of_dependents, highest_education_attained, 
 			  employment_status, kyc_status, last_ok_date, credit_rating_rating, credit_rating_source, credit_limit_currency, credit_limit_amount) 
 			  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	
+
 	dobDependentsStr := ""
 	if len(customer.DobOfDependents) > 0 {
 		dobDependentsStr = customer.DobOfDependents[0].Format("2006-01-02")
 	}
-	
+
 	_, err := r.db.ExecContext(ctx, query,
 		customer.CustomerId,
 		customer.BankId,
@@ -59,10 +59,10 @@ func (r *customerRepository) GetByID(ctx context.Context, customerID string) (*m
 			  face_image_url, date_of_birth, relationship_status, dependents, dob_of_dependents, highest_education_attained, 
 			  employment_status, kyc_status, last_ok_date, credit_rating_rating, credit_rating_source, credit_limit_currency, credit_limit_amount 
 			  FROM customers WHERE customer_id = ?`
-	
+
 	customer := &models.Customer{}
 	var dobDependentsStr, creditRatingRating, creditRatingSource, creditLimitCurrency, creditLimitAmount string
-	
+
 	err := r.db.QueryRowContext(ctx, query, customerID).Scan(
 		&customer.CustomerId,
 		&customer.BankId,
@@ -84,13 +84,13 @@ func (r *customerRepository) GetByID(ctx context.Context, customerID string) (*m
 		&creditLimitCurrency,
 		&creditLimitAmount,
 	)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	customer.DobOfDependents = make([]time.Time, 0)
-	
+
 	return customer, nil
 }
 
@@ -99,18 +99,18 @@ func (r *customerRepository) GetByBankID(ctx context.Context, bankID string) ([]
 			  face_image_url, date_of_birth, relationship_status, dependents, dob_of_dependents, highest_education_attained, 
 			  employment_status, kyc_status, last_ok_date, credit_rating_rating, credit_rating_source, credit_limit_currency, credit_limit_amount 
 			  FROM customers WHERE bank_id = ?`
-	
+
 	rows, err := r.db.QueryContext(ctx, query, bankID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var customers []*models.Customer
 	for rows.Next() {
 		customer := &models.Customer{}
 		var dobDependentsStr, creditRatingRating, creditRatingSource, creditLimitCurrency, creditLimitAmount string
-		
+
 		err := rows.Scan(
 			&customer.CustomerId,
 			&customer.BankId,
@@ -135,12 +135,12 @@ func (r *customerRepository) GetByBankID(ctx context.Context, bankID string) ([]
 		if err != nil {
 			return nil, err
 		}
-		
+
 		customer.DobOfDependents = make([]time.Time, 0)
-		
+
 		customers = append(customers, customer)
 	}
-	
+
 	return customers, rows.Err()
 }
 
@@ -149,12 +149,12 @@ func (r *customerRepository) Update(ctx context.Context, customer *models.Custom
 			  face_image_url = ?, date_of_birth = ?, relationship_status = ?, dependents = ?, dob_of_dependents = ?, 
 			  highest_education_attained = ?, employment_status = ?, kyc_status = ?, last_ok_date = ? 
 			  WHERE customer_id = ?`
-	
+
 	dobDependentsStr := ""
 	if len(customer.DobOfDependents) > 0 {
 		dobDependentsStr = customer.DobOfDependents[0].Format("2006-01-02")
 	}
-	
+
 	_, err := r.db.ExecContext(ctx, query,
 		customer.Number,
 		customer.LegalName,

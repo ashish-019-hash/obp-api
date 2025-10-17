@@ -12,11 +12,11 @@ type FeeService interface {
 }
 
 type FeeCalculationResult struct {
-	BaseFee         *big.Float
-	PercentageFee   *big.Float
-	TotalFee        *big.Float
-	FeeBreakdown    map[string]*big.Float
-	Currency        string
+	BaseFee       *big.Float
+	PercentageFee *big.Float
+	TotalFee      *big.Float
+	FeeBreakdown  map[string]*big.Float
+	Currency      string
 }
 
 type feeService struct {
@@ -44,7 +44,7 @@ func (s *feeService) CalculateProductFee(ctx context.Context, productID string, 
 	if !exists {
 		feeStructure = s.feeStructures["default"]
 	}
-	
+
 	return s.calculateFee(ctx, feeStructure, amount, currency)
 }
 
@@ -54,7 +54,7 @@ func (s *feeService) CalculateTransactionFee(ctx context.Context, transactionTyp
 	if !exists {
 		feeStructure = s.feeStructures["default_transaction"]
 	}
-	
+
 	return s.calculateFee(ctx, feeStructure, amount, currency)
 }
 
@@ -63,7 +63,7 @@ func (s *feeService) ApplyFeeStructure(ctx context.Context, feeType string, base
 	if !exists {
 		feeStructure = s.feeStructures["default"]
 	}
-	
+
 	return s.calculateFee(ctx, feeStructure, baseAmount, currency)
 }
 
@@ -76,28 +76,28 @@ func (s *feeService) calculateFee(ctx context.Context, structure FeeStructure, a
 		}
 		convertedAmount = s.currencyService.ConvertCurrency(amount, exchangeRate)
 	}
-	
+
 	baseFee := new(big.Float).Copy(structure.BaseFee)
-	
+
 	percentageFee := new(big.Float).Mul(convertedAmount, structure.PercentageRate)
 	percentageFee.Quo(percentageFee, big.NewFloat(100))
-	
+
 	totalFee := new(big.Float).Add(baseFee, percentageFee)
-	
+
 	if structure.MinimumFee != nil && totalFee.Cmp(structure.MinimumFee) < 0 {
 		totalFee = new(big.Float).Copy(structure.MinimumFee)
 	}
-	
+
 	if structure.MaximumFee != nil && totalFee.Cmp(structure.MaximumFee) > 0 {
 		totalFee = new(big.Float).Copy(structure.MaximumFee)
 	}
-	
+
 	breakdown := map[string]*big.Float{
 		"base_fee":       baseFee,
 		"percentage_fee": percentageFee,
 		"total_fee":      totalFee,
 	}
-	
+
 	return &FeeCalculationResult{
 		BaseFee:       baseFee,
 		PercentageFee: percentageFee,
@@ -109,7 +109,7 @@ func (s *feeService) calculateFee(ctx context.Context, structure FeeStructure, a
 
 func initializeFeeStructures() map[string]FeeStructure {
 	structures := make(map[string]FeeStructure)
-	
+
 	structures["default"] = FeeStructure{
 		BaseFee:        big.NewFloat(1.00),
 		PercentageRate: big.NewFloat(0.5),
@@ -117,7 +117,7 @@ func initializeFeeStructures() map[string]FeeStructure {
 		MaximumFee:     big.NewFloat(50.00),
 		Currency:       "USD",
 	}
-	
+
 	structures["default_transaction"] = FeeStructure{
 		BaseFee:        big.NewFloat(0.25),
 		PercentageRate: big.NewFloat(0.1),
@@ -125,7 +125,7 @@ func initializeFeeStructures() map[string]FeeStructure {
 		MaximumFee:     big.NewFloat(10.00),
 		Currency:       "USD",
 	}
-	
+
 	structures["wire_transfer"] = FeeStructure{
 		BaseFee:        big.NewFloat(15.00),
 		PercentageRate: big.NewFloat(0.25),
@@ -133,7 +133,7 @@ func initializeFeeStructures() map[string]FeeStructure {
 		MaximumFee:     big.NewFloat(100.00),
 		Currency:       "USD",
 	}
-	
+
 	structures["international_transfer"] = FeeStructure{
 		BaseFee:        big.NewFloat(25.00),
 		PercentageRate: big.NewFloat(0.75),
@@ -141,6 +141,6 @@ func initializeFeeStructures() map[string]FeeStructure {
 		MaximumFee:     big.NewFloat(200.00),
 		Currency:       "USD",
 	}
-	
+
 	return structures
 }

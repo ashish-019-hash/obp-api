@@ -31,31 +31,31 @@ func (c *BerlinGroupController) GetAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	berlinGroupAccounts := make([]map[string]interface{}, len(accounts))
 	for i, account := range accounts {
 		berlinGroupAccounts[i] = map[string]interface{}{
 			"resourceId":      account.AccountId,
-			"iban":           account.AccountId,
-			"currency":       account.Currency,
-			"name":           account.Label,
-			"product":        "CurrentAccount",
+			"iban":            account.AccountId,
+			"currency":        account.Currency,
+			"name":            account.Label,
+			"product":         "CurrentAccount",
 			"cashAccountType": "CACC",
 		}
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"accounts": berlinGroupAccounts})
 }
 
 func (c *BerlinGroupController) GetAccountBalances(ctx *gin.Context) {
 	accountID := ctx.Param("account-id")
-	
+
 	currentBalance, err := c.balanceService.CalculateCurrentBalance(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	balances := []map[string]interface{}{
 		{
 			"balanceAmount": map[string]interface{}{
@@ -66,7 +66,7 @@ func (c *BerlinGroupController) GetAccountBalances(ctx *gin.Context) {
 			"referenceDate": "2023-09-16",
 		},
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"balances": balances})
 }
 
@@ -76,49 +76,49 @@ func (c *BerlinGroupController) InitiateSEPACreditTransfer(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	paymentID, err := c.paymentService.InitiatePayment(ctx.Request.Context(), paymentRequest)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"transactionStatus": "RCVD",
-		"paymentId":        paymentID,
+		"paymentId":         paymentID,
 	})
 }
 
 func (c *BerlinGroupController) GetAccountTransactions(ctx *gin.Context) {
 	accountID := ctx.Param("account-id")
-	
+
 	transactions, err := c.accountService.GetTransactionsByAccountID(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"transactions": transactions})
 }
 
 func (c *BerlinGroupController) GetAccountDetails(ctx *gin.Context) {
 	accountID := ctx.Param("account-id")
-	
+
 	account, err := c.accountService.GetAccountByID(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Account not found"})
 		return
 	}
-	
+
 	berlinGroupAccount := map[string]interface{}{
 		"resourceId":      account.AccountId,
-		"iban":           account.AccountId,
-		"currency":       account.Currency,
-		"name":           account.Label,
-		"product":        "CurrentAccount",
+		"iban":            account.AccountId,
+		"currency":        account.Currency,
+		"name":            account.Label,
+		"product":         "CurrentAccount",
 		"cashAccountType": "CACC",
 	}
-	
+
 	ctx.JSON(http.StatusOK, berlinGroupAccount)
 }
 
@@ -128,9 +128,9 @@ func (c *BerlinGroupController) CreateAccountInformationConsent(ctx *gin.Context
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	consentID := "consent-123"
-	
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"consentId":     consentID,
 		"consentStatus": "received",
@@ -139,7 +139,7 @@ func (c *BerlinGroupController) CreateAccountInformationConsent(ctx *gin.Context
 
 func (c *BerlinGroupController) GetConsentInformation(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"consentId":     consentID,
 		"consentStatus": "valid",
@@ -173,13 +173,13 @@ func (c *BerlinGroupController) GetConsent(ctx *gin.Context) {
 	consent := map[string]interface{}{
 		"consentId": consentID,
 		"access": map[string]interface{}{
-			"accounts": []string{},
-			"balances": []string{},
+			"accounts":     []string{},
+			"balances":     []string{},
 			"transactions": []string{},
 		},
 		"recurringIndicator": false,
-		"validUntil": "2024-12-31",
-		"frequencyPerDay": 4,
+		"validUntil":         "2024-12-31",
+		"frequencyPerDay":    4,
 	}
 	ctx.JSON(http.StatusOK, consent)
 }
