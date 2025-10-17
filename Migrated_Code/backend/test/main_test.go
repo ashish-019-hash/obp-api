@@ -11,11 +11,11 @@ import (
 
 func TestHealthEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	r := gin.Default()
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"status": "OK",
+			"status":  "OK",
 			"message": "OBP API Backend is running",
 		})
 	})
@@ -30,12 +30,12 @@ func TestHealthEndpoint(t *testing.T) {
 
 func TestRootEndpoint(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	
+
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
-			"name": "Open Bank Project API",
-			"version": "5.1.0",
+			"name":        "Open Bank Project API",
+			"version":     "5.1.0",
 			"description": "Complete REST API for Open Bank Project",
 		})
 	})

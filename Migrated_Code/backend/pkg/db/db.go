@@ -21,15 +21,15 @@ func GetDB() *sql.DB {
 		if err != nil {
 			log.Fatal("Failed to open database:", err)
 		}
-		
+
 		if err = instance.Ping(); err != nil {
 			log.Fatal("Failed to ping database:", err)
 		}
-		
+
 		if err = initializeSchema(); err != nil {
 			log.Fatal("Failed to initialize schema:", err)
 		}
-		
+
 		log.Println("SQLite in-memory database initialized successfully")
 	})
 	return instance
@@ -41,7 +41,7 @@ func initializeSchema() error {
 
 func createTables() error {
 	db := instance
-	
+
 	tables := []string{
 		`CREATE TABLE IF NOT EXISTS banks (
 			bank_id TEXT PRIMARY KEY,
@@ -52,7 +52,7 @@ func createTables() error {
 			bank_routing_scheme TEXT,
 			bank_routing_address TEXT
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS bank_accounts (
 			account_id TEXT PRIMARY KEY,
 			bank_id TEXT NOT NULL,
@@ -67,7 +67,7 @@ func createTables() error {
 			account_routing_address TEXT,
 			FOREIGN KEY (bank_id) REFERENCES banks(bank_id)
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS transactions (
 			transaction_id TEXT PRIMARY KEY,
 			account_id TEXT NOT NULL,
@@ -82,7 +82,7 @@ func createTables() error {
 			value_date TEXT,
 			FOREIGN KEY (account_id) REFERENCES bank_accounts(account_id)
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS counterparties (
 			counterparty_id TEXT PRIMARY KEY,
 			name TEXT NOT NULL,
@@ -95,7 +95,7 @@ func createTables() error {
 			FOREIGN KEY (this_bank_id) REFERENCES banks(bank_id),
 			FOREIGN KEY (this_account_id) REFERENCES bank_accounts(account_id)
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS counterparty_limits (
 			limit_id TEXT PRIMARY KEY,
 			counterparty_id TEXT NOT NULL,
@@ -105,15 +105,114 @@ func createTables() error {
 			max_monthly_amount_value TEXT NOT NULL,
 			FOREIGN KEY (counterparty_id) REFERENCES counterparties(counterparty_id)
 		)`,
-		
-		`CREATE TABLE IF NOT EXISTS users (
+
+		`CREATE TABLE IF NOT EXISTS auth_users (
 			user_id TEXT PRIMARY KEY,
+			username TEXT UNIQUE NOT NULL,
+			email TEXT UNIQUE NOT NULL,
+			password_hash TEXT NOT NULL,
+			email_verified BOOLEAN DEFAULT FALSE,
+			validated BOOLEAN DEFAULT FALSE,
+			first_name TEXT,
+			last_name TEXT,
+			provider TEXT NOT NULL DEFAULT 'local',
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS resource_users (
+			user_id TEXT PRIMARY KEY,
+			auth_user_id TEXT,
 			provider TEXT NOT NULL,
 			provider_id TEXT NOT NULL,
-			username TEXT,
-			email TEXT
+			name TEXT,
+			email TEXT,
+			company TEXT,
+			is_deleted BOOLEAN DEFAULT FALSE,
+			last_marketing_agreement_signed_date DATETIME,
+			terms_accepted_date DATETIME,
+			privacy_accepted_date DATETIME,
+			created_by_consent_id TEXT,
+			created_by_user_invitation_id TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (auth_user_id) REFERENCES auth_users(user_id)
 		)`,
-		
+
+		`CREATE TABLE IF NOT EXISTS consumers (
+			consumer_id TEXT PRIMARY KEY,
+			consumer_key TEXT UNIQUE NOT NULL,
+			consumer_secret TEXT NOT NULL,
+			is_active BOOLEAN DEFAULT TRUE,
+			name TEXT NOT NULL,
+			app_type TEXT,
+			description TEXT,
+			developer_email TEXT,
+			redirect_url TEXT,
+			created_by_user_id TEXT,
+			client_certificate TEXT,
+			company TEXT,
+			logo_url TEXT,
+			per_second_call_limit INTEGER DEFAULT 10,
+			per_minute_call_limit INTEGER DEFAULT 100,
+			per_hour_call_limit INTEGER DEFAULT 1000,
+			per_day_call_limit INTEGER DEFAULT 10000,
+			per_week_call_limit INTEGER DEFAULT 50000,
+			per_month_call_limit INTEGER DEFAULT 200000,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (created_by_user_id) REFERENCES resource_users(user_id)
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS entitlements (
+			entitlement_id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			role_name TEXT NOT NULL,
+			bank_id TEXT,
+			created_by_user_id TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES resource_users(user_id),
+			UNIQUE(user_id, role_name, bank_id)
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS scopes (
+			scope_id TEXT PRIMARY KEY,
+			consumer_id TEXT NOT NULL,
+			role_name TEXT NOT NULL,
+			bank_id TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (consumer_id) REFERENCES consumers(consumer_id),
+			UNIQUE(consumer_id, role_name, bank_id)
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS bad_login_attempts (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			provider TEXT NOT NULL,
+			username TEXT NOT NULL,
+			last_failure_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+			bad_attempts_since_last_success_or_reset INTEGER DEFAULT 0,
+			UNIQUE(provider, username)
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS user_locks (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			user_id TEXT NOT NULL,
+			type_of_lock TEXT NOT NULL,
+			last_lock_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES resource_users(user_id)
+		)`,
+
+		`CREATE TABLE IF NOT EXISTS user_auth_contexts (
+			id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			consumer_id TEXT,
+			key TEXT NOT NULL,
+			value TEXT NOT NULL,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES resource_users(user_id),
+			FOREIGN KEY (consumer_id) REFERENCES consumers(consumer_id)
+		)`,
+
 		`CREATE TABLE IF NOT EXISTS customers (
 			customer_id TEXT PRIMARY KEY,
 			bank_id TEXT NOT NULL,
@@ -136,7 +235,7 @@ func createTables() error {
 			credit_limit_amount TEXT,
 			FOREIGN KEY (bank_id) REFERENCES banks(bank_id)
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS fx_rates (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			bank_id TEXT,
@@ -146,7 +245,7 @@ func createTables() error {
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (bank_id) REFERENCES banks(bank_id)
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS api_metrics (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			consumer_id TEXT,
@@ -155,7 +254,7 @@ func createTables() error {
 			duration INTEGER NOT NULL,
 			date DATETIME DEFAULT CURRENT_TIMESTAMP
 		)`,
-		
+
 		`CREATE TABLE IF NOT EXISTS rate_limits (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			consumer_key TEXT NOT NULL,
@@ -167,12 +266,12 @@ func createTables() error {
 			UNIQUE(consumer_key, period, period_key)
 		)`,
 	}
-	
+
 	for _, table := range tables {
 		if _, err := db.Exec(table); err != nil {
 			return fmt.Errorf("failed to create table: %v", err)
 		}
 	}
-	
+
 	return nil
 }

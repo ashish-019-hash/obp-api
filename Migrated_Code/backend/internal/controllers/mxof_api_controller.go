@@ -31,19 +31,19 @@ func (c *MxOFAPIController) GetAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"accounts": accounts})
 }
 
 func (c *MxOFAPIController) GetAccountBalances(ctx *gin.Context) {
 	accountID := ctx.Param("account-id")
-	
+
 	currentBalance, err := c.balanceService.CalculateCurrentBalance(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	balances := []map[string]interface{}{
 		{
 			"balanceAmount": map[string]interface{}{
@@ -54,24 +54,24 @@ func (c *MxOFAPIController) GetAccountBalances(ctx *gin.Context) {
 			"referenceDate": "2023-09-16",
 		},
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"balances": balances})
 }
 
 func (c *MxOFAPIController) GetAccountTransactions(ctx *gin.Context) {
 	accountID := ctx.Param("account-id")
-	
+
 	transactions, err := c.accountService.GetTransactionsByAccountID(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"transactions": transactions})
 }
 func (c *MxOFAPIController) GetAccount(ctx *gin.Context) {
 	accountID := ctx.Param("accountId")
-	
+
 	account := map[string]interface{}{
 		"accountId": accountID,
 		"currency":  "MXN",
@@ -86,13 +86,13 @@ func (c *MxOFAPIController) CreatePayment(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	paymentID, err := c.paymentService.InitiatePayment(ctx.Request.Context(), paymentRequest)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"paymentId":         paymentID,
 		"transactionStatus": "RCVD",
@@ -101,7 +101,7 @@ func (c *MxOFAPIController) CreatePayment(ctx *gin.Context) {
 
 func (c *MxOFAPIController) GetPayment(ctx *gin.Context) {
 	paymentID := ctx.Param("paymentId")
-	
+
 	payment := map[string]interface{}{
 		"paymentId":         paymentID,
 		"transactionStatus": "ACSC",
@@ -115,7 +115,7 @@ func (c *MxOFAPIController) CreateConsent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	consentID := "consent-123"
 	ctx.JSON(http.StatusCreated, gin.H{
 		"consentId":     consentID,
@@ -125,7 +125,7 @@ func (c *MxOFAPIController) CreateConsent(ctx *gin.Context) {
 
 func (c *MxOFAPIController) GetConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	consent := map[string]interface{}{
 		"consentId":     consentID,
 		"consentStatus": "valid",
@@ -135,7 +135,7 @@ func (c *MxOFAPIController) GetConsent(ctx *gin.Context) {
 
 func (c *MxOFAPIController) DeleteConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":   "Consent deleted",
 		"consentId": consentID,
@@ -144,7 +144,7 @@ func (c *MxOFAPIController) DeleteConsent(ctx *gin.Context) {
 
 func (c *MxOFAPIController) GetConsentStatus(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	status := map[string]interface{}{
 		"consentId":     consentID,
 		"consentStatus": "valid",

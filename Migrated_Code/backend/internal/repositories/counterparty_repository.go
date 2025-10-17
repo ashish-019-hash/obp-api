@@ -21,7 +21,7 @@ func NewCounterpartyRepository() CounterpartyRepository {
 func (r *counterpartyRepository) Create(ctx context.Context, counterparty *models.Counterparty) error {
 	query := `INSERT INTO counterparties (counterparty_id, name, created_by_user_id, this_bank_id, this_account_id, this_view_id, counterparty_id_value, kind) 
 			  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-	
+
 	_, err := r.db.ExecContext(ctx, query,
 		counterparty.CounterpartyId,
 		counterparty.CounterpartyName,
@@ -38,10 +38,10 @@ func (r *counterpartyRepository) Create(ctx context.Context, counterparty *model
 func (r *counterpartyRepository) GetByID(ctx context.Context, counterpartyID string) (*models.Counterparty, error) {
 	query := `SELECT counterparty_id, name, created_by_user_id, this_bank_id, this_account_id, this_view_id, counterparty_id_value, kind 
 			  FROM counterparties WHERE counterparty_id = ?`
-	
+
 	counterparty := &models.Counterparty{}
 	var createdByUserId, thisViewId, counterpartyIdValue, kind string
-	
+
 	err := r.db.QueryRowContext(ctx, query, counterpartyID).Scan(
 		&counterparty.CounterpartyId,
 		&counterparty.CounterpartyName,
@@ -52,13 +52,13 @@ func (r *counterpartyRepository) GetByID(ctx context.Context, counterpartyID str
 		&counterpartyIdValue,
 		&kind,
 	)
-	
+
 	return counterparty, err
 }
 
 func (r *counterpartyRepository) Update(ctx context.Context, counterparty *models.Counterparty) error {
 	query := `UPDATE counterparties SET name = ?, this_bank_id = ?, this_account_id = ? WHERE counterparty_id = ?`
-	
+
 	_, err := r.db.ExecContext(ctx, query,
 		counterparty.CounterpartyName,
 		counterparty.ThisBankId,
@@ -77,18 +77,18 @@ func (r *counterpartyRepository) Delete(ctx context.Context, counterpartyID stri
 func (r *counterpartyRepository) GetByAccountID(ctx context.Context, accountID string) ([]*models.Counterparty, error) {
 	query := `SELECT counterparty_id, name, created_by_user_id, this_bank_id, this_account_id, this_view_id, counterparty_id_value, kind 
 			  FROM counterparties WHERE this_account_id = ?`
-	
+
 	rows, err := r.db.QueryContext(ctx, query, accountID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var counterparties []*models.Counterparty
 	for rows.Next() {
 		counterparty := &models.Counterparty{}
 		var createdByUserId, thisViewId, counterpartyIdValue, kind string
-		
+
 		err := rows.Scan(
 			&counterparty.CounterpartyId,
 			&counterparty.CounterpartyName,
@@ -102,9 +102,9 @@ func (r *counterpartyRepository) GetByAccountID(ctx context.Context, accountID s
 		if err != nil {
 			return nil, err
 		}
-		
+
 		counterparties = append(counterparties, counterparty)
 	}
-	
+
 	return counterparties, rows.Err()
 }

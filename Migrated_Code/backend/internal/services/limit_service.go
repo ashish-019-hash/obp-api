@@ -44,7 +44,7 @@ func (s *limitService) ValidateCounterpartyLimit(ctx context.Context, counterpar
 	if err != nil {
 		return err
 	}
-	
+
 	if currency != limit.Currency {
 		exchangeRate, err := s.currencyService.GetExchangeRate(ctx, "", currency, limit.Currency)
 		if err != nil {
@@ -52,11 +52,11 @@ func (s *limitService) ValidateCounterpartyLimit(ctx context.Context, counterpar
 		}
 		amount = s.currencyService.ConvertCurrency(amount, exchangeRate)
 	}
-	
+
 	if amount.Cmp(limit.MaxSingleAmount) > 0 {
 		return errors.New("amount exceeds counterparty single transaction limit")
 	}
-	
+
 	return nil
 }
 
@@ -69,7 +69,7 @@ func (s *limitService) CheckPaymentCoverage(ctx context.Context, accountID strin
 	if err != nil {
 		return nil, err
 	}
-	
+
 	convertedPaymentAmount := paymentAmount
 	if paymentCurrency != accountCurrency {
 		exchangeRate, err := s.currencyService.GetExchangeRate(ctx, "", paymentCurrency, accountCurrency)
@@ -78,15 +78,15 @@ func (s *limitService) CheckPaymentCoverage(ctx context.Context, accountID strin
 		}
 		convertedPaymentAmount = s.currencyService.ConvertCurrency(paymentAmount, exchangeRate)
 	}
-	
+
 	reservedAmount := big.NewFloat(0)
 	minimumBalance := big.NewFloat(0)
-	
+
 	availableBalance := new(big.Float).Sub(accountBalance, reservedAmount)
 	availableBalance.Sub(availableBalance, minimumBalance)
-	
+
 	result := &PaymentCoverageResult{}
-	
+
 	if availableBalance.Cmp(convertedPaymentAmount) >= 0 {
 		result.CoverageStatus = "COVERED"
 		result.CoverageConfidence = "HIGH"
@@ -101,14 +101,14 @@ func (s *limitService) CheckPaymentCoverage(ctx context.Context, accountID strin
 			result.CoverageStatus = "NOT_COVERED"
 			result.CoverageConfidence = "LOW"
 		}
-		
+
 		result.AvailableAmount = new(big.Float).Copy(availableBalance)
 		result.ShortfallAmount = new(big.Float).Sub(convertedPaymentAmount, availableBalance)
-		
+
 		if result.ShortfallAmount.Cmp(big.NewFloat(0)) < 0 {
 			result.ShortfallAmount = big.NewFloat(0)
 		}
 	}
-	
+
 	return result, nil
 }

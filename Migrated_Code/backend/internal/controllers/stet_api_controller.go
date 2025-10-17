@@ -31,19 +31,19 @@ func (c *STETAPIController) GetAccounts(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"accounts": accounts})
 }
 
 func (c *STETAPIController) GetAccountBalances(ctx *gin.Context) {
 	accountID := ctx.Param("account-id")
-	
+
 	currentBalance, err := c.balanceService.CalculateCurrentBalance(ctx.Request.Context(), accountID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	balances := []map[string]interface{}{
 		{
 			"balanceAmount": map[string]interface{}{
@@ -54,7 +54,7 @@ func (c *STETAPIController) GetAccountBalances(ctx *gin.Context) {
 			"referenceDate": "2023-09-16",
 		},
 	}
-	
+
 	ctx.JSON(http.StatusOK, gin.H{"balances": balances})
 }
 
@@ -64,13 +64,13 @@ func (c *STETAPIController) CreatePaymentRequest(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	paymentID, err := c.paymentService.InitiatePayment(ctx.Request.Context(), paymentRequest)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	ctx.JSON(http.StatusCreated, gin.H{
 		"paymentRequestResourceId": paymentID,
 		"transactionStatus":        "RCVD",
@@ -78,7 +78,7 @@ func (c *STETAPIController) CreatePaymentRequest(ctx *gin.Context) {
 }
 func (c *STETAPIController) GetAccount(ctx *gin.Context) {
 	accountID := ctx.Param("accountId")
-	
+
 	account := map[string]interface{}{
 		"resourceId": accountID,
 		"currency":   "EUR",
@@ -89,7 +89,7 @@ func (c *STETAPIController) GetAccount(ctx *gin.Context) {
 
 func (c *STETAPIController) GetAccountTransactions(ctx *gin.Context) {
 	accountID := ctx.Param("accountId")
-	
+
 	transactions := []map[string]interface{}{}
 	ctx.JSON(http.StatusOK, gin.H{
 		"account": map[string]interface{}{
@@ -101,7 +101,7 @@ func (c *STETAPIController) GetAccountTransactions(ctx *gin.Context) {
 
 func (c *STETAPIController) GetPaymentRequest(ctx *gin.Context) {
 	paymentID := ctx.Param("paymentId")
-	
+
 	payment := map[string]interface{}{
 		"paymentRequestResourceId": paymentID,
 		"transactionStatus":        "ACSC",
@@ -115,7 +115,7 @@ func (c *STETAPIController) CreateConsent(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	consentID := "consent-123"
 	ctx.JSON(http.StatusCreated, gin.H{
 		"consentId":     consentID,
@@ -125,7 +125,7 @@ func (c *STETAPIController) CreateConsent(ctx *gin.Context) {
 
 func (c *STETAPIController) GetConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	consent := map[string]interface{}{
 		"consentId":     consentID,
 		"consentStatus": "valid",
@@ -135,7 +135,7 @@ func (c *STETAPIController) GetConsent(ctx *gin.Context) {
 
 func (c *STETAPIController) DeleteConsent(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	ctx.JSON(http.StatusOK, gin.H{
 		"message":   "Consent deleted",
 		"consentId": consentID,
@@ -144,7 +144,7 @@ func (c *STETAPIController) DeleteConsent(ctx *gin.Context) {
 
 func (c *STETAPIController) GetConsentStatus(ctx *gin.Context) {
 	consentID := ctx.Param("consentId")
-	
+
 	status := map[string]interface{}{
 		"consentId":     consentID,
 		"consentStatus": "valid",

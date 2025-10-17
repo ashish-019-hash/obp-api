@@ -24,11 +24,11 @@ func (r *rateLimitRepository) IncrementCounter(ctx context.Context, consumerKey,
 		return 0, err
 	}
 	defer tx.Rollback()
-	
+
 	var currentCount int
 	query := `SELECT call_count FROM rate_limits WHERE consumer_key = ? AND period = ? AND period_key = ?`
 	err = tx.QueryRowContext(ctx, query, consumerKey, period, periodKey).Scan(&currentCount)
-	
+
 	if err == sql.ErrNoRows {
 		insertQuery := `INSERT INTO rate_limits (consumer_key, period, period_key, call_count, limit_value, reset_time) 
 						VALUES (?, ?, ?, 1, ?, ?)`
@@ -48,19 +48,19 @@ func (r *rateLimitRepository) IncrementCounter(ctx context.Context, consumerKey,
 		}
 		currentCount++
 	}
-	
+
 	return currentCount, tx.Commit()
 }
 
 func (r *rateLimitRepository) GetCounter(ctx context.Context, consumerKey, period, periodKey string) (int, error) {
 	query := `SELECT call_count FROM rate_limits WHERE consumer_key = ? AND period = ? AND period_key = ?`
-	
+
 	var count int
 	err := r.db.QueryRowContext(ctx, query, consumerKey, period, periodKey).Scan(&count)
 	if err == sql.ErrNoRows {
 		return 0, nil
 	}
-	
+
 	return count, err
 }
 
@@ -72,7 +72,7 @@ func (r *rateLimitRepository) ResetCounter(ctx context.Context, consumerKey, per
 
 func (r *rateLimitRepository) calculateResetTime(period string) time.Time {
 	now := time.Now()
-	
+
 	switch period {
 	case "second":
 		return now.Truncate(time.Second).Add(time.Second)

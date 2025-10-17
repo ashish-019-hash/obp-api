@@ -40,19 +40,19 @@ type Routing struct {
 }
 
 type Branch struct {
-	BranchId            string     `json:"branch_id"`
-	BankId              string     `json:"bank_id"`
-	Name                string     `json:"name"`
-	Address             Address    `json:"address"`
-	Location            Location   `json:"location"`
-	Lobby               *Lobby     `json:"lobby,omitempty"`
-	DriveUp             *DriveUp   `json:"drive_up,omitempty"`
-	IsAccessible        *bool      `json:"is_accessible,omitempty"`
-	AccessibleFeatures  *string    `json:"accessible_features,omitempty"`
-	BranchType          *string    `json:"branch_type,omitempty"`
-	MoreInfo            *string    `json:"more_info,omitempty"`
-	PhoneNumber         *string    `json:"phone_number,omitempty"`
-	BranchRouting       *Routing   `json:"branch_routing,omitempty"`
+	BranchId           string   `json:"branch_id"`
+	BankId             string   `json:"bank_id"`
+	Name               string   `json:"name"`
+	Address            Address  `json:"address"`
+	Location           Location `json:"location"`
+	Lobby              *Lobby   `json:"lobby,omitempty"`
+	DriveUp            *DriveUp `json:"drive_up,omitempty"`
+	IsAccessible       *bool    `json:"is_accessible,omitempty"`
+	AccessibleFeatures *string  `json:"accessible_features,omitempty"`
+	BranchType         *string  `json:"branch_type,omitempty"`
+	MoreInfo           *string  `json:"more_info,omitempty"`
+	PhoneNumber        *string  `json:"phone_number,omitempty"`
+	BranchRouting      *Routing `json:"branch_routing,omitempty"`
 }
 
 func NewBranch() *Branch {

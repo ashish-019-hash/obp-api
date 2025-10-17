@@ -21,7 +21,7 @@ func NewBankRepository() BankRepository {
 func (r *bankRepository) Create(ctx context.Context, bank *models.Bank) error {
 	query := `INSERT INTO banks (bank_id, short_name, full_name, logo, website, bank_routing_scheme, bank_routing_address) 
 			  VALUES (?, ?, ?, ?, ?, ?, ?)`
-	
+
 	_, err := r.db.ExecContext(ctx, query,
 		bank.BankId,
 		bank.ShortName,
@@ -37,9 +37,9 @@ func (r *bankRepository) Create(ctx context.Context, bank *models.Bank) error {
 func (r *bankRepository) GetByID(ctx context.Context, bankID string) (*models.Bank, error) {
 	query := `SELECT bank_id, short_name, full_name, logo, website, bank_routing_scheme, bank_routing_address 
 			  FROM banks WHERE bank_id = ?`
-	
+
 	bank := &models.Bank{}
-	
+
 	err := r.db.QueryRowContext(ctx, query, bankID).Scan(
 		&bank.BankId,
 		&bank.ShortName,
@@ -49,18 +49,18 @@ func (r *bankRepository) GetByID(ctx context.Context, bankID string) (*models.Ba
 		&bank.BankRoutingScheme,
 		&bank.BankRoutingAddress,
 	)
-	
+
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return bank, nil
 }
 
 func (r *bankRepository) Update(ctx context.Context, bank *models.Bank) error {
 	query := `UPDATE banks SET short_name = ?, full_name = ?, logo = ?, website = ?, 
 			  bank_routing_scheme = ?, bank_routing_address = ? WHERE bank_id = ?`
-	
+
 	_, err := r.db.ExecContext(ctx, query,
 		bank.ShortName,
 		bank.FullName,
@@ -82,17 +82,17 @@ func (r *bankRepository) Delete(ctx context.Context, bankID string) error {
 func (r *bankRepository) List(ctx context.Context, limit, offset int) ([]*models.Bank, error) {
 	query := `SELECT bank_id, short_name, full_name, logo, website, bank_routing_scheme, bank_routing_address 
 			  FROM banks LIMIT ? OFFSET ?`
-	
+
 	rows, err := r.db.QueryContext(ctx, query, limit, offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var banks []*models.Bank
 	for rows.Next() {
 		bank := &models.Bank{}
-		
+
 		err := rows.Scan(
 			&bank.BankId,
 			&bank.ShortName,
@@ -105,9 +105,9 @@ func (r *bankRepository) List(ctx context.Context, limit, offset int) ([]*models
 		if err != nil {
 			return nil, err
 		}
-		
+
 		banks = append(banks, bank)
 	}
-	
+
 	return banks, rows.Err()
 }

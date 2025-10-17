@@ -21,7 +21,7 @@ func NewMetricsRepository() MetricsRepository {
 
 func (r *metricsRepository) RecordAPICall(ctx context.Context, consumerID, userID, url string, duration int64) error {
 	query := `INSERT INTO api_metrics (consumer_id, user_id, url, duration) VALUES (?, ?, ?, ?)`
-	
+
 	_, err := r.db.ExecContext(ctx, query, consumerID, userID, url, duration)
 	return err
 }
@@ -35,9 +35,9 @@ func (r *metricsRepository) GetMetrics(ctx context.Context, fromDate, toDate tim
 				SUM(duration) as total_duration
 			  FROM api_metrics 
 			  WHERE date BETWEEN ? AND ?`
-	
+
 	args := []interface{}{fromDate.Format(time.RFC3339), toDate.Format(time.RFC3339)}
-	
+
 	if consumerID != "" {
 		query += " AND consumer_id = ?"
 		args = append(args, consumerID)
@@ -50,7 +50,7 @@ func (r *metricsRepository) GetMetrics(ctx context.Context, fromDate, toDate tim
 		query += " AND url LIKE ?"
 		args = append(args, "%"+url+"%")
 	}
-	
+
 	metrics := &models.APIMetrics{}
 	err := r.db.QueryRowContext(ctx, query, args...).Scan(
 		&metrics.TotalCalls,
@@ -59,7 +59,7 @@ func (r *metricsRepository) GetMetrics(ctx context.Context, fromDate, toDate tim
 		&metrics.MaxDuration,
 		&metrics.TotalDuration,
 	)
-	
+
 	return metrics, err
 }
 
@@ -74,18 +74,18 @@ func (r *metricsRepository) GetTopAPIs(ctx context.Context, fromDate, toDate tim
 			  GROUP BY url
 			  ORDER BY call_count DESC, avg_duration ASC
 			  LIMIT ?`
-	
+
 	rows, err := r.db.QueryContext(ctx, query, fromDate.Format(time.RFC3339), toDate.Format(time.RFC3339), limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var rankings []*models.APIRanking
 	rank := 1
 	for rows.Next() {
 		ranking := &models.APIRanking{}
-		
+
 		err := rows.Scan(
 			&ranking.URL,
 			&ranking.CallCount,
@@ -95,12 +95,12 @@ func (r *metricsRepository) GetTopAPIs(ctx context.Context, fromDate, toDate tim
 		if err != nil {
 			return nil, err
 		}
-		
+
 		ranking.Rank = rank
 		rankings = append(rankings, ranking)
 		rank++
 	}
-	
+
 	return rankings, rows.Err()
 }
 
@@ -116,18 +116,18 @@ func (r *metricsRepository) GetTopConsumers(ctx context.Context, fromDate, toDat
 			  GROUP BY consumer_id
 			  ORDER BY total_calls DESC, unique_apis_used DESC
 			  LIMIT ?`
-	
+
 	rows, err := r.db.QueryContext(ctx, query, fromDate.Format(time.RFC3339), toDate.Format(time.RFC3339), limit)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	
+
 	var rankings []*models.ConsumerRanking
 	rank := 1
 	for rows.Next() {
 		ranking := &models.ConsumerRanking{}
-		
+
 		err := rows.Scan(
 			&ranking.ConsumerID,
 			&ranking.TotalCalls,
@@ -138,11 +138,11 @@ func (r *metricsRepository) GetTopConsumers(ctx context.Context, fromDate, toDat
 		if err != nil {
 			return nil, err
 		}
-		
+
 		ranking.Rank = rank
 		rankings = append(rankings, ranking)
 		rank++
 	}
-	
+
 	return rankings, rows.Err()
 }

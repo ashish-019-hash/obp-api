@@ -31,8 +31,8 @@ type StandingOrderResult struct {
 }
 
 type analyticsService struct {
-	customerRepo repositories.CustomerRepository
-	metricsRepo  repositories.MetricsRepository
+	customerRepo    repositories.CustomerRepository
+	metricsRepo     repositories.MetricsRepository
 	currencyService CurrencyService
 }
 
@@ -53,14 +53,14 @@ func (s *analyticsService) CalculateCreditRating(ctx context.Context, customerID
 	if err != nil {
 		return nil, err
 	}
-	
+
 	creditScore := s.calculateBaseScore(customer.EmploymentStatus, customer.HighestEducationAttained)
 	creditScore = s.adjustForRelationship(creditScore, customer.RelationshipStatus, customer.Dependents)
-	
+
 	assessment := &CreditAssessment{
 		CreditScore: creditScore,
 	}
-	
+
 	if creditScore >= 750 {
 		assessment.CreditRating = "EXCELLENT"
 		assessment.CreditLimit = s.calculateCreditLimit(creditScore, "HIGH", "USD")
@@ -74,7 +74,7 @@ func (s *analyticsService) CalculateCreditRating(ctx context.Context, customerID
 		assessment.CreditRating = "POOR"
 		assessment.CreditLimit = s.calculateCreditLimit(creditScore, "MINIMAL", "USD")
 	}
-	
+
 	return assessment, nil
 }
 
@@ -93,9 +93,9 @@ func (s *analyticsService) GetAPIMetrics(ctx context.Context, fromDate, toDate t
 func (s *analyticsService) ProcessStandingOrderAmount(amount *big.Float, currency, frequency string) (*StandingOrderResult, error) {
 	smallestUnits := s.currencyService.ConvertToSmallestUnits(amount, currency)
 	displayAmount := s.currencyService.ConvertFromSmallestUnits(smallestUnits, currency)
-	
+
 	orderID := generateOrderID()
-	
+
 	return &StandingOrderResult{
 		SmallestUnits: smallestUnits,
 		DisplayAmount: displayAmount,
@@ -105,7 +105,7 @@ func (s *analyticsService) ProcessStandingOrderAmount(amount *big.Float, currenc
 
 func (s *analyticsService) calculateBaseScore(employmentStatus, education string) int {
 	baseScore := 500
-	
+
 	switch employmentStatus {
 	case "EMPLOYED_FULL_TIME":
 		baseScore += 150
@@ -120,7 +120,7 @@ func (s *analyticsService) calculateBaseScore(employmentStatus, education string
 	case "STUDENT":
 		baseScore += 50
 	}
-	
+
 	switch education {
 	case "DOCTORATE":
 		baseScore += 100
@@ -135,7 +135,7 @@ func (s *analyticsService) calculateBaseScore(employmentStatus, education string
 	case "SOME_HIGH_SCHOOL":
 		baseScore += 0
 	}
-	
+
 	return baseScore
 }
 
@@ -150,17 +150,17 @@ func (s *analyticsService) adjustForRelationship(score int, relationshipStatus s
 	case "WIDOWED":
 		score += 10
 	}
-	
+
 	if dependents > 0 {
 		score -= dependents * 10
 	}
-	
+
 	return score
 }
 
 func (s *analyticsService) calculateCreditLimit(score int, tier, currency string) *models.AmountOfMoney {
 	var baseLimit float64
-	
+
 	switch tier {
 	case "HIGH":
 		baseLimit = 50000
@@ -173,14 +173,14 @@ func (s *analyticsService) calculateCreditLimit(score int, tier, currency string
 	default:
 		baseLimit = 5000
 	}
-	
+
 	multiplier := float64(score) / 750.0
 	if multiplier > 2.0 {
 		multiplier = 2.0
 	}
-	
+
 	finalLimit := baseLimit * multiplier
-	
+
 	return &models.AmountOfMoney{
 		Currency: currency,
 		Amount:   big.NewFloat(finalLimit).String(),

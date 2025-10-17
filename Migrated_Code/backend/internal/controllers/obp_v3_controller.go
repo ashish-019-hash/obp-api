@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"net/http"
 	"github.com/gin-gonic/gin"
-	"obp-api-backend/internal/services"
+	"net/http"
 	"obp-api-backend/internal/models"
+	"obp-api-backend/internal/services"
 )
 
 type OBPv3Controller struct {
@@ -27,17 +27,17 @@ func NewOBPv3Controller(
 
 func (c *OBPv3Controller) GetAPIInfo(ctx *gin.Context) {
 	apiInfo := map[string]interface{}{
-		"version": "v3.1.0",
+		"version":        "v3.1.0",
 		"version_status": "STABLE",
-		"git_commit": "unknown",
-		"connector": "mapped",
+		"git_commit":     "unknown",
+		"connector":      "mapped",
 	}
 	ctx.JSON(http.StatusOK, apiInfo)
 }
 
 func (c *OBPv3Controller) GetConfig(ctx *gin.Context) {
 	config := map[string]interface{}{
-		"akka_ports": []string{"8080"},
+		"akka_ports":             []string{"8080"},
 		"elastic_search_enabled": false,
 	}
 	ctx.JSON(http.StatusOK, config)
@@ -45,7 +45,7 @@ func (c *OBPv3Controller) GetConfig(ctx *gin.Context) {
 
 func (c *OBPv3Controller) GetAdapterInfo(ctx *gin.Context) {
 	adapterInfo := map[string]interface{}{
-		"name": "OBP-API",
+		"name":    "OBP-API",
 		"version": "v3.1.0",
 	}
 	ctx.JSON(http.StatusOK, adapterInfo)
@@ -53,7 +53,7 @@ func (c *OBPv3Controller) GetAdapterInfo(ctx *gin.Context) {
 
 func (c *OBPv3Controller) GetRateLimitingInfo(ctx *gin.Context) {
 	rateLimiting := map[string]interface{}{
-		"enabled": true,
+		"enabled":    true,
 		"technology": "REDIS",
 	}
 	ctx.JSON(http.StatusOK, rateLimiting)
@@ -63,13 +63,13 @@ func (c *OBPv3Controller) CreateAccountWebhook(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	accountID := ctx.Param("accountId")
 	_ = ctx.Param("viewId")
-	
+
 	var webhookData models.AccountWebhook
 	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	webhookData.BankId = bankID
 	webhookData.AccountId = accountID
 	ctx.JSON(http.StatusCreated, webhookData)
@@ -79,7 +79,7 @@ func (c *OBPv3Controller) GetAccountWebhooks(ctx *gin.Context) {
 	_ = ctx.Param("bankId")
 	_ = ctx.Param("accountId")
 	_ = ctx.Param("viewId")
-	
+
 	webhooks := []models.AccountWebhook{}
 	ctx.JSON(http.StatusOK, gin.H{"account_webhooks": webhooks})
 }
@@ -89,13 +89,13 @@ func (c *OBPv3Controller) UpdateAccountWebhook(ctx *gin.Context) {
 	accountID := ctx.Param("accountId")
 	_ = ctx.Param("viewId")
 	webhookID := ctx.Param("accountWebhookId")
-	
+
 	var webhookData models.AccountWebhook
 	if err := ctx.ShouldBindJSON(&webhookData); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	
+
 	webhookData.AccountWebhookId = webhookID
 	webhookData.BankId = bankID
 	webhookData.AccountId = accountID
@@ -124,7 +124,7 @@ func (c *OBPv3Controller) GetProduct(ctx *gin.Context) {
 	productCode := ctx.Param("productCode")
 	product := models.Product{
 		ProductCode: productCode,
-		BankId: bankID,
+		BankId:      bankID,
 	}
 	ctx.JSON(http.StatusOK, product)
 }
@@ -134,8 +134,8 @@ func (c *OBPv3Controller) GetProductTree(ctx *gin.Context) {
 	productCode := ctx.Param("productCode")
 	tree := map[string]interface{}{
 		"product_code": productCode,
-		"bank_id": bankID,
-		"tree": []map[string]interface{}{},
+		"bank_id":      bankID,
+		"tree":         []map[string]interface{}{},
 	}
 	ctx.JSON(http.StatusOK, tree)
 }
@@ -159,8 +159,8 @@ func (c *OBPv3Controller) GetProductAttribute(ctx *gin.Context) {
 	attrID := ctx.Param("productAttributeId")
 	attr := models.ProductAttribute{
 		ProductAttributeId: attrID,
-		BankId: bankID,
-		ProductCode: productCode,
+		BankId:             bankID,
+		ProductCode:        productCode,
 	}
 	ctx.JSON(http.StatusOK, attr)
 }
@@ -258,7 +258,7 @@ func (c *OBPv3Controller) GetMeeting(ctx *gin.Context) {
 	meetingID := ctx.Param("meetingId")
 	meeting := models.Meeting{
 		MeetingId: meetingID,
-		BankId: bankID,
+		BankId:    bankID,
 	}
 	ctx.JSON(http.StatusOK, meeting)
 }
@@ -313,7 +313,7 @@ func (c *OBPv3Controller) GetSystemView(ctx *gin.Context) {
 	viewID := ctx.Param("systemViewId")
 	view := map[string]interface{}{
 		"view_id": viewID,
-		"name": "System View",
+		"name":    "System View",
 	}
 	ctx.JSON(http.StatusOK, view)
 }
@@ -368,9 +368,9 @@ func (c *OBPv3Controller) GetFirehoseCustomers(ctx *gin.Context) {
 func (c *OBPv3Controller) GetBadLoginStatus(ctx *gin.Context) {
 	username := ctx.Param("username")
 	status := map[string]interface{}{
-		"username": username,
+		"username":     username,
 		"bad_attempts": 0,
-		"is_locked": false,
+		"is_locked":    false,
 	}
 	ctx.JSON(http.StatusOK, status)
 }
@@ -398,7 +398,7 @@ func (c *OBPv3Controller) SetCallsLimit(ctx *gin.Context) {
 func (c *OBPv3Controller) GetCallsLimit(ctx *gin.Context) {
 	consumerID := ctx.Param("consumerId")
 	limit := map[string]interface{}{
-		"consumer_id": consumerID,
+		"consumer_id":           consumerID,
 		"per_second_call_limit": 1000,
 		"per_minute_call_limit": 10000,
 	}
@@ -409,11 +409,11 @@ func (c *OBPv3Controller) CheckFundsAvailable(ctx *gin.Context) {
 	_ = ctx.Param("bankId")
 	_ = ctx.Param("accountId")
 	_ = ctx.Param("viewId")
-	
+
 	result := map[string]interface{}{
 		"funds_available": "yes",
-		"amount": "1000.00",
-		"currency": "EUR",
+		"amount":          "1000.00",
+		"currency":        "EUR",
 	}
 	ctx.JSON(http.StatusOK, result)
 }
@@ -422,7 +422,7 @@ func (c *OBPv3Controller) GetConsumer(ctx *gin.Context) {
 	consumerID := ctx.Param("consumerId")
 	consumer := map[string]interface{}{
 		"consumer_id": consumerID,
-		"app_name": "Test App",
+		"app_name":    "Test App",
 	}
 	ctx.JSON(http.StatusOK, consumer)
 }
@@ -439,7 +439,7 @@ func (c *OBPv3Controller) GetConsumers(ctx *gin.Context) {
 
 func (c *OBPv3Controller) GetConnectorLoopback(ctx *gin.Context) {
 	loopback := map[string]interface{}{
-		"connector": "mapped",
+		"connector":   "mapped",
 		"duration_ms": 1,
 	}
 	ctx.JSON(http.StatusOK, loopback)
@@ -450,9 +450,9 @@ func (c *OBPv3Controller) GetTransactionByIdForBankAccount(ctx *gin.Context) {
 	_ = ctx.Param("accountId")
 	_ = ctx.Param("viewId")
 	transactionID := ctx.Param("transactionId")
-	
+
 	transaction := models.Transaction{
-		Id: transactionID,
+		Id:          transactionID,
 		ThisAccount: ctx.Param("accountId"),
 	}
 	ctx.JSON(http.StatusOK, transaction)
@@ -462,7 +462,7 @@ func (c *OBPv3Controller) GetTransactionRequests(ctx *gin.Context) {
 	_ = ctx.Param("bankId")
 	_ = ctx.Param("accountId")
 	_ = ctx.Param("viewId")
-	
+
 	requests := []map[string]interface{}{}
 	ctx.JSON(http.StatusOK, gin.H{"transaction_requests": requests})
 }
@@ -470,10 +470,10 @@ func (c *OBPv3Controller) GetTransactionRequests(ctx *gin.Context) {
 func (c *OBPv3Controller) GetCustomerByCustomerId(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	customerID := ctx.Param("customerId")
-	
+
 	customer := models.Customer{
 		CustomerId: customerID,
-		BankId: bankID,
+		BankId:     bankID,
 	}
 	ctx.JSON(http.StatusOK, customer)
 }
@@ -481,7 +481,7 @@ func (c *OBPv3Controller) GetCustomerByCustomerId(ctx *gin.Context) {
 func (c *OBPv3Controller) GetCustomerByCustomerNumber(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	customerNumber := ctx.Param("customerNumber")
-	
+
 	customer := models.Customer{
 		Number: customerNumber,
 		BankId: bankID,
@@ -786,7 +786,6 @@ func (c *OBPv3Controller) DeleteOtherAccountMoreInfo(ctx *gin.Context) {
 	ctx.JSON(http.StatusNoContent, nil)
 }
 
-
 func (c *OBPv3Controller) CreateOtherAccountURL(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	accountID := ctx.Param("accountId")
@@ -810,11 +809,11 @@ func (c *OBPv3Controller) GetOtherAccountURL(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	url := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
-		"url": "https://example.com",
+		"url":              "https://example.com",
 	}
 	ctx.JSON(http.StatusOK, url)
 }
@@ -842,10 +841,10 @@ func (c *OBPv3Controller) DeleteOtherAccountURL(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account URL deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account URL deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -873,11 +872,11 @@ func (c *OBPv3Controller) GetOtherAccountImageURL(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	imageURL := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
-		"image_url": "https://example.com/image.jpg",
+		"image_url":        "https://example.com/image.jpg",
 	}
 	ctx.JSON(http.StatusOK, imageURL)
 }
@@ -905,10 +904,10 @@ func (c *OBPv3Controller) DeleteOtherAccountImageURL(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account image URL deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account image URL deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -936,10 +935,10 @@ func (c *OBPv3Controller) GetOtherAccountOpenCorporatesURL(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	url := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
-		"other_account_id": otherAccountID,
+		"bank_id":             bankID,
+		"account_id":          accountID,
+		"view_id":             viewID,
+		"other_account_id":    otherAccountID,
 		"open_corporates_url": "https://opencorporates.com/companies/example",
 	}
 	ctx.JSON(http.StatusOK, url)
@@ -968,10 +967,10 @@ func (c *OBPv3Controller) DeleteOtherAccountOpenCorporatesURL(ctx *gin.Context) 
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account open corporates URL deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account open corporates URL deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -1000,12 +999,12 @@ func (c *OBPv3Controller) GetOtherAccountCorporateLocation(ctx *gin.Context) {
 
 	otherAccountID := ctx.Param("otherAccountId")
 	location := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 		"corporate_location": map[string]interface{}{
-			"latitude": 51.5074,
+			"latitude":  51.5074,
 			"longitude": -0.1278,
 		},
 	}
@@ -1035,10 +1034,10 @@ func (c *OBPv3Controller) DeleteOtherAccountCorporateLocation(ctx *gin.Context) 
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account corporate location deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account corporate location deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -1066,12 +1065,12 @@ func (c *OBPv3Controller) GetOtherAccountPhysicalLocation(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	location := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 		"physical_location": map[string]interface{}{
-			"latitude": 51.5074,
+			"latitude":  51.5074,
 			"longitude": -0.1278,
 		},
 	}
@@ -1101,10 +1100,10 @@ func (c *OBPv3Controller) DeleteOtherAccountPhysicalLocation(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account physical location deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account physical location deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -1132,11 +1131,11 @@ func (c *OBPv3Controller) GetOtherAccountPrivateAlias(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	alias := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
-		"private_alias": "Private Account Alias",
+		"private_alias":    "Private Account Alias",
 	}
 	ctx.JSON(http.StatusOK, alias)
 }
@@ -1164,10 +1163,10 @@ func (c *OBPv3Controller) DeleteOtherAccountPrivateAlias(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account private alias deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account private alias deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -1195,11 +1194,11 @@ func (c *OBPv3Controller) GetOtherAccountPublicAlias(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	alias := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
-		"public_alias": "Public Account Alias",
+		"public_alias":     "Public Account Alias",
 	}
 	ctx.JSON(http.StatusOK, alias)
 }
@@ -1227,10 +1226,10 @@ func (c *OBPv3Controller) DeleteOtherAccountPublicAlias(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account public alias deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account public alias deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }
@@ -1256,10 +1255,10 @@ func (c *OBPv3Controller) GetWebhookNew(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	webhookID := ctx.Param("webhookId")
 	webhook := map[string]interface{}{
-		"bank_id": bankID,
+		"bank_id":    bankID,
 		"webhook_id": webhookID,
-		"url": "https://example.com/webhook",
-		"is_active": true,
+		"url":        "https://example.com/webhook",
+		"is_active":  true,
 	}
 	ctx.JSON(http.StatusOK, webhook)
 }
@@ -1281,8 +1280,8 @@ func (c *OBPv3Controller) DeleteWebhookNew(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	webhookID := ctx.Param("webhookId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Webhook deleted",
-		"bank_id": bankID,
+		"message":    "Webhook deleted",
+		"bank_id":    bankID,
 		"webhook_id": webhookID,
 	})
 }
@@ -1327,13 +1326,12 @@ func (c *OBPv3Controller) DeleteProductAttributeV3(ctx *gin.Context) {
 	productCode := ctx.Param("productCode")
 	attrID := ctx.Param("attributeId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Product attribute deleted",
-		"bank_id": bankID,
+		"message":      "Product attribute deleted",
+		"bank_id":      bankID,
 		"product_code": productCode,
 		"attribute_id": attrID,
 	})
 }
-
 
 func (c *OBPv3Controller) GetWebhooksV3(ctx *gin.Context) {
 	webhooks := []map[string]interface{}{}
@@ -1353,8 +1351,8 @@ func (c *OBPv3Controller) GetWebhookV3(ctx *gin.Context) {
 	webhookID := ctx.Param("webhookId")
 	webhook := map[string]interface{}{
 		"webhook_id": webhookID,
-		"url": "https://example.com/webhook",
-		"is_active": true,
+		"url":        "https://example.com/webhook",
+		"is_active":  true,
 	}
 	ctx.JSON(http.StatusOK, webhook)
 }
@@ -1373,7 +1371,7 @@ func (c *OBPv3Controller) UpdateWebhookV3(ctx *gin.Context) {
 func (c *OBPv3Controller) DeleteWebhookV3(ctx *gin.Context) {
 	webhookID := ctx.Param("webhookId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Webhook deleted",
+		"message":    "Webhook deleted",
 		"webhook_id": webhookID,
 	})
 }
@@ -1399,10 +1397,10 @@ func (c *OBPv3Controller) GetProductAttributeDefinitionV3(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	defID := ctx.Param("attributeDefinitionId")
 	definition := map[string]interface{}{
-		"bank_id": bankID,
+		"bank_id":                 bankID,
 		"attribute_definition_id": defID,
-		"name": "sample_attribute",
-		"type": "STRING",
+		"name":                    "sample_attribute",
+		"type":                    "STRING",
 	}
 	ctx.JSON(http.StatusOK, definition)
 }
@@ -1424,12 +1422,11 @@ func (c *OBPv3Controller) DeleteProductAttributeDefinitionV3(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	defID := ctx.Param("attributeDefinitionId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Product attribute definition deleted",
-		"bank_id": bankID,
+		"message":                 "Product attribute definition deleted",
+		"bank_id":                 bankID,
 		"attribute_definition_id": defID,
 	})
 }
-
 
 func (c *OBPv3Controller) GetWebhooks(ctx *gin.Context) {
 	webhooks := []map[string]interface{}{}
@@ -1449,8 +1446,8 @@ func (c *OBPv3Controller) GetWebhook(ctx *gin.Context) {
 	webhookID := ctx.Param("webhookId")
 	webhook := map[string]interface{}{
 		"webhook_id": webhookID,
-		"url": "https://example.com/webhook",
-		"is_active": true,
+		"url":        "https://example.com/webhook",
+		"is_active":  true,
 	}
 	ctx.JSON(http.StatusOK, webhook)
 }
@@ -1469,11 +1466,10 @@ func (c *OBPv3Controller) UpdateWebhook(ctx *gin.Context) {
 func (c *OBPv3Controller) DeleteWebhook(ctx *gin.Context) {
 	webhookID := ctx.Param("webhookId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Webhook deleted",
+		"message":    "Webhook deleted",
 		"webhook_id": webhookID,
 	})
 }
-
 
 func (c *OBPv3Controller) GetProductAttributeDefinitions(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
@@ -1496,10 +1492,10 @@ func (c *OBPv3Controller) GetProductAttributeDefinition(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	attrDefID := ctx.Param("attributeDefinitionId")
 	definition := map[string]interface{}{
-		"bank_id": bankID,
+		"bank_id":                 bankID,
 		"attribute_definition_id": attrDefID,
-		"name": "sample_attribute",
-		"type": "STRING",
+		"name":                    "sample_attribute",
+		"type":                    "STRING",
 	}
 	ctx.JSON(http.StatusOK, definition)
 }
@@ -1521,8 +1517,8 @@ func (c *OBPv3Controller) DeleteProductAttributeDefinition(ctx *gin.Context) {
 	bankID := ctx.Param("bankId")
 	attrDefID := ctx.Param("attributeDefinitionId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Product attribute definition deleted",
-		"bank_id": bankID,
+		"message":                 "Product attribute definition deleted",
+		"bank_id":                 bankID,
 		"attribute_definition_id": attrDefID,
 	})
 }
@@ -1550,11 +1546,11 @@ func (c *OBPv3Controller) GetOtherAccountURLV3(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	url := map[string]interface{}{
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
-		"url": "https://example.com",
+		"url":              "https://example.com",
 	}
 	ctx.JSON(http.StatusOK, url)
 }
@@ -1582,10 +1578,10 @@ func (c *OBPv3Controller) DeleteOtherAccountURLV3(ctx *gin.Context) {
 	viewID := ctx.Param("viewId")
 	otherAccountID := ctx.Param("otherAccountId")
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Other account URL deleted",
-		"bank_id": bankID,
-		"account_id": accountID,
-		"view_id": viewID,
+		"message":          "Other account URL deleted",
+		"bank_id":          bankID,
+		"account_id":       accountID,
+		"view_id":          viewID,
 		"other_account_id": otherAccountID,
 	})
 }

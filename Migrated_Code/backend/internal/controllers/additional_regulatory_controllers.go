@@ -27,7 +27,7 @@ func NewAdditionalRegulatoryController(
 
 func (c *AdditionalRegulatoryController) GetHealthCheck(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
-		"status": "OK",
+		"status":  "OK",
 		"message": "All regulatory API endpoints are operational",
 	})
 }

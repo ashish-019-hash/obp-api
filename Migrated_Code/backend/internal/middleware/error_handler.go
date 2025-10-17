@@ -12,21 +12,21 @@ func ErrorHandler() gin.HandlerFunc {
 
 		if len(c.Errors) > 0 {
 			err := c.Errors.Last()
-			
+
 			switch err.Type {
 			case gin.ErrorTypeBind:
 				c.JSON(http.StatusBadRequest, gin.H{
-					"error": "Invalid request format",
+					"error":   "Invalid request format",
 					"message": err.Error(),
 				})
 			case gin.ErrorTypePublic:
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": "Internal server error",
+					"error":   "Internal server error",
 					"message": err.Error(),
 				})
 			default:
 				c.JSON(http.StatusInternalServerError, gin.H{
-					"error": "Internal server error",
+					"error":   "Internal server error",
 					"message": "An unexpected error occurred",
 				})
 			}
