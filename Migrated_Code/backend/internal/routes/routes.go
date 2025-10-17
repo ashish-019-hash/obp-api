@@ -44,13 +44,6 @@ func SetupRoutes(
 
 	router.POST("/my/logins/direct", authController.DirectLogin)
 
-	auth := router.Group("/auth")
-	{
-		auth.POST("/users", authController.CreateUser)
-		auth.POST("/consumers", authController.CreateConsumer)
-		auth.GET("/users/current", authMiddleware, authController.GetCurrentUser)
-	}
-
 	v5 := router.Group("/obp/v5.1.0")
 	v5.Use(authMiddleware)
 	{
@@ -84,9 +77,9 @@ func SetupRoutes(
 		v5.DELETE("/banks/:bankId/customers/:customerId", obpController.DeleteCustomer)
 
 		v5.GET("/users", obpController.GetUsers)
-		v5.GET("/users/current", obpController.GetCurrentUser)
+		v5.GET("/users/current", authController.GetCurrentUser)
 		v5.GET("/users/:userId", obpController.GetUser)
-		v5.POST("/users", obpController.CreateUser)
+		v5.POST("/users", authController.CreateUser)
 		v5.PUT("/users/:userId", obpController.UpdateUser)
 		v5.DELETE("/users/:userId", obpController.DeleteUser)
 
@@ -157,7 +150,7 @@ func SetupRoutes(
 		v5.PUT("/banks/:bankId/atms/:atmId", obpController.UpdateATM)
 		v5.DELETE("/banks/:bankId/atms/:atmId", obpController.DeleteATM)
 
-		v5.POST("/management/consumers", obpController.CreateConsumer)
+		v5.POST("/management/consumers", authController.CreateConsumer)
 		v5.POST("/management/consumers/my", obpController.CreateMyConsumer)
 		v5.GET("/management/consumers/:consumerId", obpController.GetConsumer)
 		v5.GET("/management/consumers", obpController.GetConsumers)
