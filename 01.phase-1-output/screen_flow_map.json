@@ -1,0 +1,565 @@
+{
+  "metadata": {
+    "framework": "Lift Web Framework (Scala)",
+    "extraction_date": "2025-09-14",
+    "source_repository": "karunam2/OBP-API",
+    "source_folder": "00.phase-1-input/OBP-API-develop",
+    "total_screens": 12,
+    "total_navigation_flows": 18
+  },
+  "screens": [
+    {
+      "screen_id": "HOME_PAGE",
+      "title": "Open Bank Project Home Page",
+      "url_pattern": "/",
+      "http_method": "GET",
+      "triggers": [
+        "Root URL access",
+        "Navigation menu Home link",
+        "Post-login redirect"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/bootstrap/liftweb/Boot.scala",
+        "method": "sitemap configuration",
+        "line_numbers": [565, 566]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/index.html",
+        "binding": "default layout",
+        "line_numbers": [1, 72]
+      },
+      "navigation_targets": [
+        "LOGIN_PAGE",
+        "USER_REGISTRATION",
+        "CONSUMER_REGISTRATION",
+        "OAUTH_AUTHORIZE"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": [],
+        "conditional_display": "Content varies based on AuthUser.loggedIn_?"
+      },
+      "redirect_pattern": "direct_render",
+      "notes": "Entry point, shows different content based on authentication state"
+    },
+    {
+      "screen_id": "LOGIN_PAGE",
+      "title": "User Authentication",
+      "url_pattern": "/user_mgt/login",
+      "http_method": ["GET", "POST"],
+      "triggers": [
+        "Click Log on button",
+        "Redirect from protected pages",
+        "OAuth authorization flow"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/Login.scala",
+        "methods": ["loggedIn", "loggedOut", "customiseLogin"],
+        "line_numbers": [45, 77, 98, 106]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/templates-hidden/default-en.html",
+        "binding": "data-lift=\"Login.loggedOut\"",
+        "line_numbers": [143, 147]
+      },
+      "navigation_targets": [
+        "HOME_PAGE",
+        "USER_REGISTRATION",
+        "OAUTH_AUTHORIZE"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": ["Show login form if !AuthUser.loggedIn_?"],
+        "conditional_display": "Login/logout state dependent"
+      },
+      "redirect_pattern": "post_redirect_get",
+      "notes": "Supports OpenID Connect, customizable instructions"
+    },
+    {
+      "screen_id": "OAUTH_AUTHORIZE",
+      "title": "OAuth Application Authorization",
+      "url_pattern": "/oauth/authorize",
+      "http_method": "GET",
+      "triggers": [
+        "Third-party application authorization request",
+        "OAuth token parameter"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/OAuthAuthorisation.scala",
+        "method": "tokenCheck",
+        "line_numbers": [77, 191]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/oauth/authorize.html",
+        "binding": "data-lift=\"OAuthAuthorisation.tokenCheck\"",
+        "line_numbers": [1, 72]
+      },
+      "navigation_targets": [
+        "LOGIN_PAGE",
+        "OAUTH_THANKS",
+        "ERROR_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": true,
+        "guards": [
+          "Valid OAuth token required",
+          "Token expiration check",
+          "User authentication required"
+        ],
+        "conditional_display": "Token validation dependent"
+      },
+      "redirect_pattern": "callback_redirect",
+      "redirect_details": {
+        "method": "S.redirectTo()",
+        "line_number": 122,
+        "target": "Application callback URL with verifier"
+      },
+      "notes": "OAuth 1.0a authorization flow, supports oob callbacks"
+    },
+    {
+      "screen_id": "CONSUMER_REGISTRATION",
+      "title": "API Consumer Registration",
+      "url_pattern": "/consumer-registration",
+      "http_method": "GET",
+      "triggers": [
+        "Click Consumer Registration in navigation"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/bootstrap/liftweb/Boot.scala",
+        "method": "Menu definition",
+        "line_numbers": [580]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/consumer-registration.html",
+        "binding": "data-lift=\"Nav.item?name=Consumer%20Registration\"",
+        "line_numbers": [122, 124]
+      },
+      "navigation_targets": [
+        "HOME_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": true,
+        "guards": ["AuthUser.loginFirst"],
+        "conditional_display": "Authenticated users only"
+      },
+      "redirect_pattern": "direct_render",
+      "notes": "Allows developers to register for API access keys"
+    },
+    {
+      "screen_id": "BG_CONSENT_REQUEST",
+      "title": "Berlin Group Consent Request",
+      "url_pattern": "/confirm-bg-consent-request",
+      "http_method": "GET",
+      "triggers": [
+        "Berlin Group PSD2 consent flow",
+        "Consent parameters"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/BerlinGroupConsent.scala",
+        "method": "confirmBgConsentRequest",
+        "line_numbers": [448, 451]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/confirm-bg-consent-request.html",
+        "binding": "data-lift=\"BerlinGroupConsent.confirmBgConsentRequest\""
+      },
+      "navigation_targets": [
+        "BG_CONSENT_SCA",
+        "ERROR_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": true,
+        "guards": [
+          "AuthUser.loginFirst",
+          "Valid consent request ID",
+          "User must own requested accounts"
+        ],
+        "conditional_display": "Account ownership validation"
+      },
+      "redirect_pattern": "multi_step_redirect",
+      "notes": "PSD2 consent management for account access"
+    },
+    {
+      "screen_id": "BG_CONSENT_SCA",
+      "title": "Strong Customer Authentication",
+      "url_pattern": "/confirm-bg-consent-request-sca",
+      "http_method": ["GET", "POST"],
+      "triggers": [
+        "POST from consent request page",
+        "SCA requirement"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/BerlinGroupConsent.scala",
+        "method": "confirmConsentRequestProcessSca",
+        "line_numbers": [417, 429]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/confirm-bg-consent-request-sca.html",
+        "binding": "data-lift=\"BerlinGroupConsent.confirmBgConsentRequest\"",
+        "line_numbers": [30, 31]
+      },
+      "navigation_targets": [
+        "EXTERNAL_REDIRECT"
+      ],
+      "conditions": {
+        "authentication_required": true,
+        "guards": [
+          "Valid OTP required",
+          "Active consent session",
+          "User authentication"
+        ],
+        "conditional_display": "OTP validation"
+      },
+      "redirect_pattern": "final_redirect",
+      "notes": "Two-factor authentication for PSD2 compliance"
+    },
+    {
+      "screen_id": "VRP_CONSENT_REQUEST",
+      "title": "Variable Recurring Payment Consent",
+      "url_pattern": "/confirm-vrp-consent-request",
+      "http_method": "GET",
+      "triggers": [
+        "VRP consent flow initiation",
+        "Consent ID parameter"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/VrpConsentCreation.scala",
+        "method": "confirmVrpConsentRequest",
+        "line_numbers": [157, 162]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/confirm-vrp-consent-request.html",
+        "binding": "data-lift=\"VrpConsentCreation.confirmVrpConsentRequest\"",
+        "line_numbers": [30, 31]
+      },
+      "navigation_targets": [
+        "VRP_CONSENT_CONFIRM"
+      ],
+      "conditions": {
+        "authentication_required": true,
+        "guards": [
+          "Valid consent ID",
+          "User authentication required"
+        ],
+        "conditional_display": "Consent validation"
+      },
+      "redirect_pattern": "parameter_redirect",
+      "redirect_details": {
+        "method": "S.redirectTo()",
+        "line_numbers": [160, 162],
+        "target": "VRP consent confirmation with parameters"
+      },
+      "notes": "Variable Recurring Payment consent flows"
+    },
+    {
+      "screen_id": "USER_REGISTRATION",
+      "title": "New User Registration",
+      "url_pattern": "/user_mgt/sign_up",
+      "http_method": ["GET", "POST"],
+      "triggers": [
+        "Click Register button",
+        "Multiple signup entry points"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/Login.scala",
+        "method": "loggedOut",
+        "line_numbers": [72, 75]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/templates-hidden/default-en.html",
+        "binding": "Multiple signup links",
+        "line_numbers": [146, 201, 238, 240]
+      },
+      "navigation_targets": [
+        "LOGIN_PAGE",
+        "HOME_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": ["Available to non-authenticated users"],
+        "conditional_display": "Registration form validation"
+      },
+      "redirect_pattern": "form_submission",
+      "notes": "Multiple entry points for user registration"
+    },
+    {
+      "screen_id": "USER_INVITATION",
+      "title": "User Invitation Processing",
+      "url_pattern": "/user-invitation",
+      "http_method": "GET",
+      "triggers": [
+        "Email invitation links",
+        "Invitation parameters"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/UserInvitation.scala",
+        "method": "Multiple redirect methods",
+        "line_numbers": [139, 210, 213]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/user-invitation.html",
+        "binding": "UserInvitation snippet"
+      },
+      "navigation_targets": [
+        "PASSWORD_RESET",
+        "USER_INVITATION_INVALID",
+        "USER_INVITATION_WARNING"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": [
+          "Valid invitation token",
+          "User not already logged in"
+        ],
+        "conditional_display": "Invitation token validation"
+      },
+      "redirect_pattern": "conditional_redirect",
+      "redirect_details": {
+        "method": "S.redirectTo()",
+        "line_numbers": [139, 210, 213],
+        "conditions": "Multiple paths based on validation"
+      },
+      "notes": "User onboarding via email invitations"
+    },
+    {
+      "screen_id": "TERMS_CONDITIONS",
+      "title": "Terms and Conditions Agreement",
+      "url_pattern": "/terms-and-conditions",
+      "http_method": ["GET", "POST"],
+      "triggers": [
+        "Click Terms and Conditions link",
+        "Mandatory agreement flow"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/TermsAndConditions.scala",
+        "methods": ["skipButtonDefense", "agreement processing"],
+        "line_numbers": [47, 76]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/terms-and-conditions.html",
+        "binding": "data-lift=\"TermsAndConditions.updateForm\"",
+        "line_numbers": [29]
+      },
+      "navigation_targets": [
+        "HOME_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": ["May be required for authenticated users"],
+        "conditional_display": "Agreement requirement check"
+      },
+      "redirect_pattern": "post_redirect_get",
+      "redirect_details": {
+        "method": "S.redirectTo(\"/\")",
+        "line_numbers": [47, 76],
+        "target": "Home page after processing"
+      },
+      "notes": "User agreement to updated terms"
+    },
+    {
+      "screen_id": "PRIVACY_POLICY",
+      "title": "Privacy Policy Agreement",
+      "url_pattern": "/privacy-policy",
+      "http_method": ["GET", "POST"],
+      "triggers": [
+        "Click Privacy Policy link",
+        "Mandatory privacy agreement flow"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/code/snippet/PrivacyPolicy.scala",
+        "methods": ["skipButtonDefense", "agreement processing"],
+        "line_numbers": [47, 73]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/privacy-policy.html",
+        "binding": "PrivacyPolicy snippet"
+      },
+      "navigation_targets": [
+        "HOME_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": ["May be required for authenticated users"],
+        "conditional_display": "Privacy agreement requirement check"
+      },
+      "redirect_pattern": "post_redirect_get",
+      "redirect_details": {
+        "method": "S.redirectTo(\"/\")",
+        "line_numbers": [47, 73],
+        "target": "Home page after processing"
+      },
+      "notes": "User agreement to privacy policy updates"
+    },
+    {
+      "screen_id": "USER_INFORMATION",
+      "title": "User Account Information",
+      "url_pattern": "/user-information",
+      "http_method": "GET",
+      "triggers": [
+        "Click username in navigation",
+        "Direct URL access"
+      ],
+      "controller_source": {
+        "file": "/obp-api/src/main/scala/bootstrap/liftweb/Boot.scala",
+        "method": "Menu definition",
+        "line_numbers": [585]
+      },
+      "template_source": {
+        "file": "/obp-api/src/main/webapp/user-information.html",
+        "binding": "Navigation link reference",
+        "line_numbers": [152]
+      },
+      "navigation_targets": [
+        "HOME_PAGE"
+      ],
+      "conditions": {
+        "authentication_required": false,
+        "guards": ["No explicit authentication in menu"],
+        "conditional_display": "User-specific content"
+      },
+      "redirect_pattern": "direct_render",
+      "notes": "User account details and management options"
+    }
+  ],
+  "navigation_flows": [
+    {
+      "flow_id": "authentication_flow",
+      "description": "User login and logout process",
+      "steps": [
+        {
+          "from": "HOME_PAGE",
+          "to": "LOGIN_PAGE",
+          "trigger": "Click Log on button",
+          "condition": "!AuthUser.loggedIn_?"
+        },
+        {
+          "from": "LOGIN_PAGE",
+          "to": "HOME_PAGE",
+          "trigger": "Successful authentication",
+          "condition": "Valid credentials"
+        },
+        {
+          "from": "LOGIN_PAGE",
+          "to": "USER_REGISTRATION",
+          "trigger": "Click Register button",
+          "condition": "New user"
+        }
+      ]
+    },
+    {
+      "flow_id": "oauth_authorization_flow",
+      "description": "OAuth 1.0a authorization process",
+      "steps": [
+        {
+          "from": "EXTERNAL_APP",
+          "to": "OAUTH_AUTHORIZE",
+          "trigger": "Authorization request with token",
+          "condition": "Valid OAuth token"
+        },
+        {
+          "from": "OAUTH_AUTHORIZE",
+          "to": "LOGIN_PAGE",
+          "trigger": "User not authenticated",
+          "condition": "!AuthUser.loggedIn_?"
+        },
+        {
+          "from": "OAUTH_AUTHORIZE",
+          "to": "OAUTH_THANKS",
+          "trigger": "User grants permission",
+          "condition": "Authenticated user + valid token"
+        },
+        {
+          "from": "OAUTH_THANKS",
+          "to": "EXTERNAL_APP",
+          "trigger": "Callback redirect with verifier",
+          "condition": "Successful authorization"
+        }
+      ]
+    },
+    {
+      "flow_id": "berlin_group_consent_flow",
+      "description": "PSD2 consent management process",
+      "steps": [
+        {
+          "from": "EXTERNAL_TPP",
+          "to": "BG_CONSENT_REQUEST",
+          "trigger": "Consent request initiation",
+          "condition": "Valid consent parameters"
+        },
+        {
+          "from": "BG_CONSENT_REQUEST",
+          "to": "BG_CONSENT_SCA",
+          "trigger": "User confirms consent",
+          "condition": "Account access permissions granted"
+        },
+        {
+          "from": "BG_CONSENT_SCA",
+          "to": "EXTERNAL_TPP",
+          "trigger": "OTP validation success",
+          "condition": "Valid OTP + consent confirmation"
+        }
+      ]
+    },
+    {
+      "flow_id": "user_invitation_flow",
+      "description": "User onboarding via email invitation",
+      "steps": [
+        {
+          "from": "EMAIL_INVITATION",
+          "to": "USER_INVITATION",
+          "trigger": "Click invitation link",
+          "condition": "Invitation token present"
+        },
+        {
+          "from": "USER_INVITATION",
+          "to": "PASSWORD_RESET",
+          "trigger": "Valid invitation token",
+          "condition": "Token validation success"
+        },
+        {
+          "from": "USER_INVITATION",
+          "to": "USER_INVITATION_INVALID",
+          "trigger": "Invalid invitation token",
+          "condition": "Token validation failure"
+        },
+        {
+          "from": "USER_INVITATION",
+          "to": "USER_INVITATION_WARNING",
+          "trigger": "User already logged in",
+          "condition": "AuthUser.loggedIn_?"
+        }
+      ]
+    }
+  ],
+  "security_patterns": {
+    "authentication_guards": [
+      "AuthUser.loginFirst",
+      "AuthUser.loggedIn_?",
+      "Admin.loginFirst"
+    ],
+    "token_validation": [
+      "OAuth token expiration check",
+      "Consent request ID validation",
+      "Invitation token validation"
+    ],
+    "redirect_patterns": [
+      "S.redirectTo()",
+      "Post-Redirect-Get",
+      "Callback redirects",
+      "Conditional redirects"
+    ]
+  },
+  "framework_specifics": {
+    "lift_patterns": {
+      "snippets": "Replace traditional controllers",
+      "css_selectors": "Used for DOM manipulation and template binding",
+      "sitemap": "Centralized routing in Boot.scala",
+      "session_vars": "Maintain state across requests"
+    },
+    "template_binding": {
+      "data_lift_attribute": "Primary binding mechanism",
+      "css_selector_transforms": "Snippet methods return CSS selectors",
+      "conditional_rendering": "Based on authentication and validation states"
+    }
+  }
+}

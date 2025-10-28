@@ -1,0 +1,140 @@
+=== OBP API v5.1.0 Comprehensive Testing ===
+Started: Wed Sep 24 08:33:29 UTC 2025
+
+Testing: GET /root - API root information
+  ✓ PASS - Status: 200
+  Response: {"energy_source":{"organisation":"Example","organisation_website":"https://www.example.com"},"git_commit":"unknown","hosted_at":{"organisation":"Example","organisation_website":"https://www.example.com"},"hosted_by":{"email":"contact@openbankproject.com","organisation":"Open Bank Project","phone":"+49 (0)30 8145 3994"},"version":"v5.1.0","version_status":"BLEEDING_EDGE"}
+
+Testing: GET /ui/suggested-session-timeout - Session timeout
+  ✓ PASS - Status: 200
+  Response: {"suggested_session_timeout":"300"}
+
+Testing: GET /well-known - OAuth2 well-known URIs
+  ✓ PASS - Status: 200
+  Response: {"well_known_uris":[{"name":"keycloak","uri":"https://keycloak.example.com/.well-known/openid_configuration"}]}
+
+Testing: GET /tags - API tags
+  ✓ PASS - Status: 200
+  Response: {"tags":["Account","Transaction","Customer","Bank","ATM","Branch","Card","Consent","Consumer","Counterparty","Entitlement","Metric","Product","Role","User","View","Webhook"]}
+
+Testing: POST /banks - Create bank
+  ✓ PASS - Status: 201
+  Response: {"id":"test_comprehensive_bank","short_name":"Test Comprehensive Bank","full_name":"Test Comprehensive Bank Ltd","logo":"","website":"","bank_routing_scheme":"","bank_routing_address":"","created_at":"2025-09-24T08:33:29.17703889Z"}
+
+Testing: GET /banks - Get all banks
+  ✓ PASS - Status: 200
+  Response: {"banks":[{"id":"test_comprehensive_bank","short_name":"Test Comprehensive Bank","full_name":"Test Comprehensive Bank Ltd","logo":"","website":"","bank_routing_scheme":"","bank_routing_address":"","created_at":"2025-09-24T08:33:29.17703889Z"}]}
+
+Testing: GET /banks/test_comprehensive_bank - Get specific bank
+  ✓ PASS - Status: 200
+  Response: {"id":"test_comprehensive_bank","short_name":"Test Comprehensive Bank","full_name":"Test Comprehensive Bank Ltd","logo":"","website":"","bank_routing_scheme":"","bank_routing_address":"","created_at":"2025-09-24T08:33:29.17703889Z"}
+
+Testing: POST /users - Create user
+  ✓ PASS - Status: 201
+  Response: {"user_id":"user_1758702809","username":"testcomprehensive","provider":"local","email":"comprehensive@example.com","display_name":"Test Comprehensive","is_locked":false,"is_validated":true}
+
+Testing: GET /users - Get all users
+  ✓ PASS - Status: 200
+  Response: {"users":[{"user_id":"user_1758702809","username":"testcomprehensive","provider":"local","email":"comprehensive@example.com","display_name":"testcomprehensive","is_locked":false,"is_validated":true}]}
+
+Testing: GET /users/provider/github/username/testuser - Get user by provider
+  ✓ PASS - Status: 200
+  Response: {"user_id":"user_1758702809","username":"testuser","provider":"github","email":"testuser@example.com","display_name":"testuser","is_locked":false,"is_validated":true}
+
+Testing: GET /users/provider/github/username/testuser/lock-status - Get user lock status
+  ✓ PASS - Status: 200
+  Response: {"is_locked":false,"lock_reason":"","locked_at":"2025-09-24T08:33:29.236120285Z","bad_attempts":0}
+
+Testing: POST /users/provider/github/provider-id/test123/sync - Sync external user
+  ✓ PASS - Status: 201
+  Response: {"user_id":"user_1758702809","username":"test123","provider":"github","email":"test123@github","display_name":"test123","is_locked":false,"is_validated":true}
+
+Testing: GET /my/consents - Get user consents
+  ✓ PASS - Status: 200
+  Response: {"consents":[]}
+
+Testing: GET /consents - Get all consents
+  ✓ PASS - Status: 200
+  Response: {"consents":[]}
+
+Testing: POST /banks/test_comprehensive_bank/consents - Create consent
+  ✓ PASS - Status: 201
+  Response: {"consent_id":"consent_1758702809","jwt":"eyJhbGciOiJIUzI1NiJ9...","status":"INITIATED","created_at":"2025-09-24T08:33:29.27531537Z","expires_at":"2025-09-25T08:33:29.27531544Z"}
+
+Testing: PUT /consents/consent123/status - Update consent status
+  ✓ PASS - Status: 200
+  Response: {"consent_id":"consent123","jwt":"eyJhbGciOiJIUzI1NiJ9...","status":"ACCEPTED","created_at":"2025-09-23T08:33:29.285499188Z","expires_at":"2025-09-25T08:33:29.285499398Z"}
+
+Testing: GET /banks/test_comprehensive_bank/accounts/test_account/views/owner/balances - Get account balances
+  ✓ PASS - Status: 200
+  Response: {"balances":[{"id":"balance_001","type":"CURRENT","currency":"EUR","amount":"1500.50","date":"2025-09-24T08:33:29.295834815Z"},{"id":"balance_002","type":"AVAILABLE","currency":"EUR","amount":"1450.50","date":"2025-09-24T08:33:29.295834875Z"}]}
+
+Testing: GET /banks/test_comprehensive_bank/balances - Get bank balances
+  ✓ PASS - Status: 200
+  Response: {"accounts":[{"account_id":"account_001","balances":[{"id":"balance_001","type":"CURRENT","currency":"EUR","amount":"1500.50","date":"2025-09-24T08:33:29.306143973Z"}]},{"account_id":"account_002","balances":[{"id":"balance_003","type":"CURRENT","currency":"USD","amount":"2000.00","date":"2025-09-24T08:33:29.306144023Z"}]}]}
+
+Testing: POST /banks/test_comprehensive_bank/accounts/test_account/balances - Create balance
+  ✓ PASS - Status: 201
+  Response: {"id":"balance_1758702809","type":"CURRENT","currency":"EUR","amount":"1000.00","date":"2025-09-24T08:33:29.316171886Z"}
+
+Testing: GET /banks/test_comprehensive_bank/accounts/test_account/views/owner/counterparties - Get counterparties
+  ✓ PASS - Status: 200
+  Response: {"counterparties":[{"counterparty_id":"counterparty_001","name":"Counterparty One","bank_id":"bank_001","account_id":"account_001","created_at":"2025-09-22T08:33:29.327103055Z","updated_at":"2025-09-23T08:33:29.327103185Z"}]}
+
+Testing: POST /banks/test_comprehensive_bank/accounts/test_account/views/owner/counterparties - Create counterparty
+  ✓ PASS - Status: 201
+  Response: {"counterparty_id":"counterparty_1758702809","name":"Test Counterparty","bank_id":"test_comprehensive_bank","account_id":"test_account","created_at":"2025-09-24T08:33:29.337186824Z","updated_at":"2025-09-24T08:33:29.337186904Z"}
+
+Testing: POST /banks/test_comprehensive_bank/accounts/test_account/views/owner/counterparties/cp123/limits - Create counterparty limit
+  ✓ PASS - Status: 201
+  Response: {"counterparty_limit_id":"limit_1758702809","bank_id":"test_comprehensive_bank","account_id":"test_account","view_id":"owner","counterparty_id":"cp123","currency":"USD","max_single_amount":"1000","max_monthly_amount":"5000","max_number_of_monthly_transactions":50,"max_yearly_amount":"10000","max_number_of_yearly_transactions":500,"max_total_amount":"100000.00","max_number_of_transactions":500}
+
+Testing: GET /banks/test_comprehensive_bank/atms - Get ATMs
+  ✓ PASS - Status: 200
+  Response: {"atms":[{"id":"atm_001","bank_id":"test_comprehensive_bank","name":"Main Branch ATM","address":{"line_1":"123 Main St","line_2":"","line_3":"","city":"New York","county":"","state":"NY","post_code":"10001","country_code":"US"},"location":{"latitude":40.7128,"longitude":-74.006},"meta":{"license":{"id":"license_001","name":"Standard ATM License"}},"attributes":[]}]}
+
+Testing: POST /banks/test_comprehensive_bank/atms - Create ATM
+  ✓ PASS - Status: 201
+  Response: {"id":"atm_1758702809","bank_id":"test_comprehensive_bank","name":"Test ATM","address":{"line_1":"","line_2":"","line_3":"","city":"Test City","county":"","state":"","post_code":"","country_code":"US"},"location":{"latitude":40.7128,"longitude":-74.006},"meta":{"license":{"id":"license_001","name":"Standard License"}},"attributes":[]}
+
+Testing: GET /management/consumers - Get consumers
+  ✓ PASS - Status: 200
+  Response: {"consumers":[{"consumer_id":"consumer_001","key":"key_001","secret":"","app_name":"Example App 1","app_type":"Confidential","description":"First example application","developer_email":"dev1@example.com","company":"Example Corp","redirect_url":"https://example.com/callback1","client_certificate":"","logo_url":"","enabled":true,"created_by_user_id":"user_123"},{"consumer_id":"consumer_002","key":"key_002","secret":"","app_name":"Example App 2","app_type":"Public","description":"Second example application","developer_email":"dev2@example.com","company":"Example Corp","redirect_url":"https://example.com/callback2","client_certificate":"","logo_url":"","enabled":false,"created_by_user_id":"user_456"}]}
+
+Testing: POST /management/consumers - Create consumer
+  ✓ PASS - Status: 201
+  Response: {"consumer_id":"consumer_1758702809","key":"key_1758702809","secret":"secret_1758702809","app_name":"Test App","app_type":"Confidential","description":"Test application","developer_email":"dev@example.com","company":"","redirect_url":"","client_certificate":"","logo_url":"","enabled":false,"created_by_user_id":"user_123"}
+
+Testing: POST /banks/test_comprehensive_bank/accounts/test_account/views/owner/account-access/grant - Grant account access
+  ✓ PASS - Status: 201
+  Response: {"id":"owner","short_name":"Owner View","description":"Owner view of account","is_public":false,"alias":"private","hide_metadata_if_alias_used":false,"can_add_comment":true,"can_add_corporate_location":false,"can_add_image_url":false,"can_add_more_info":false,"can_add_open_corporates_url":false,"can_add_physical_location":false,"can_add_private_alias":false,"can_add_public_alias":false,"can_add_tag":false,"can_add_url":false,"can_add_where_tag":false,"can_delete_comment":false,"can_delete_corporate_location":false,"can_delete_image_url":false,"can_delete_more_info":false,"can_delete_open_corporates_url":false,"can_delete_physical_location":false,"can_delete_tag":false,"can_delete_url":false,"can_delete_where_tag":false,"can_edit_owner_comment":false,"can_see_image_url":false,"can_see_more_info":false,"can_see_open_corporates_url":false,"can_see_other_account_bank_name":false,"can_see_other_account_iban":false,"can_see_other_account_kind":false,"can_see_other_account_metadata":false,"can_see_other_account_national_identifier":false,"can_see_other_account_number":false,"can_see_other_account_routing_address":false,"can_see_other_account_routing_scheme":false,"can_see_owner_comment":false,"can_see_physical_location":false,"can_see_private_alias":false,"can_see_public_alias":false,"can_see_tag":false,"can_see_transaction_amount":true,"can_see_transaction_balance":true,"can_see_transaction_currency":true,"can_see_transaction_description":true,"can_see_transaction_finish_date":true,"can_see_transaction_metadata":false,"can_see_transaction_other_bank_account":false,"can_see_transaction_start_date":true,"can_see_transaction_this_bank_account":false,"can_see_transaction_type":true,"can_see_url":false,"can_see_where_tag":false}
+
+Testing: GET /users/user123/account-access - Get user account access
+  ✓ PASS - Status: 200
+  Response: {"accounts":[{"id":"account_001","label":"Main Account","bank_id":"bank_001","views_available":["owner","public"]},{"id":"account_002","label":"Savings Account","bank_id":"bank_001","views_available":["owner"]}]}
+
+Testing: GET /banks/test_comprehensive_bank/accounts/test_account/owner/transaction-requests - Get transaction requests
+  ✓ PASS - Status: 200
+  Response: {"transaction_requests":[{"id":"tr_001","type":"SANDBOX_TAN","from":{"bank_id":"test_comprehensive_bank","account_id":"test_account"},"details":{"to_sandbox_tan":{"bank_id":"bank_002","account_id":"account_002"},"to_sepa":{"bank_id":"","account_id":""},"to_counterparty":{"counterparty_id":""},"to_transfer_to_phone":{"phone_number":""},"to_transfer_to_atm":{"atm_id":""},"value":{"currency":"EUR","amount":"100.00"},"description":"Test transaction 1"},"body":{"to":{"bank_id":"","account_id":""},"value":{"currency":"","amount":""},"description":""},"status":"INITIATED","start_date":"2025-09-24T08:33:29.417991187Z","end_date":"2025-09-25T08:33:29.417991247Z","challenge":{"id":"","allowed_attempts":0,"challenge_type":""},"charge":{"summary":"","value":{"currency":"","amount":""}}},{"id":"tr_002","type":"SEPA","from":{"bank_id":"test_comprehensive_bank","account_id":"test_account"},"details":{"to_sandbox_tan":{"bank_id":"","account_id":""},"to_sepa":{"bank_id":"bank_003","account_id":"account_003"},"to_counterparty":{"counterparty_id":""},"to_transfer_to_phone":{"phone_number":""},"to_transfer_to_atm":{"atm_id":""},"value":{"currency":"EUR","amount":"250.00"},"description":"Test transaction 2"},"body":{"to":{"bank_id":"","account_id":""},"value":{"currency":"","amount":""},"description":""},"status":"COMPLETED","start_date":"2025-09-24T06:33:29.417991428Z","end_date":"2025-09-24T07:33:29.417991538Z","challenge":{"id":"","allowed_attempts":0,"challenge_type":""},"charge":{"summary":"","value":{"currency":"","amount":""}}}]}
+
+Testing: GET /management/transaction-requests/tr123 - Get transaction request by ID
+  ✓ PASS - Status: 200
+  Response: {"id":"tr123","type":"SANDBOX_TAN","from":{"bank_id":"bank_001","account_id":"account_001"},"details":{"to_sandbox_tan":{"bank_id":"bank_002","account_id":"account_002"},"to_sepa":{"bank_id":"","account_id":""},"to_counterparty":{"counterparty_id":""},"to_transfer_to_phone":{"phone_number":""},"to_transfer_to_atm":{"atm_id":""},"value":{"currency":"EUR","amount":"100.00"},"description":"Test transaction"},"body":{"to":{"bank_id":"bank_002","account_id":"account_002"},"value":{"currency":"EUR","amount":"100.00"},"description":"Test transaction"},"status":"INITIATED","start_date":"2025-09-24T08:33:29.428269122Z","end_date":"2025-09-25T08:33:29.428269202Z","challenge":{"id":"challenge_001","allowed_attempts":3,"challenge_type":"SANDBOX_TAN"},"charge":{"summary":"Transaction charge","value":{"currency":"EUR","amount":"0.50"}}}
+
+Testing: POST /users/user123/non-personal/attributes - Create user attribute
+  ✓ PASS - Status: 201
+  Response: {"user_attribute_id":"attr_1758702809","user_id":"user123","name":"test_attribute","type":"STRING","value":"test_value","created_at":"2025-09-24T08:33:29.438333443Z","updated_at":"2025-09-24T08:33:29.438333513Z"}
+
+Testing: POST /regulated-entities - Create regulated entity
+  ✓ PASS - Status: 201
+  Response: {"regulated_entity_id":"entity_1758702809","name":"Test Entity","description":"","entity_type":"BANK"}
+
+Testing: GET /webui-props - Get WebUI properties
+  ✓ PASS - Status: 200
+  Response: {"webui_props":[{"name":"webui_api_explorer_url","value":"https://apiexplorer.openbankproject.com","id":"webui_prop_001"},{"name":"webui_api_documentation_url","value":"https://github.com/OpenBankProject/OBP-API/wiki","id":"webui_prop_002"},{"name":"webui_api_manager_url","value":"https://apimanager.openbankproject.com","id":"webui_prop_003"}]}
+
+Testing: POST /system-views/system/permissions - Add system view permission
+  ✓ PASS - Status: 201
+  Response: {"permission_id":"perm_1758702809","view_id":"system","permission_name":"can_see_transaction_amount","extra_data":"","created_at":"2025-09-24T08:33:29.470755188Z"}
+
+Completed: Wed Sep 24 08:33:29 UTC 2025

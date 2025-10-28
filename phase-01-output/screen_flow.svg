@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="800" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" 
+     refX="0" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+    </marker>
+    <style>
+      .screen { fill: #e8f4fd; stroke: #2196f3; stroke-width: 2; }
+      .auth-screen { fill: #fff3e0; stroke: #ff9800; stroke-width: 2; }
+      .oauth-screen { fill: #f3e5f5; stroke: #9c27b0; stroke-width: 2; }
+      .consent-screen { fill: #e8f5e8; stroke: #4caf50; stroke-width: 2; }
+      .error-screen { fill: #ffebee; stroke: #f44336; stroke-width: 2; }
+      .screen-text { font-family: Arial, sans-serif; font-size: 12px; text-anchor: middle; }
+      .flow-label { font-family: Arial, sans-serif; font-size: 10px; fill: #333; }
+      .condition-label { font-family: Arial, sans-serif; font-size: 9px; fill: #666; font-style: italic; }
+    </style>
+  </defs>
+  
+  <!-- Home Page -->
+  <rect x="50" y="50" width="120" height="60" class="screen" />
+  <text x="110" y="75" class="screen-text">Home Page</text>
+  <text x="110" y="90" class="screen-text">/</text>
+  
+  <!-- Login Page -->
+  <rect x="250" y="50" width="120" height="60" class="auth-screen" />
+  <text x="310" y="75" class="screen-text">Login Page</text>
+  <text x="310" y="90" class="screen-text">/user_mgt/login</text>
+  
+  <!-- Registration Page -->
+  <rect x="450" y="50" width="120" height="60" class="auth-screen" />
+  <text x="510" y="75" class="screen-text">Registration</text>
+  <text x="510" y="90" class="screen-text">/user_mgt/sign_up</text>
+  
+  <!-- OAuth Authorization -->
+  <rect x="50" y="200" width="120" height="60" class="oauth-screen" />
+  <text x="110" y="225" class="screen-text">OAuth Authorize</text>
+  <text x="110" y="240" class="screen-text">/oauth/authorize</text>
+  
+  <!-- OAuth Thanks -->
+  <rect x="250" y="200" width="120" height="60" class="oauth-screen" />
+  <text x="310" y="225" class="screen-text">OAuth Thanks</text>
+  <text x="310" y="240" class="screen-text">Callback Redirect</text>
+  
+  <!-- Consumer Registration -->
+  <rect x="450" y="200" width="120" height="60" class="screen" />
+  <text x="510" y="220" class="screen-text">Consumer</text>
+  <text x="510" y="235" class="screen-text">Registration</text>
+  <text x="510" y="250" class="screen-text">/consumer-registration</text>
+  
+  <!-- Berlin Group Consent -->
+  <rect x="650" y="200" width="120" height="60" class="consent-screen" />
+  <text x="710" y="220" class="screen-text">BG Consent</text>
+  <text x="710" y="235" class="screen-text">Request</text>
+  <text x="710" y="250" class="screen-text">/confirm-bg-consent</text>
+  
+  <!-- SCA Page -->
+  <rect x="850" y="200" width="120" height="60" class="consent-screen" />
+  <text x="910" y="225" class="screen-text">SCA (OTP)</text>
+  <text x="910" y="240" class="screen-text">/confirm-bg-sca</text>
+  
+  <!-- VRP Consent -->
+  <rect x="50" y="350" width="120" height="60" class="consent-screen" />
+  <text x="110" y="375" class="screen-text">VRP Consent</text>
+  <text x="110" y="390" class="screen-text">/confirm-vrp-consent</text>
+  
+  <!-- User Invitation -->
+  <rect x="250" y="350" width="120" height="60" class="auth-screen" />
+  <text x="310" y="375" class="screen-text">User Invitation</text>
+  <text x="310" y="390" class="screen-text">/user-invitation</text>
+  
+  <!-- User Information -->
+  <rect x="450" y="350" width="120" height="60" class="screen" />
+  <text x="510" y="375" class="screen-text">User Information</text>
+  <text x="510" y="390" class="screen-text">/user-information</text>
+  
+  <!-- Terms & Conditions -->
+  <rect x="650" y="350" width="120" height="60" class="screen" />
+  <text x="710" y="370" class="screen-text">Terms &</text>
+  <text x="710" y="385" class="screen-text">Conditions</text>
+  <text x="710" y="400" class="screen-text">/terms-and-conditions</text>
+  
+  <!-- Privacy Policy -->
+  <rect x="850" y="350" width="120" height="60" class="screen" />
+  <text x="910" y="375" class="screen-text">Privacy Policy</text>
+  <text x="910" y="390" class="screen-text">/privacy-policy</text>
+  
+  <!-- Error Pages -->
+  <rect x="250" y="500" width="120" height="60" class="error-screen" />
+  <text x="310" y="525" class="screen-text">Invalid Invitation</text>
+  <text x="310" y="540" class="screen-text">Error Page</text>
+  
+  <rect x="450" y="500" width="120" height="60" class="error-screen" />
+  <text x="510" y="525" class="screen-text">Already Logged In</text>
+  <text x="510" y="540" class="screen-text">Warning Page</text>
+  
+  <!-- Navigation Arrows -->
+  
+  <!-- Home to Login -->
+  <line x1="170" y1="80" x2="250" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="210" y="75" class="flow-label">Click "Log on"</text>
+  
+  <!-- Login to Registration -->
+  <line x1="370" y1="80" x2="450" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="410" y="75" class="flow-label">Click "Register"</text>
+  
+  <!-- Login Success back to Home -->
+  <path d="M 310 50 Q 310 20 110 20 Q 110 20 110 50" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  <text x="210" y="15" class="flow-label">Login Success</text>
+  
+  <!-- OAuth Flow -->
+  <line x1="110" y1="200" x2="110" y2="140" stroke="#9c27b0" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="80" y="170" class="flow-label">OAuth Request</text>
+  
+  <line x1="170" y1="230" x2="250" y2="230" stroke="#9c27b0" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="210" y="225" class="flow-label">User Grants</text>
+  
+  <!-- Consent Flow -->
+  <line x1="770" y1="230" x2="850" y2="230" stroke="#4caf50" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="810" y="225" class="flow-label">Requires SCA</text>
+  
+  <!-- SCA Success -->
+  <path d="M 910 200 Q 910 170 1050 170 Q 1050 170 1050 80 Q 1050 80 170 80" stroke="#4caf50" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  <text x="1000" y="165" class="flow-label">SCA Success → Redirect</text>
+  
+  <!-- User Invitation Flow -->
+  <line x1="310" y1="350" x2="310" y2="320" stroke="#ff9800" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="320" y="335" class="flow-label">Valid Token</text>
+  
+  <!-- User Invitation to Error -->
+  <line x1="310" y1="410" x2="310" y2="500" stroke="#f44336" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="320" y="455" class="flow-label">Invalid Token</text>
+  
+  <!-- User Invitation to Warning -->
+  <line x1="370" y1="380" x2="450" y2="530" stroke="#ff9800" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="420" y="455" class="flow-label">Already Logged In</text>
+  
+  <!-- Terms/Privacy to Home -->
+  <path d="M 710 350 Q 710 320 580 320 Q 580 320 580 80 Q 580 80 170 80" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  <text x="640" y="315" class="flow-label">Accept/Skip</text>
+  
+  <path d="M 910 350 Q 910 320 780 320 Q 780 320 780 80 Q 780 80 170 80" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)" />
+  <text x="840" y="315" class="flow-label">Accept/Skip</text>
+  
+  <!-- Authentication Guards -->
+  <text x="50" y="650" class="condition-label">Authentication Guards:</text>
+  <text x="50" y="665" class="condition-label">• Consumer Registration: AuthUser.loginFirst</text>
+  <text x="50" y="680" class="condition-label">• OAuth Authorize: Valid token + User auth</text>
+  <text x="50" y="695" class="condition-label">• BG Consent: AuthUser.loginFirst + Valid consent</text>
+  <text x="50" y="710" class="condition-label">• VRP Consent: User auth + Valid consent ID</text>
+  
+  <!-- Legend -->
+  <text x="650" y="650" class="condition-label">Legend:</text>
+  <rect x="650" y="660" width="20" height="15" class="screen" />
+  <text x="680" y="672" class="condition-label">General Pages</text>
+  <rect x="650" y="680" width="20" height="15" class="auth-screen" />
+  <text x="680" y="692" class="condition-label">Authentication</text>
+  <rect x="650" y="700" width="20" height="15" class="oauth-screen" />
+  <text x="680" y="712" class="condition-label">OAuth Flow</text>
+  <rect x="650" y="720" width="20" height="15" class="consent-screen" />
+  <text x="680" y="732" class="condition-label">Consent Flow</text>
+  <rect x="650" y="740" width="20" height="15" class="error-screen" />
+  <text x="680" y="752" class="condition-label">Error Pages</text>
+</svg>
