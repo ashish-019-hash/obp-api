@@ -1,0 +1,1778 @@
+openapi: 3.0.3
+info:
+  title: Open Bank Project API
+  description: |
+    Complete REST API specification for the Open Bank Project (OBP) API, extracted from Scala codebase.
+    
+    This specification covers multiple API versions and regulatory standards including:
+    - OBP Standard APIs (v1.2.1 to v5.1.0)
+    - Berlin Group PSD2 (v1.3)
+    - UK Open Banking (v3.1.0)
+    - Australian Consumer Data Right (v1.0.0)
+    - Polish, STET, Bahrain OBF, and MxOF standards
+    
+    The API provides comprehensive banking services including account management, payment processing,
+    customer operations, consent management, and regulatory compliance features.
+  version: 5.1.0
+  contact:
+    name: Open Bank Project
+    url: https://www.openbankproject.com
+  license:
+    name: AGPL-3.0
+    url: https://www.gnu.org/licenses/agpl-3.0.html
+
+servers:
+  - url: https://api.example.com
+    description: Production server (placeholder)
+  - url: https://api-sandbox.example.com
+    description: Sandbox server (placeholder)
+
+paths:
+  /obp/v5.1.0/root:
+    get:
+      tags: [API Information]
+      summary: Get API Information
+      description: Get basic information about the API including version, status, and capabilities
+      responses:
+        '200':
+          description: API information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiInfo'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/regulated-entities/{regulatedEntityId}:
+    delete:
+      tags: [Regulated Entities]
+      summary: Delete Regulated Entity
+      description: Delete a regulated entity by ID
+      parameters:
+        - name: regulatedEntityId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Regulated entity deleted successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/waiting-for-godot:
+    get:
+      tags: [Testing]
+      summary: Waiting For Godot
+      description: Test endpoint for performance testing and load simulation
+      responses:
+        '200':
+          description: Test response
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/accounts/{accountId}:
+    get:
+      tags: [Bahrain OBF - Accounts]
+      summary: Get Account by AccountId
+      description: Get account details for Bahrain Open Banking Framework compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                  Links:
+                    type: object
+                  Data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/accounts:
+    get:
+      tags: [Bahrain OBF - Accounts]
+      summary: Get Accounts
+      description: Get all accounts for Bahrain Open Banking Framework compliance
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                  Links:
+                    type: object
+                  Data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/accounts/{accountId}/balances:
+    get:
+      tags: [Bahrain OBF - Balances]
+      summary: Get Account Balances
+      description: Get account balances for Bahrain Open Banking Framework compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/balances:
+    get:
+      tags: [Bahrain OBF - Balances]
+      summary: Get Balances
+      description: Get all balances for Bahrain Open Banking Framework compliance
+      responses:
+        '200':
+          description: Balances retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /bahrain-obf/v1.0.0/domestic-payment-consents:
+    post:
+      tags: [Bahrain OBF - Payments]
+      summary: Create Domestic Payment Consent
+      description: Create domestic payment consent for Bahrain OBF compliance
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Domestic payment consent created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/aisp/accounts:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Accounts
+      description: Get accounts for UK Open Banking compliance
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Meta:
+                    type: object
+                  Links:
+                    type: object
+                  Data:
+                    type: object
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/aisp/accounts/{accountId}:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Account
+      description: Get account details for UK Open Banking compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account details retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/aisp/accounts/{accountId}/balances:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Account Balances
+      description: Get account balances for UK Open Banking compliance
+      parameters:
+        - name: accountId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/pisp/domestic-payment-consents:
+    post:
+      tags: [UK Open Banking - Payments]
+      summary: Create Domestic Payment Consents
+      description: Create domestic payment consent for UK Open Banking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Domestic payment consent created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /open-banking/v3.1.0/pisp/domestic-payments:
+    post:
+      tags: [UK Open Banking - Payments]
+      summary: Create Domestic Payments
+      description: Create domestic payment for UK Open Banking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '201':
+          description: Domestic payment created successfully
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/ui/suggested-session-timeout:
+    get:
+      tags: [API Information]
+      summary: Get Suggested Session Timeout
+      description: Get the suggested session timeout value for UI applications
+      responses:
+        '200':
+          description: Session timeout retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestedSessionTimeout'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/banks:
+    get:
+      tags: [Banks]
+      summary: Get Banks
+      description: Get list of banks available in the system
+      parameters:
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Banks retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BanksList'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/banks/{bankId}:
+    get:
+      tags: [Banks]
+      summary: Get Bank
+      description: Get information about a specific bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+      responses:
+        '200':
+          description: Bank information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Bank'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /obp/v5.1.0/banks/{bankId}/agents:
+    post:
+      tags: [Agents]
+      summary: Create Agent
+      description: Create a new agent for the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAgent'
+      responses:
+        '201':
+          description: Agent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanCreateAgent]
+
+    get:
+      tags: [Agents]
+      summary: Get Agents
+      description: Get list of agents for the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Agents retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AgentsList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetAgents]
+
+  /obp/v5.1.0/banks/{bankId}/agents/{agentId}:
+    get:
+      tags: [Agents]
+      summary: Get Agent
+      description: Get information about a specific agent
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AgentId'
+      responses:
+        '200':
+          description: Agent information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetAgent]
+
+    put:
+      tags: [Agents]
+      summary: Update Agent Status
+      description: Update the status of an existing agent
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AgentId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PutAgent'
+      responses:
+        '200':
+          description: Agent status updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanUpdateAgentStatus]
+
+  /obp/v5.1.0/banks/{bankId}/accounts:
+    get:
+      tags: [Accounts]
+      summary: Get Accounts at Bank
+      description: Get list of accounts at the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountsList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetAccounts]
+
+    post:
+      tags: [Accounts]
+      summary: Create Account
+      description: Create a new account at the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostAccount'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanCreateAccount]
+
+  /obp/v5.1.0/banks/{bankId}/accounts/{accountId}:
+    get:
+      tags: [Accounts]
+      summary: Get Account
+      description: Get information about a specific account
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Account information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetAccount]
+
+  /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/balances:
+    get:
+      tags: [Accounts]
+      summary: Get Account Balances
+      description: Get balance information for a specific account
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalances'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetBalances]
+
+  /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/transactions:
+    get:
+      tags: [Transactions]
+      summary: Get Transactions
+      description: Get list of transactions for an account through a specific view
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/ViewId'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+        - name: from_date
+          in: query
+          description: Start date for transaction filtering
+          schema:
+            type: string
+            format: date
+        - name: to_date
+          in: query
+          description: End date for transaction filtering
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Transactions retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionsList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetTransactions]
+
+  /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/transactions/{transactionId}:
+    get:
+      tags: [Transactions]
+      summary: Get Transaction
+      description: Get information about a specific transaction
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/ViewId'
+        - $ref: '#/components/parameters/TransactionId'
+      responses:
+        '200':
+          description: Transaction information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetTransaction]
+
+  /obp/v5.1.0/banks/{bankId}/accounts/{accountId}/{viewId}/transaction-request-types/SEPA/transaction-requests:
+    post:
+      tags: [Transaction Requests]
+      summary: Create SEPA Transaction Request
+      description: Create a new SEPA transaction request
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/ViewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostTransactionRequest'
+      responses:
+        '201':
+          description: Transaction request created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionRequest'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanCreateTransactionRequest]
+
+  /obp/v5.1.0/banks/{bankId}/customers:
+    get:
+      tags: [Customers]
+      summary: Get Customers
+      description: Get list of customers for the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Customers retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CustomersList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetCustomers]
+
+    post:
+      tags: [Customers]
+      summary: Create Customer
+      description: Create a new customer for the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostCustomer'
+      responses:
+        '201':
+          description: Customer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Customer'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanCreateCustomer]
+
+  /obp/v5.1.0/banks/{bankId}/my/consents:
+    get:
+      tags: [Consents]
+      summary: Get My Consents at Bank
+      description: Get list of consents for the current user at the specified bank
+      parameters:
+        - $ref: '#/components/parameters/BankId'
+        - $ref: '#/components/parameters/Offset'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Consents retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConsentsList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/BankNotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanGetConsents]
+
+  /obp/v5.1.0/consumer/consents:
+    post:
+      tags: [Consents]
+      summary: Create Consent
+      description: Create a new consent for data access
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PostConsent'
+      responses:
+        '201':
+          description: Consent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Consent'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [CanCreateConsent]
+
+  /berlin-group/v1.3/accounts:
+    get:
+      tags: [Berlin Group - Accounts]
+      summary: Get Account List
+      description: Get list of accounts accessible to the current user (Berlin Group PSD2)
+      parameters:
+        - name: withBalance
+          in: query
+          description: Include balance information
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: Account list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerlinGroupAccountList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [AIS]
+
+  /berlin-group/v1.3/accounts/{account-id}/balances:
+    get:
+      tags: [Berlin Group - Accounts]
+      summary: Get Account Balances
+      description: Get balance information for a specific account (Berlin Group PSD2)
+      parameters:
+        - name: account-id
+          in: path
+          required: true
+          description: Account identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerlinGroupBalances'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [AIS]
+
+  /berlin-group/v1.3/payments/sepa-credit-transfers:
+    post:
+      tags: [Berlin Group - Payments]
+      summary: Initiate SEPA Credit Transfer
+      description: Initiate a SEPA credit transfer payment (Berlin Group PSD2)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BerlinGroupSepaCreditTransfer'
+      responses:
+        '201':
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BerlinGroupPaymentInitiation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [PIS]
+
+  /open-banking/v3.1.0/aisp/accounts:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Accounts
+      description: Get list of accounts accessible to the current user (UK Open Banking)
+      responses:
+        '200':
+          description: Account list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UKOpenBankingAccountList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [accounts]
+
+  /open-banking/v3.1.0/aisp/accounts/{AccountId}/balances:
+    get:
+      tags: [UK Open Banking - Accounts]
+      summary: Get Account Balances
+      description: Get balance information for a specific account (UK Open Banking)
+      parameters:
+        - name: AccountId
+          in: path
+          required: true
+          description: Account identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Account balances retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UKOpenBankingBalances'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [accounts]
+
+  /cds-au/v1.0.0/banking/accounts:
+    get:
+      tags: [Australian CDR - Banking]
+      summary: Get Accounts
+      description: Get list of accounts accessible to the current user (Australian CDR)
+      parameters:
+        - name: product-category
+          in: query
+          description: Filter accounts by product category
+          schema:
+            type: string
+            enum: [TRANS_AND_SAVINGS_ACCOUNTS, TERM_DEPOSITS, TRAVEL_CARDS, REGULATED_TRUST_ACCOUNTS, RESIDENTIAL_MORTGAGES, CRED_AND_CHRG_CARDS, PERS_LOANS, MARGIN_LOANS, LEASES, TRADE_FINANCE, OVERDRAFTS, BUSINESS_LOANS]
+      responses:
+        '200':
+          description: Account list retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AustralianCDRAccountList'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+      security:
+        - OAuth2: [bank:accounts.basic:read]
+
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://api.example.com/oauth/authorize
+          tokenUrl: https://api.example.com/oauth/token
+          scopes:
+            CanCreateAgent: Create agents
+            CanGetAgents: View agents
+            CanGetAgent: View specific agent
+            CanUpdateAgentStatus: Update agent status
+            CanGetAccounts: View accounts
+            CanCreateAccount: Create accounts
+            CanGetAccount: View specific account
+            CanGetBalances: View account balances
+            CanGetTransactions: View transactions
+            CanGetTransaction: View specific transaction
+            CanCreateTransactionRequest: Create transaction requests
+            CanGetCustomers: View customers
+            CanCreateCustomer: Create customers
+            CanGetConsents: View consents
+            CanCreateConsent: Create consents
+            AIS: Account Information Services (Berlin Group)
+            PIS: Payment Initiation Services (Berlin Group)
+            accounts: Account access (UK Open Banking)
+            bank:accounts.basic:read: Basic account information (Australian CDR)
+
+  parameters:
+    BankId:
+      name: bankId
+      in: path
+      required: true
+      description: Bank identifier
+      schema:
+        type: string
+        example: "gh.29.uk"
+
+    AccountId:
+      name: accountId
+      in: path
+      required: true
+      description: Account identifier
+      schema:
+        type: string
+        example: "8ca8a7e4-6d02-48e3-a029-0b2bf89de9f0"
+
+    ViewId:
+      name: viewId
+      in: path
+      required: true
+      description: View identifier
+      schema:
+        type: string
+        example: "owner"
+
+    TransactionId:
+      name: transactionId
+      in: path
+      required: true
+      description: Transaction identifier
+      schema:
+        type: string
+        example: "7d804f5e-bb6d-4e5c-9d5a-3b2c1a8e9f7d"
+
+    AgentId:
+      name: agentId
+      in: path
+      required: true
+      description: Agent identifier
+      schema:
+        type: string
+        example: "agent-123"
+
+    Offset:
+      name: offset
+      in: query
+      description: Number of records to skip for pagination
+      schema:
+        type: integer
+        minimum: 0
+        default: 0
+
+    Limit:
+      name: limit
+      in: query
+      description: Maximum number of records to return
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 1000
+        default: 50
+
+  schemas:
+    ApiInfo:
+      type: object
+      properties:
+        version:
+          type: string
+          example: "v5.1.0"
+        version_status:
+          type: string
+          example: "STABLE"
+        git_commit:
+          type: string
+          example: "abc123def456"
+        connector:
+          type: string
+          example: "mapped"
+
+    SuggestedSessionTimeout:
+      type: object
+      properties:
+        suggested_session_timeout_in_seconds:
+          type: string
+          example: "300"
+
+    Bank:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "gh.29.uk"
+        short_name:
+          type: string
+          example: "The Royal Bank of Scotland"
+        full_name:
+          type: string
+          example: "The Royal Bank of Scotland"
+        logo:
+          type: string
+          example: "https://static.openbankproject.com/images/sandbox/logo.png"
+        website:
+          type: string
+          example: "https://www.rbs.co.uk/"
+        bank_routings:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankRouting'
+
+    BankRouting:
+      type: object
+      properties:
+        scheme:
+          type: string
+          example: "BIC"
+        address:
+          type: string
+          example: "NWBKGB22"
+
+    BanksList:
+      type: object
+      properties:
+        banks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bank'
+
+    Agent:
+      type: object
+      properties:
+        agent_id:
+          type: string
+          example: "agent-123"
+        legal_name:
+          type: string
+          example: "John Smith"
+        mobile_phone_number:
+          type: string
+          example: "+44 123 456 7890"
+        agent_number:
+          type: string
+          example: "AGT001"
+        is_pending_agent:
+          type: boolean
+          example: false
+        is_confirmed_agent:
+          type: boolean
+          example: true
+        bank_account:
+          $ref: '#/components/schemas/Account'
+
+    PostAgent:
+      type: object
+      required:
+        - legal_name
+        - mobile_phone_number
+        - agent_number
+        - currency
+      properties:
+        legal_name:
+          type: string
+          example: "John Smith"
+        mobile_phone_number:
+          type: string
+          example: "+44 123 456 7890"
+        agent_number:
+          type: string
+          example: "AGT001"
+        currency:
+          type: string
+          example: "GBP"
+
+    PutAgent:
+      type: object
+      properties:
+        is_pending_agent:
+          type: boolean
+          example: false
+        is_confirmed_agent:
+          type: boolean
+          example: true
+
+    AgentsList:
+      type: object
+      properties:
+        agents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Agent'
+
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "8ca8a7e4-6d02-48e3-a029-0b2bf89de9f0"
+        label:
+          type: string
+          example: "My Savings Account"
+        number:
+          type: string
+          example: "123456789"
+        type:
+          type: string
+          example: "CURRENT"
+        balance:
+          $ref: '#/components/schemas/Amount'
+        IBAN:
+          type: string
+          example: "GB33BUKB20201555555555"
+        bank_id:
+          type: string
+          example: "gh.29.uk"
+
+    PostAccount:
+      type: object
+      required:
+        - user_id
+        - label
+        - type
+        - balance
+      properties:
+        user_id:
+          type: string
+          example: "c7b6cb47-cb96-4441-8801-35b57456753a"
+        label:
+          type: string
+          example: "My Savings Account"
+        type:
+          type: string
+          example: "CURRENT"
+        balance:
+          $ref: '#/components/schemas/Amount'
+
+    AccountsList:
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/Account'
+
+    AccountBalances:
+      type: object
+      properties:
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/Balance'
+
+    Balance:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "balance-123"
+        label:
+          type: string
+          example: "Available Balance"
+        amount:
+          $ref: '#/components/schemas/Amount'
+
+    Amount:
+      type: object
+      properties:
+        currency:
+          type: string
+          example: "GBP"
+        amount:
+          type: string
+          example: "1000.00"
+
+    Transaction:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "7d804f5e-bb6d-4e5c-9d5a-3b2c1a8e9f7d"
+        this_account:
+          $ref: '#/components/schemas/ThisAccount'
+        other_account:
+          $ref: '#/components/schemas/OtherAccount'
+        details:
+          $ref: '#/components/schemas/TransactionDetails'
+
+    ThisAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "8ca8a7e4-6d02-48e3-a029-0b2bf89de9f0"
+        holders:
+          type: array
+          items:
+            $ref: '#/components/schemas/AccountHolder'
+
+    OtherAccount:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "other-account-123"
+        holder:
+          $ref: '#/components/schemas/AccountHolder'
+
+    AccountHolder:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "John Smith"
+
+    TransactionDetails:
+      type: object
+      properties:
+        type:
+          type: string
+          example: "SEPA"
+        description:
+          type: string
+          example: "Payment for services"
+        posted:
+          type: string
+          format: date-time
+          example: "2023-09-16T10:30:00Z"
+        completed:
+          type: string
+          format: date-time
+          example: "2023-09-16T10:30:00Z"
+        new_balance:
+          $ref: '#/components/schemas/Amount'
+        value:
+          $ref: '#/components/schemas/Amount'
+
+    TransactionsList:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transaction'
+
+    TransactionRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "tr-123"
+        type:
+          type: string
+          example: "SEPA"
+        from:
+          $ref: '#/components/schemas/TransactionRequestAccount'
+        body:
+          $ref: '#/components/schemas/TransactionRequestBody'
+        status:
+          type: string
+          example: "INITIATED"
+
+    PostTransactionRequest:
+      type: object
+      required:
+        - to
+        - value
+        - description
+      properties:
+        to:
+          $ref: '#/components/schemas/TransactionRequestAccount'
+        value:
+          $ref: '#/components/schemas/Amount'
+        description:
+          type: string
+          example: "Payment for services"
+
+    TransactionRequestAccount:
+      type: object
+      properties:
+        bank_id:
+          type: string
+          example: "gh.29.uk"
+        account_id:
+          type: string
+          example: "8ca8a7e4-6d02-48e3-a029-0b2bf89de9f0"
+
+    TransactionRequestBody:
+      type: object
+      properties:
+        to:
+          $ref: '#/components/schemas/TransactionRequestAccount'
+        value:
+          $ref: '#/components/schemas/Amount'
+        description:
+          type: string
+          example: "Payment for services"
+
+    Customer:
+      type: object
+      properties:
+        customer_id:
+          type: string
+          example: "cust-123"
+        customer_number:
+          type: string
+          example: "CUST001"
+        legal_name:
+          type: string
+          example: "John Smith"
+        mobile_phone_number:
+          type: string
+          example: "+44 123 456 7890"
+        email:
+          type: string
+          example: "john.smith@example.com"
+        face_image:
+          $ref: '#/components/schemas/CustomerFaceImage'
+        date_of_birth:
+          type: string
+          format: date
+          example: "1980-01-01"
+        relationship_status:
+          type: string
+          example: "Single"
+        dependants:
+          type: integer
+          example: 0
+        dob_of_dependants:
+          type: array
+          items:
+            type: string
+            format: date
+        highest_education_attained:
+          type: string
+          example: "Bachelor"
+        employment_status:
+          type: string
+          example: "Employed"
+        kyc_status:
+          type: boolean
+          example: true
+        last_ok_date:
+          type: string
+          format: date-time
+          example: "2023-09-16T10:30:00Z"
+
+    PostCustomer:
+      type: object
+      required:
+        - legal_name
+        - mobile_phone_number
+        - email
+        - date_of_birth
+      properties:
+        legal_name:
+          type: string
+          example: "John Smith"
+        mobile_phone_number:
+          type: string
+          example: "+44 123 456 7890"
+        email:
+          type: string
+          example: "john.smith@example.com"
+        date_of_birth:
+          type: string
+          format: date
+          example: "1980-01-01"
+
+    CustomerFaceImage:
+      type: object
+      properties:
+        url:
+          type: string
+          example: "https://example.com/images/face.jpg"
+        date:
+          type: string
+          format: date-time
+          example: "2023-09-16T10:30:00Z"
+
+    CustomersList:
+      type: object
+      properties:
+        customers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Customer'
+
+    Consent:
+      type: object
+      properties:
+        consent_id:
+          type: string
+          example: "consent-123"
+        jwt:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        status:
+          type: string
+          example: "ACCEPTED"
+        created_date:
+          type: string
+          format: date-time
+          example: "2023-09-16T10:30:00Z"
+
+    PostConsent:
+      type: object
+      required:
+        - everything
+      properties:
+        everything:
+          type: boolean
+          example: false
+        bank_id:
+          type: string
+          example: "gh.29.uk"
+        account_access:
+          type: array
+          items:
+            $ref: '#/components/schemas/ConsentAccountAccess'
+
+    ConsentAccountAccess:
+      type: object
+      properties:
+        account_id:
+          type: string
+          example: "8ca8a7e4-6d02-48e3-a029-0b2bf89de9f0"
+        view_id:
+          type: string
+          example: "owner"
+
+    ConsentsList:
+      type: object
+      properties:
+        consents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Consent'
+
+    BerlinGroupAccountList:
+      type: object
+      properties:
+        accounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BerlinGroupAccount'
+
+    BerlinGroupAccount:
+      type: object
+      properties:
+        resourceId:
+          type: string
+          example: "account-123"
+        iban:
+          type: string
+          example: "DE89370400440532013000"
+        currency:
+          type: string
+          example: "EUR"
+        name:
+          type: string
+          example: "Main Account"
+        product:
+          type: string
+          example: "Current Account"
+        cashAccountType:
+          type: string
+          example: "CACC"
+
+    BerlinGroupBalances:
+      type: object
+      properties:
+        balances:
+          type: array
+          items:
+            $ref: '#/components/schemas/BerlinGroupBalance'
+
+    BerlinGroupBalance:
+      type: object
+      properties:
+        balanceAmount:
+          $ref: '#/components/schemas/BerlinGroupAmount'
+        balanceType:
+          type: string
+          example: "closingBooked"
+        referenceDate:
+          type: string
+          format: date
+          example: "2023-09-16"
+
+    BerlinGroupAmount:
+      type: object
+      properties:
+        currency:
+          type: string
+          example: "EUR"
+        amount:
+          type: string
+          example: "1000.00"
+
+    BerlinGroupSepaCreditTransfer:
+      type: object
+      required:
+        - debtorAccount
+        - creditorAccount
+        - instructedAmount
+      properties:
+        debtorAccount:
+          $ref: '#/components/schemas/BerlinGroupAccountReference'
+        creditorAccount:
+          $ref: '#/components/schemas/BerlinGroupAccountReference'
+        creditorName:
+          type: string
+          example: "John Smith"
+        instructedAmount:
+          $ref: '#/components/schemas/BerlinGroupAmount'
+        remittanceInformationUnstructured:
+          type: string
+          example: "Payment for services"
+
+    BerlinGroupAccountReference:
+      type: object
+      properties:
+        iban:
+          type: string
+          example: "DE89370400440532013000"
+
+    BerlinGroupPaymentInitiation:
+      type: object
+      properties:
+        transactionStatus:
+          type: string
+          example: "RCVD"
+        paymentId:
+          type: string
+          example: "payment-123"
+
+    UKOpenBankingAccountList:
+      type: object
+      properties:
+        Data:
+          type: object
+          properties:
+            Account:
+              type: array
+              items:
+                $ref: '#/components/schemas/UKOpenBankingAccount'
+
+    UKOpenBankingAccount:
+      type: object
+      properties:
+        AccountId:
+          type: string
+          example: "account-123"
+        Currency:
+          type: string
+          example: "GBP"
+        AccountType:
+          type: string
+          example: "Personal"
+        AccountSubType:
+          type: string
+          example: "CurrentAccount"
+        Nickname:
+          type: string
+          example: "My Current Account"
+
+    UKOpenBankingBalances:
+      type: object
+      properties:
+        Data:
+          type: object
+          properties:
+            Balance:
+              type: array
+              items:
+                $ref: '#/components/schemas/UKOpenBankingBalance'
+
+    UKOpenBankingBalance:
+      type: object
+      properties:
+        AccountId:
+          type: string
+          example: "account-123"
+        Amount:
+          $ref: '#/components/schemas/UKOpenBankingAmount'
+        CreditDebitIndicator:
+          type: string
+          example: "Credit"
+        Type:
+          type: string
+          example: "ClosingAvailable"
+
+    UKOpenBankingAmount:
+      type: object
+      properties:
+        Amount:
+          type: string
+          example: "1000.00"
+        Currency:
+          type: string
+          example: "GBP"
+
+    AustralianCDRAccountList:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            accounts:
+              type: array
+              items:
+                $ref: '#/components/schemas/AustralianCDRAccount'
+
+    AustralianCDRAccount:
+      type: object
+      properties:
+        accountId:
+          type: string
+          example: "account-123"
+        displayName:
+          type: string
+          example: "My Transaction Account"
+        nickname:
+          type: string
+          example: "Everyday Account"
+        maskedNumber:
+          type: string
+          example: "xxxx1234"
+        openStatus:
+          type: string
+          example: "OPEN"
+        isOwned:
+          type: boolean
+          example: true
+        productCategory:
+          type: string
+          example: "TRANS_AND_SAVINGS_ACCOUNTS"
+        productName:
+          type: string
+          example: "Complete Freedom"
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          example: "OBP-10001"
+        message:
+          type: string
+          example: "User not logged in"
+
+  responses:
+    BadRequest:
+      description: Bad Request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    NotFound:
+      description: Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    BankNotFound:
+      description: Bank Not Found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+tags:
+  - name: API Information
+    description: Basic API information and configuration
+  - name: Banks
+    description: Bank management and information
+  - name: Agents
+    description: Agent management and operations
+  - name: Accounts
+    description: Account management and information
+  - name: Transactions
+    description: Transaction history and information
+  - name: Transaction Requests
+    description: Payment and transaction request processing
+  - name: Customers
+    description: Customer management and information
+  - name: Consents
+    description: Data access consent management
+  - name: Berlin Group - Accounts
+    description: Berlin Group PSD2 Account Information Services
+  - name: Berlin Group - Payments
+    description: Berlin Group PSD2 Payment Initiation Services
+  - name: UK Open Banking - Accounts
+    description: UK Open Banking Account and Information Services
+  - name: UK Open Banking - Payments
+    description: UK Open Banking Payment Initiation Services
+  - name: Australian CDR - Banking
+    description: Australian Consumer Data Right Banking APIs
+  - name: Bahrain OBF - Accounts
+    description: Bahrain Open Banking Framework Account Services
+  - name: Bahrain OBF - Payments
+    description: Bahrain Open Banking Framework Payment Services
+  - name: Bahrain OBF - Balances
+    description: Bahrain Open Banking Framework Balance Services
+  - name: MxOF - ATMs
+    description: Mexican Open Finance ATM Services
+  - name: STET - Payments
+    description: STET Payment Initiation Services
+  - name: Polish - AIS
+    description: Polish Account Information Services
+  - name: System Management
+    description: System administration and management
+  - name: User Management
+    description: User account and authentication management
+  - name: Regulated Entities
+    description: Regulated entity management and compliance
+  - name: Testing
+    description: Testing and performance endpoints
